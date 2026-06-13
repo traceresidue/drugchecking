@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FTIR Overlay & Subtraction Bench — Drug Checking Viz</title>
+<script src="lib/d3.min.js"></script>
+</head>
+<body>
+<script>
+window.DATA = {};
+window.SPEC = {"ftir":{"fentanyl":[[3030,0.18,30],[2935,0.32,45],[2810,0.18,40],[1645,0.95,28],[1495,0.45,18],[1450,0.42,20],[1412,0.35,16],[1305,0.28,18],[1242,0.4,20],[1135,0.25,18],[1032,0.22,15],[745,0.65,14],[700,0.7,12]],"xylazine":[[3170,0.22,50],[2920,0.3,45],[1602,0.88,24],[1558,0.8,22],[1470,0.46,20],[1378,0.3,16],[1320,0.4,18],[1232,0.28,16],[1090,0.22,15],[765,0.62,14]],"lactose":[[3330,0.75,180],[2900,0.22,60],[1650,0.12,40],[1420,0.18,30],[1340,0.2,25],[1140,0.45,20],[1070,0.78,22],[1030,0.85,20],[990,0.5,16],[916,0.3,14],[875,0.25,14]],"caffeine":[[3110,0.15,30],[2950,0.14,40],[1700,0.9,22],[1655,0.95,24],[1600,0.42,18],[1548,0.5,18],[1483,0.46,18],[1360,0.4,16],[1238,0.36,16],[1024,0.22,14],[745,0.4,12]],"methamphetamine":[[2960,0.8,90],[2700,0.45,70],[2450,0.25,60],[1605,0.18,16],[1495,0.3,14],[1455,0.4,18],[1380,0.22,14],[1060,0.18,14],[745,0.55,12],[700,0.6,12]],"cocaine":[[2950,0.3,50],[2550,0.2,60],[1730,0.92,20],[1712,0.85,18],[1450,0.3,18],[1265,0.8,22],[1230,0.55,18],[1105,0.5,16],[1070,0.35,14],[728,0.6,12],[712,0.5,10]],"heroin":[[2940,0.28,50],[1762,0.85,20],[1738,0.8,20],[1600,0.2,16],[1450,0.3,16],[1368,0.4,16],[1245,0.75,22],[1175,0.5,16],[1115,0.3,14],[905,0.3,12]],"fentanyl_street_mix":"computed","mannitol":[[3280,0.8,160],[2940,0.3,55],[1420,0.25,24],[1280,0.3,20],[1080,0.75,20],[1018,0.85,18],[930,0.4,14],[875,0.3,12]]}};
+</script>
+<script>
+(function(){
+/* Drug Checking Visualization Framework — shared helpers
+   Loaded by every standalone visualization. Pure ES module, no dependencies.
+   Provides: design tokens (CSS injection), substance classification + palette,
+   spectral synthesis (Gaussian chromatograms, stick spectra, FTIR curves),
+   formatting, tooltip, and a small DOM scaffold builder. */
+
+const TOKENS = {
+  bg:'#0b0e14', panel:'#121826', panel2:'#1a2234', line:'#26304a',
+  ink:'#e8ecf4', muted:'#8b94a8', faint:'#5b6478',
+  opioid:'#ff8a5c', fent:'#ff5c7a', xyl:'#b388ff', stim:'#ffd166',
+  coke:'#4cc9f0', benzo:'#7aa2ff', cut:'#6ee7a8', other:'#94a3b8',
+  alert:'#ff5c7a', watch:'#ffd166', ok:'#6ee7a8', info:'#4cc9f0'
+};
+
+/* Map a substance name -> {class, color, label, action} */
+const CLASS = {
+  fent:{color:TOKENS.fent,label:'Fentanyl & analogs'},
+  opioid:{color:TOKENS.opioid,label:'Opioid'},
+  xyl:{color:TOKENS.xyl,label:'Sedative / xylazine'},
+  stim:{color:TOKENS.stim,label:'Stimulant'},
+  coke:{color:TOKENS.coke,label:'Cocaine'},
+  benzo:{color:TOKENS.benzo,label:'Benzodiazepine'},
+  cut:{color:TOKENS.cut,label:'Cut / diluent'},
+  other:{color:TOKENS.other,label:'Other'}
+};
+const RULES = [
+  [/fentanyl|anpp|despropionyl|norfentanyl|acetylfentanyl|n-phenylpropanamide|phenethyl/i,'fent'],
+  [/nitazene|etonitazene|metonitazene|protonitazene|isotonitazene/i,'fent'],
+  [/heroin|morphine|codeine|6-mam|monoacetylmorphine|oxycodone|hydromorphone|tramadol|mitragynine|opioid/i,'opioid'],
+  [/xylazine|medetomidine|detomidine|clonidine/i,'xyl'],
+  [/bromazolam|flualprazolam|alprazolam|etizolam|diazepam|clonazolam|benzodiazep|flubromazolam|diclazepam/i,'benzo'],
+  [/methamphetamine|amphetamine|mdma|cathinone|methylenedioxy|n,n-dimethylamphetamine/i,'stim'],
+  [/cocaine|benzoylecgonine|ecgonine/i,'coke'],
+  [/caffeine|acetaminophen|paracetamol|lidocaine|levamisole|quinine|mannitol|lactose|sucrose|cellulose|diphenhydramine|sulfone|msm|sugar|inositol|procaine|benzocaine|phenacetin|gabapentin|dimethyl|sebacate|btmps|piperidyl|boric|sorbitol|maltose|glucose|creatine|diacetin|tetramethyl/i,'cut'],
+];
+function classify(name=''){
+  const n = String(name).toLowerCase();
+  for(const [re,c] of RULES) if(re.test(n)) return {cls:c,...CLASS[c]};
+  return {cls:'other',...CLASS.other};
+}
+
+/* ---- formatting ---- */
+const fmt = {
+  mz:v=>`${(+v).toFixed(0)}`,
+  rt:v=>`${(+v).toFixed(2)}`,
+  pct:v=>`${(+v).toFixed(0)}%`,
+  int:v=>(+v).toLocaleString('en-US'),
+  month:m=>{const [y,mo]=m.split('-');return new Date(y,mo-1).toLocaleDateString('en-US',{month:'short',year:'2-digit'});}
+};
+
+/* ---- spectral synthesis ---- */
+// Sum-of-Gaussians chromatogram trace. peaks:[{rt,amp}], returns {x:[],y:[]}
+function chromatogram(peaks,{x0=2,x1=13,n=900,sigma=0.045}={}){
+  const x=[],y=[];
+  for(let i=0;i<n;i++){
+    const t=x0+(x1-x0)*i/(n-1); x.push(t);
+    let v=0; for(const p of peaks){const d=(t-p.rt)/(p.sigma||sigma); v+=p.amp*Math.exp(-0.5*d*d);}
+    y.push(v);
+  }
+  const mx=Math.max(...y,1e-9);
+  return {x,y:y.map(v=>v/mx*100)};
+}
+// FTIR absorbance curve from bands [[center,intensity,width],...]; reversed x handled by caller
+function ftirCurve(bands,{x0=4000,x1=400,n=1100}={}){
+  const x=[],y=[];
+  for(let i=0;i<n;i++){
+    const w=x0+(x1-x0)*i/(n-1); x.push(w);
+    let v=0; for(const [c,I,wd] of bands){const d=(w-c)/(wd||20); v+=I*Math.exp(-0.5*d*d);}
+    y.push(v);
+  }
+  return {x,y}; // y in absorbance-ish 0..~1
+}
+// Mass spectrum sticks: returns sorted peaks with base-peak normalization
+function stickSpectrum(peaks){
+  const mx=Math.max(...peaks.map(p=>p[1]),1);
+  return peaks.map(([mz,i])=>({mz,i:i/mx*100})).sort((a,b)=>a.mz-b.mz);
+}
+// cosine similarity between two stick spectra (binned at 1 m/z)
+function cosine(a,b,tol=0.5){
+  let dot=0,na=0,nb=0; const used=new Set();
+  for(const pa of a){na+=pa.i*pa.i;}
+  for(const pb of b){nb+=pb.i*pb.i;}
+  for(const pa of a){let best=null,bd=tol; for(let k=0;k<b.length;k++){if(used.has(k))continue;const d=Math.abs(pa.mz-b[k].mz); if(d<=bd){bd=d;best=k;}} if(best!=null){dot+=pa.i*b[best].i;used.add(best);}}
+  return dot/(Math.sqrt(na)*Math.sqrt(nb)||1);
+}
+
+/* ---- tooltip ---- */
+let _tt;
+function tooltip(){
+  if(_tt) return _tt;
+  _tt=document.createElement('div');
+  _tt.style.cssText=`position:fixed;pointer-events:none;z-index:99;background:${TOKENS.panel2};border:1px solid ${TOKENS.line};border-radius:8px;padding:8px 10px;font:12px/1.4 Inter,system-ui;color:${TOKENS.ink};box-shadow:0 6px 24px rgba(0,0,0,.5);opacity:0;transition:opacity .12s;max-width:260px`;
+  document.body.appendChild(_tt);
+  return {
+    show(html,x,y){_tt.innerHTML=html;_tt.style.opacity=1;const r=_tt.getBoundingClientRect();let nx=x+14,ny=y+14;if(nx+r.width>innerWidth)nx=x-r.width-14;if(ny+r.height>innerHeight)ny=y-r.height-14;_tt.style.left=nx+'px';_tt.style.top=ny+'px';},
+    hide(){_tt.style.opacity=0;}
+  };
+}
+
+/* ---- page scaffold + global CSS ---- */
+function scaffold({tag,title,dek,how,provenance,harm}={}){
+  injectCSS();
+  document.body.innerHTML=`
+    <header class="dcf-h">
+      <div class="dcf-tag">${tag||''}</div>
+      <h1>${title||''}</h1>
+      <p class="dek">${dek||''}</p>
+    </header>
+    <main id="stage"></main>
+    <details class="dcf-how"><summary>How to read this</summary><div>${how||''}</div></details>
+    <footer class="dcf-f">
+      <p class="prov">${provenance||''}</p>
+      ${harm?`<p class="harm">${harm}</p>`:''}
+    </footer>`;
+  return document.getElementById('stage');
+}
+function injectCSS(){
+  if(document.getElementById('dcf-css')) return;
+  const s=document.createElement('style'); s.id='dcf-css';
+  s.textContent=`
+  :root{--bg:${TOKENS.bg};--panel:${TOKENS.panel};--panel2:${TOKENS.panel2};--line:${TOKENS.line};--ink:${TOKENS.ink};--muted:${TOKENS.muted};--faint:${TOKENS.faint}}
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
+  body{max-width:1180px;margin:0 auto;padding:28px 22px 64px}
+  .mono{font-family:ui-monospace,"SF Mono","Cascadia Mono",monospace}
+  .muted{color:var(--muted)} .faint{color:var(--faint)}
+  .dcf-h{margin-bottom:18px;border-bottom:1px solid var(--line);padding-bottom:16px}
+  .dcf-tag{font:600 11px/1 ui-monospace,monospace;letter-spacing:.14em;color:var(--muted);text-transform:uppercase;margin-bottom:10px}
+  .dcf-h h1{font-size:27px;line-height:1.15;margin:0 0 8px;font-weight:700;letter-spacing:-.01em}
+  .dek{font-size:15px;line-height:1.5;color:var(--muted);margin:0;max-width:74ch}
+  #stage{margin:18px 0}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px}
+  .dcf-how{margin:22px 0 8px;border:1px solid var(--line);border-radius:10px;background:var(--panel);overflow:hidden}
+  .dcf-how summary{cursor:pointer;padding:12px 16px;font-weight:600;font-size:13px;color:var(--ink);list-style:none}
+  .dcf-how summary::before{content:"ⓘ ";color:var(--muted)}
+  .dcf-how[open] summary{border-bottom:1px solid var(--line)}
+  .dcf-how>div{padding:14px 16px;font-size:13.5px;line-height:1.6;color:var(--muted)}
+  .dcf-how b{color:var(--ink)}
+  .dcf-f{margin-top:26px;padding-top:14px;border-top:1px solid var(--line);font-size:12px;line-height:1.5}
+  .dcf-f .prov{color:var(--faint);margin:0 0 6px}
+  .dcf-f .harm{color:var(--muted);margin:0;padding-left:11px;border-left:3px solid ${TOKENS.ok}}
+  button.tgl{background:var(--panel);color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:7px 13px;font:500 13px Inter;cursor:pointer;transition:.15s}
+  button.tgl:hover{background:var(--panel2);color:var(--ink)}
+  button.tgl[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+  .controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+  input[type=range]{accent-color:${TOKENS.info}}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:10px}
+  .legend i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+  @media (prefers-reduced-motion:reduce){*{animation-duration:.001ms!important;transition-duration:.001ms!important}}
+  `;
+  document.head.appendChild(s);
+}
+
+/* draw a 2D structure from SMILES into a <canvas id=...>; needs SmilesDrawer loaded.
+   Uses the dark theme tuned to the framework background. No-ops gracefully if absent. */
+function drawSmiles(smiles,canvasId,w=160,h=120){
+  const el=document.getElementById(canvasId);
+  if(!el||typeof SmilesDrawer==='undefined'||!smiles){ if(el){const c=el.getContext&&el.getContext('2d');if(c){c.fillStyle='#5b6478';c.font='11px Inter';c.fillText('structure n/a',8,h/2);}} return; }
+  try{
+    const drawer=new SmilesDrawer.Drawer({width:w,height:h,padding:14,bondThickness:1.1,
+      themes:{dcf:{C:'#cfd6e4',N:'#7aa2ff',O:'#ff8a5c',F:'#6ee7a8',S:'#ffd166',Cl:'#6ee7a8',Br:'#ff8a5c',
+        BACKGROUND:'#0e1320',bond:'#9aa6bd',default:'#cfd6e4'}}});
+    SmilesDrawer.parse(smiles,t=>drawer.draw(t,canvasId,'dcf',false),()=>{});
+  }catch(e){}
+}
+
+
+window.DCF={TOKENS,classify,fmt,chromatogram,ftirCurve,stickSpectrum,cosine,tooltip,scaffold,injectCSS,drawSmiles};
+
+})();
+</script>
+<script>
+/* Nº 03 · FTIR Overlay & Subtraction Bench — overlay a mixed street sample's
+   infrared spectrum against pure reference components, then subtract them one by
+   one to see what signal is "left over" (the unexplained residual). */
+const {scaffold,ftirCurve,classify,tooltip,fmt,TOKENS}=DCF;
+const F=SPEC.ftir;
+const refs=Object.keys(F).filter(k=>Array.isArray(F[k]));
+
+const stage=scaffold({
+  tag:'Nº 03 · FTIR',
+  title:'FTIR Overlay & Subtraction Bench',
+  dek:'On-site FTIR reads a sample\'s infrared "molecular barcode." Build a synthetic mixture, then peel off known components to reveal what can\'t yet be explained.',
+  how:`<b>FTIR</b> shines infrared light through a sample; chemical bonds absorb specific frequencies, producing bands at characteristic <b>wavenumbers</b> (<span class="mono">cm⁻¹</span>, plotted high→low by convention). The cluttered <b>fingerprint region</b> (1500–400, shaded) is nearly unique per molecule. A field tech identifies a mixture by matching and <b>subtracting</b> reference spectra; whatever signal remains (the <b>residual</b>) may be an unidentified or trace component — exactly where novel adulterants hide. <b>Limits:</b> FTIR struggles below ~5% of a mixture and can miss potent drugs present in tiny amounts (like fentanyl).`,
+  provenance:'Band positions illustrative of characteristic functional-group absorptions; intensities approximate.',
+  harm:'FTIR can miss fentanyl and other potent drugs present below its detection floor. A "clean" FTIR result is not an all-clear — use test strips too.'
+});
+
+stage.innerHTML=`
+<div class="controls" id="mixctl"><span class="muted" style="font-size:13px">Mixture contains:</span></div>
+<div class="controls" id="subctl"><span class="muted" style="font-size:13px">Subtract reference:</span></div>
+<div class="panel"><svg id="svg" width="100%" height="420" role="img" aria-label="FTIR overlay and residual"></svg></div>
+<div class="legend" id="leg"></div>`;
+
+const mix=new Set(['fentanyl','caffeine','lactose']);
+const subtracted=new Set();
+const tt=tooltip();
+
+function chips(host,set,onToggle,active){
+  host.querySelectorAll('button').forEach(b=>b.remove());
+  refs.forEach(r=>{
+    const b=document.createElement('button'); b.className='tgl'; b.textContent=r;
+    b.setAttribute('aria-pressed',set.has(r));
+    b.onclick=()=>{onToggle(r);render();};
+    host.appendChild(b);
+  });
+}
+function render(){
+  chips(document.getElementById('mixctl'),mix,r=>{mix.has(r)?mix.delete(r):mix.add(r);subtracted.delete(r);});
+  chips(document.getElementById('subctl'),subtracted,r=>{if(mix.has(r))subtracted.has(r)?subtracted.delete(r):subtracted.add(r);});
+  draw();
+}
+
+function curveFor(set){
+  // sum band lists, scaled equally
+  const bands=[];
+  set.forEach(r=>F[r].forEach(b=>bands.push(b)));
+  return ftirCurve(bands);
+}
+function draw(){
+  const svg=d3.select('#svg'); svg.selectAll('*').remove();
+  const W=svg.node().clientWidth,H=420,m={t:20,r:16,b:40,l:30};
+  const total=curveFor(mix);
+  const resid=curveFor(new Set([...mix].filter(r=>!subtracted.has(r))));
+  const sub=curveFor(subtracted);
+  const x=d3.scaleLinear([4000,400],[m.l,W-m.r]); // reversed
+  const ymax=Math.max(...total.y,1)*1.1;
+  const y=d3.scaleLinear([0,ymax],[H-m.b,m.t]);
+  // fingerprint shading
+  svg.append('rect').attr('x',x(1500)).attr('y',m.t).attr('width',x(400)-x(1500)).attr('height',H-m.b-m.t).attr('fill',TOKENS.panel2).attr('opacity',.5);
+  svg.append('text').attr('x',(x(1500)+x(400))/2).attr('y',m.t+13).attr('text-anchor','middle').attr('fill',TOKENS.faint).attr('font-size',10).text('fingerprint region');
+  [4000,3000,2000,1500,1000,500].forEach(t=>{
+    svg.append('line').attr('x1',x(t)).attr('x2',x(t)).attr('y1',m.t).attr('y2',H-m.b).attr('stroke',TOKENS.line).attr('opacity',.4);
+    svg.append('text').attr('x',x(t)).attr('y',H-14).attr('text-anchor','middle').attr('fill',TOKENS.faint).attr('font-size',11).attr('font-family','ui-monospace').text(t);
+  });
+  svg.append('text').attr('x',W/2).attr('y',H-2).attr('text-anchor','middle').attr('fill',TOKENS.muted).attr('font-size',11).text('wavenumber (cm⁻¹) — high to low');
+
+  const line=d3.line().x((d,i)=>x(total.x[i])).y(d=>y(d)).curve(d3.curveBasis);
+  // total mixture (faint)
+  svg.append('path').datum(total.y).attr('d',line).attr('fill','none').attr('stroke',TOKENS.muted).attr('stroke-width',1).attr('opacity',.5).attr('stroke-dasharray','3,3');
+  // subtracted refs (each colored)
+  if(subtracted.size){
+    svg.append('path').datum(sub.y).attr('d',d3.line().x((d,i)=>x(sub.x[i])).y(d=>y(d)).curve(d3.curveBasis)).attr('fill','none').attr('stroke',TOKENS.faint).attr('stroke-width',1.1).attr('opacity',.6);
+  }
+  // residual (bold gradient fill)
+  const area=d3.area().x((d,i)=>x(resid.x[i])).y0(y(0)).y1(d=>y(d)).curve(d3.curveBasis);
+  const g=svg.append('defs').append('linearGradient').attr('id','rg').attr('x1',0).attr('x2',0).attr('y1',0).attr('y2',1);
+  g.append('stop').attr('offset','0%').attr('stop-color',TOKENS.fent).attr('stop-opacity',.4);
+  g.append('stop').attr('offset','100%').attr('stop-color',TOKENS.fent).attr('stop-opacity',.03);
+  svg.append('path').datum(resid.y).attr('d',area).attr('fill','url(#rg)');
+  svg.append('path').datum(resid.y).attr('d',d3.line().x((d,i)=>x(resid.x[i])).y(d=>y(d)).curve(d3.curveBasis)).attr('fill','none').attr('stroke',TOKENS.fent).attr('stroke-width',1.8);
+  svg.on('mousemove',e=>{const wn=Math.round(x.invert(e.offsetX));if(wn>400&&wn<4000)tt.show(`<b class="mono">${wn} cm⁻¹</b>`,e.clientX,e.clientY);}).on('mouseleave',tt.hide);
+
+  document.getElementById('leg').innerHTML=
+    `<span><i style="background:${TOKENS.muted}"></i>full mixture</span>
+     <span><i style="background:${TOKENS.fent}"></i>residual after subtraction (${[...mix].filter(r=>!subtracted.has(r)).length} components left)</span>
+     <span class="faint">subtracting ${subtracted.size||'none'} reference${subtracted.size===1?'':'s'}</span>`;
+}
+render();
+addEventListener('resize',draw);
+
+</script>
+</body>
+</html>
