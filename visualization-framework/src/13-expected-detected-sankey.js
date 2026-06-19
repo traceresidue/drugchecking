@@ -2,6 +2,8 @@
    to what the lab actually found (right). The width of each stream dramatizes how
    far the unregulated supply has drifted from what's sold. */
 const {scaffold,classify,tooltip,fmt,TOKENS}=DCF;
+function subColor(name){const c=classify(name);return window.DCFDesign?DCFDesign.getClassColor(c.cls):c.color;}
+function sigColor(k){return window.DCFDesign?DCFDesign.getClassColor(k):TOKENS[k];}
 const ED=DATA.expected_detected, EC=DATA.expected_counts;
 
 const stage=scaffold({
@@ -26,7 +28,7 @@ function draw(){
   const links=ED.map(d=>({source:nidx.get('L:'+d.expected),target:nidx.get('R:'+d.detected),value:d.n}));
   const sankey=d3.sankey().nodeWidth(16).nodePadding(14).extent([[8,12],[W-8,H-12]]).nodeSort(null);
   const graph=sankey({nodes:nodes.map(d=>({...d})),links:links.map(d=>({...d}))});
-  function colOf(name){return classify(name).color;}
+  function colOf(name){return subColor(name);}
   // links
   svg.append('g').attr('fill','none').selectAll('path').data(graph.links).join('path')
     .attr('d',d3.sankeyLinkHorizontal())
@@ -40,10 +42,13 @@ function draw(){
     .attr('fill',d=>colOf(d.name)).attr('opacity',.92);
   gn.append('text').attr('x',d=>d.side==='L'?d.x0-6:d.x1+6).attr('y',d=>(d.y0+d.y1)/2).attr('dy','.35em')
     .attr('text-anchor',d=>d.side==='L'?'end':'start').attr('fill',TOKENS.ink).attr('font-size',12)
+    .attr('class','dcf-lbl').attr('data-tier','inline')
+    .attr('display',(!window.DCFDesign||DCFDesign.showTier('inline'))?null:'none')
     .text(d=>d.name).clone(true).lower().attr('stroke',TOKENS.bg).attr('stroke-width',3);
   // headers
   svg.append('text').attr('x',8).attr('y',8).attr('fill',TOKENS.muted).attr('font-size',11).attr('font-weight',600).text('EXPECTED');
   svg.append('text').attr('x',W-8).attr('y',8).attr('text-anchor','end').attr('fill',TOKENS.muted).attr('font-size',11).attr('font-weight',600).text('DETECTED');
 }
+window.__vizRedraw=draw;
 draw();
 addEventListener('resize',draw);

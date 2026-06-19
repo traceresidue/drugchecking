@@ -183,7 +183,7 @@ https://example.com/viz/25-glyph-garden.html
 
 ### What's Illustrative
 - **MS/FTIR Spectra** — Representative examples; labeled as illustrative
-- **Chromatograms** — Sample compositions created from real co-occurrence patterns but not from specific seized bags
+- **Chromatograms** — Sample compositions created from real co-occurrence patterns but not from specific submitted samples
 - **Result Cards** — Example layouts; not from actual patient samples
 
 ### Key Disclosures

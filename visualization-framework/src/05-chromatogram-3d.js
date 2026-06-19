@@ -2,6 +2,8 @@
    retention time × m/z × intensity. Here it's a navigable 3D surface, with each
    chromatographic peak rising into its own mass-spectral ridge. */
 const {scaffold,stickSpectrum,classify,TOKENS}=DCF;
+function subColor(name){const c=classify(name);return window.DCFDesign?DCFDesign.getClassColor(c.cls):c.color;}
+function sigColor(k){return window.DCFDesign?DCFDesign.getClassColor(k):TOKENS[k];}
 const CH=SPEC.chromatograms, MS=SPEC.ms, RT=Object.fromEntries(DATA.retention_times.map(d=>[d.substance,d.rt]));
 
 const stage=scaffold({
@@ -18,7 +20,7 @@ stage.innerHTML=`
 <div class="panel"><div id="plot" style="height:560px"></div></div>`;
 const sel=document.getElementById('sel');
 for(const k of Object.keys(CH)) sel.add(new Option(CH[k].label,k));
-sel.style.cssText='background:#1a2234;color:#e8ecf4;border:1px solid #26304a;border-radius:8px;padding:7px 10px;font:500 13px Inter';
+sel.className='dcf-ctl-select';
 sel.onchange=draw;
 
 function gauss(x,mu,s){return Math.exp(-0.5*((x-mu)/s)**2);}
@@ -36,11 +38,21 @@ function draw(){
     }
     return v;
   }));
-  Plotly.newPlot('plot',[{
-    type:'surface',x:rt,y:mz,z:Z,
-    colorscale:[[0,'#0b0e14'],[0.15,'#1a2a4a'],[0.4,'#2a6f97'],[0.7,'#4cc9f0'],[1,'#ffd166']],
-    showscale:false,contours:{z:{show:true,usecolormap:true,project:{z:true}}}
-  }],{
+  const colorscale=window.DCFDesign?DCFDesign.getColorscale():[[0,'#0b0e14'],[0.15,'#1a2a4a'],[0.4,'#2a6f97'],[0.7,'#4cc9f0'],[1,'#ffd166']];
+  const bg=window.DCFDesign?getComputedStyle(document.documentElement).getPropertyValue('--bg').trim():'#0b0e14';
+  const line=window.DCFDesign?getComputedStyle(document.documentElement).getPropertyValue('--line').trim():'#26304a';
+  const muted=window.DCFDesign?getComputedStyle(document.documentElement).getPropertyValue('--muted').trim():'#8b94a8';
+  const showAxis=!window.DCFDesign||DCFDesign.showTier('axis');
+  const layout=window.DCFDesign?DCFDesign.getPlotlyLayout({
+    paper_bgcolor:'rgba(0,0,0,0)',
+    scene:{
+      xaxis:{title:showAxis?'retention time (min)':'',color:muted,gridcolor:line,backgroundcolor:bg,showbackground:true},
+      yaxis:{title:showAxis?'m/z':'',color:muted,gridcolor:line,backgroundcolor:bg,showbackground:true},
+      zaxis:{title:showAxis?'signal':'',color:muted,gridcolor:line,backgroundcolor:bg,showbackground:true},
+      camera:{eye:{x:1.6,y:-1.5,z:0.9}}
+    },
+    margin:{l:0,r:0,t:0,b:0}
+  }):{
     paper_bgcolor:'rgba(0,0,0,0)',
     scene:{
       xaxis:{title:'retention time (min)',color:'#8b94a8',gridcolor:'#26304a',backgroundcolor:'#0b0e14',showbackground:true},
@@ -49,6 +61,11 @@ function draw(){
       camera:{eye:{x:1.6,y:-1.5,z:0.9}}
     },
     margin:{l:0,r:0,t:0,b:0}
-  },{responsive:true,displayModeBar:false});
+  };
+  Plotly.newPlot('plot',[{
+    type:'surface',x:rt,y:mz,z:Z,
+    colorscale,showscale:false,contours:{z:{show:true,usecolormap:true,project:{z:true}}}
+  }],layout,{responsive:true,displayModeBar:false});
 }
+window.__vizRedraw=draw;
 draw();

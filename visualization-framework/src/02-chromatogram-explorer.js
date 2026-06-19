@@ -3,6 +3,8 @@
    2D structure, plain-language drug card, and harm-reduction note. */
 const {scaffold,chromatogram,stickSpectrum,classify,tooltip,fmt,TOKENS,drawSmiles}=DCF;
 const CH=SPEC.chromatograms, MS=SPEC.ms, RT=Object.fromEntries(DATA.retention_times.map(d=>[d.substance,d.rt]));
+function subColor(name){const c=classify(name);return window.DCFDesign?DCFDesign.getClassColor(c.cls):c.color;}
+function accentInfo(){return window.DCFDesign?DCFDesign.getClassColor('info'):TOKENS.info;}
 
 const NOTE={
   fentanyl:'Potent synthetic opioid. Dominant peak ≠ known dose — small visual changes mean large potency changes.',
@@ -42,7 +44,7 @@ stage.innerHTML=`
 
 const archSel=document.getElementById('arch');
 for(const k of Object.keys(CH)) archSel.add(new Option(CH[k].label,k));
-archSel.style.cssText='background:#1a2234;color:#e8ecf4;border:1px solid #26304a;border-radius:8px;padding:7px 10px;font:500 13px Inter';
+archSel.className='dcf-ctl-select';
 const tt=tooltip();
 let selected=null;
 archSel.onchange=()=>{selected=null;draw();};
@@ -59,38 +61,38 @@ function draw(){
   const x=d3.scaleLinear([3,13],[m.l,W-m.r]);
   const y=d3.scaleLinear([0,105],[H-m.b,m.t]);
   // grid
-  x.ticks(10).forEach(t=>svg.append('text').attr('x',x(t)).attr('y',H-14).attr('fill',TOKENS.faint).attr('font-size',11).attr('text-anchor','middle').attr('font-family','ui-monospace').text(t));
-  svg.append('text').attr('x',(W)/2).attr('y',H-2).attr('text-anchor','middle').attr('fill',TOKENS.muted).attr('font-size',11).text('retention time (minutes)');
-  svg.append('text').attr('transform',`translate(13,${H/2})rotate(-90)`).attr('text-anchor','middle').attr('fill',TOKENS.muted).attr('font-size',11).text('relative abundance');
-  // area
+  if(!window.DCFDesign||DCFDesign.showTier('axis'))
+    x.ticks(10).forEach(t=>svg.append('text').attr('class','dcf-lbl').attr('data-tier','axis').attr('x',x(t)).attr('y',H-14).attr('fill',TOKENS.faint).attr('font-size',11).attr('text-anchor','middle').attr('font-family','ui-monospace').text(t));
+  svg.append('text').attr('class','dcf-lbl').attr('data-tier','axis').attr('x',(W)/2).attr('y',H-2).attr('text-anchor','middle').attr('fill',TOKENS.muted).attr('font-size',11).text('retention time (minutes)');
+  svg.append('text').attr('class','dcf-lbl').attr('data-tier','axis').attr('transform',`translate(13,${H/2})rotate(-90)`).attr('text-anchor','middle').attr('fill',TOKENS.muted).attr('font-size',11).text('relative abundance');
+  const infoCol=accentInfo();
   const area=d3.area().x((d,i)=>x(trace.x[i])).y0(y(0)).y1(d=>y(d)).curve(d3.curveBasis);
   const grad=svg.append('defs').append('linearGradient').attr('id','g').attr('x1',0).attr('x2',0).attr('y1',0).attr('y2',1);
-  grad.append('stop').attr('offset','0%').attr('stop-color',TOKENS.info).attr('stop-opacity',.5);
-  grad.append('stop').attr('offset','100%').attr('stop-color',TOKENS.info).attr('stop-opacity',.04);
+  grad.append('stop').attr('offset','0%').attr('stop-color',infoCol).attr('stop-opacity',.5);
+  grad.append('stop').attr('offset','100%').attr('stop-color',infoCol).attr('stop-opacity',.04);
   svg.append('path').datum(trace.y).attr('d',area).attr('fill','url(#g)');
-  svg.append('path').datum(trace.y).attr('d',d3.line().x((d,i)=>x(trace.x[i])).y(d=>y(d)).curve(d3.curveBasis)).attr('fill','none').attr('stroke',TOKENS.info).attr('stroke-width',1.6);
-  // peak hotspots + labels
+  svg.append('path').datum(trace.y).attr('d',d3.line().x((d,i)=>x(trace.x[i])).y(d=>y(d)).curve(d3.curveBasis)).attr('fill','none').attr('stroke',infoCol).attr('stroke-width',1.6);
   peaks.forEach(p=>{
-    const col=classify(p.s).color;
+    const col=subColor(p.s);
     const px=x(p.rt), py=y(p.amp);
     svg.append('circle').attr('cx',px).attr('cy',py-4).attr('r',selected===p.s?7:5).attr('fill',col).attr('stroke',TOKENS.bg).attr('stroke-width',2).style('cursor','pointer')
       .on('mousemove',e=>tt.show(`<b>${p.s}</b><br><span class="muted mono">RT ${fmt.rt(p.rt)} min</span>`,e.clientX,e.clientY))
       .on('mouseleave',tt.hide)
       .on('click',()=>{selected=p.s;draw();showDetail(p.s);});
-    if(p.amp>14||selected===p.s)
-      svg.append('text').attr('x',px).attr('y',py-12).attr('text-anchor','middle').attr('font-size',10).attr('font-family','ui-monospace').attr('fill',selected===p.s?col:TOKENS.muted).text(p.s.length>12?p.s.slice(0,11)+'…':p.s);
+    if((p.amp>14||selected===p.s)&&(!window.DCFDesign||DCFDesign.showTier('peak')))
+      svg.append('text').attr('class','dcf-lbl').attr('data-tier','peak').attr('x',px).attr('y',py-12).attr('text-anchor','middle').attr('font-size',10).attr('font-family','ui-monospace').attr('fill',selected===p.s?col:TOKENS.muted).text(p.s.length>12?p.s.slice(0,11)+'…':p.s);
   });
   if(!selected) document.getElementById('detail').innerHTML=`<div class="muted" style="display:flex;height:140px;align-items:center;justify-content:center;font-size:14px">▲ Tap a peak to identify the substance</div>`;
 }
 
 function showDetail(s){
-  const d=document.getElementById('detail'); const c=classify(s);
+  const d=document.getElementById('detail'); const c=classify(s); const col=subColor(s);
   const ms=MS[s];
   d.innerHTML=`
    <div style="display:grid;grid-template-columns:1fr 200px 160px;gap:18px;align-items:start">
      <div>
        <div style="display:flex;align-items:center;gap:9px;margin-bottom:6px">
-         <span style="width:12px;height:12px;border-radius:3px;background:${c.color};display:inline-block"></span>
+         <span style="width:12px;height:12px;border-radius:3px;background:${col};display:inline-block"></span>
          <span style="font-size:18px;font-weight:700;text-transform:capitalize">${s}</span>
          <span class="muted" style="font-size:12px">${c.label}</span>
        </div>
@@ -102,7 +104,7 @@ function showDetail(s){
   if(ms){
     const svg=d3.select('#ms'); const pk=stickSpectrum(ms.peaks);
     const x=d3.scaleLinear(d3.extent(pk,p=>p.mz),[6,194]), y=d3.scaleLinear([0,100],[112,8]);
-    svg.selectAll('line').data(pk).join('line').attr('x1',p=>x(p.mz)).attr('x2',p=>x(p.mz)).attr('y1',112).attr('y2',p=>y(p.i)).attr('stroke',c.color).attr('stroke-width',1.4);
+    svg.selectAll('line').data(pk).join('line').attr('x1',p=>x(p.mz)).attr('x2',p=>x(p.mz)).attr('y1',112).attr('y2',p=>y(p.i)).attr('stroke',col).attr('stroke-width',1.4);
     svg.append('text').attr('x',6).attr('y',118).attr('fill',TOKENS.faint).attr('font-size',9).attr('font-family','ui-monospace').text('m/z');
     drawSmiles(ms.smiles,'mol',160,120);
   } else {
@@ -111,3 +113,4 @@ function showDetail(s){
 }
 draw();
 addEventListener('resize',()=>{draw();if(selected)showDetail(selected);});
+window.__vizRedraw=()=>{draw();if(selected)showDetail(selected);};

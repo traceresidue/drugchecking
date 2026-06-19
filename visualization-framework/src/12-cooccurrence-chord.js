@@ -3,6 +3,7 @@
    the same sample. The fentanyl/4-ANPP/xylazine cluster dominates the ring. */
 const {scaffold,classify,tooltip,fmt,TOKENS}=DCF;
 const CO=DATA.cooccurrence, SUB=DATA.top_substances;
+function subColor(name){const c=classify(name);return window.DCFDesign?DCFDesign.getClassColor(c.cls):c.color;}
 
 const stage=scaffold({
   tag:'Nº 12 · SUPPLY',
@@ -32,25 +33,35 @@ function draw(){
   const chord=d3.chordDirected().padAngle(0.035).sortSubgroups(d3.descending)(M);
   const arc=d3.arc().innerRadius(ir).outerRadius(R);
   const ribbon=d3.ribbonArrow().radius(ir-2);
-  const color=i=>classify(topSubs[i]).color;
-  // arcs
-  g.append('g').selectAll('path').data(chord.groups).join('path')
-    .attr('d',arc).attr('fill',d=>color(d.index)).attr('opacity',.9).attr('stroke',TOKENS.bg)
-    .style('cursor','pointer')
-    .on('mouseover',(e,d)=>{ribbons.attr('opacity',r=>r.source.index===d.index||r.target.index===d.index?.85:.06);})
-    .on('mousemove',(e,d)=>tt.show(`<b style="text-transform:capitalize">${topSubs[d.index]}</b><br><span class="muted">${fmt.int(counts[topSubs[d.index]])} samples</span>`,e.clientX,e.clientY))
-    .on('mouseleave',()=>{ribbons.attr('opacity',.55);tt.hide();});
-  // labels
-  g.append('g').selectAll('text').data(chord.groups).join('text')
-    .each(d=>d.ang=(d.startAngle+d.endAngle)/2)
-    .attr('transform',d=>`rotate(${d.ang*180/Math.PI-90}) translate(${R+8}) ${d.ang>Math.PI?'rotate(180)':''}`)
-    .attr('text-anchor',d=>d.ang>Math.PI?'end':'start').attr('dy','.35em')
-    .attr('fill',d=>color(d.index)).attr('font-size',11)
-    .text(d=>{const s=topSubs[d.index];return s.length>16?s.slice(0,15)+'…':s;});
+  const color=i=>subColor(topSubs[i]);
+  let ringG;
   const ribbons=g.append('g').attr('fill-opacity',.55).selectAll('path').data(chord).join('path')
     .attr('d',ribbon).attr('fill',d=>color(d.source.index)).attr('opacity',.55).attr('stroke',TOKENS.bg).attr('stroke-width',.3)
     .on('mousemove',(e,d)=>tt.show(`<b>${topSubs[d.source.index]}</b> + <b>${topSubs[d.target.index]}</b><br><span class="muted">${fmt.int(d.source.value)} shared samples</span>`,e.clientX,e.clientY))
     .on('mouseleave',tt.hide);
+  // arcs
+  g.append('g').selectAll('path').data(chord.groups).join('path')
+    .attr('d',arc).attr('fill',d=>color(d.index)).attr('opacity',.9).attr('stroke',TOKENS.bg)
+    .style('cursor','pointer')
+    .on('mouseover',(e,d)=>{
+      ribbons.attr('opacity',r=>r.source.index===d.index||r.target.index===d.index?.85:.06);
+      if(ringG) ringG.selectAll('.dcf-arc-ring').attr('class','dcf-arc-ring');
+      ringG=g.append('g').attr('class','dcf-arc-rings');
+      const a=d3.arc().innerRadius(R+2).outerRadius(R+10);
+      ringG.append('path').attr('class','dcf-arc-ring active').attr('d',a(d)).attr('transform','rotate(-90)');
+    })
+    .on('mousemove',(e,d)=>tt.show(`<b style="text-transform:capitalize">${topSubs[d.index]}</b><br><span class="muted">${fmt.int(counts[topSubs[d.index]])} samples</span>`,e.clientX,e.clientY))
+    .on('mouseleave',()=>{ribbons.attr('opacity',.55);if(ringG)ringG.remove();ringG=null;tt.hide();});
+  // labels
+  if(!window.DCFDesign||DCFDesign.showTier('inline'))
+    g.append('g').selectAll('text').data(chord.groups).join('text')
+      .each(d=>d.ang=(d.startAngle+d.endAngle)/2)
+      .attr('class','dcf-lbl').attr('data-tier','inline')
+      .attr('transform',d=>`rotate(${d.ang*180/Math.PI-90}) translate(${R+8}) ${d.ang>Math.PI?'rotate(180)':''}`)
+      .attr('text-anchor',d=>d.ang>Math.PI?'end':'start').attr('dy','.35em')
+      .attr('fill',d=>color(d.index)).attr('font-size',11)
+      .text(d=>{const s=topSubs[d.index];return s.length>16?s.slice(0,15)+'…':s;});
 }
 draw();
 addEventListener('resize',draw);
+window.__vizRedraw=draw;

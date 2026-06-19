@@ -3,6 +3,8 @@
    category: petal count = top substances found, petal length = prevalence,
    color = class. A field of glyphs becomes a single-glance supply census. */
 const {scaffold,classify,fmt,tooltip,TOKENS}=DCF;
+function subColor(name){const c=classify(name);return window.DCFDesign?DCFDesign.getClassColor(c.cls):c.color;}
+function sigColor(k){return window.DCFDesign?DCFDesign.getClassColor(k):TOKENS[k];}
 const SUB=DATA.top_substances, EC=DATA.expected_counts;
 
 const stage=scaffold({
@@ -45,7 +47,7 @@ function draw(){
     petals.forEach((s,pi)=>{
       const ang=(pi/petals.length)*2*Math.PI - Math.PI/2;
       const len=12+ (countMap[s]/maxCount)*maxLen;
-      const col=classify(s).color;
+      const col=subColor(s);
       const x2=cx+Math.cos(ang)*len, y2=cy+Math.sin(ang)*len;
       const wx=cx+Math.cos(ang+0.18)*len*0.55, wy=cy+Math.sin(ang+0.18)*len*0.55;
       const wx2=cx+Math.cos(ang-0.18)*len*0.55, wy2=cy+Math.sin(ang-0.18)*len*0.55;
@@ -60,7 +62,8 @@ function draw(){
     svg.append('text').attr('x',cx).attr('y',cy+Math.min(cw,ch)/2+10).attr('text-anchor','middle').attr('fill',TOKENS.faint).attr('font-size',10).attr('font-family','ui-monospace').text(fmt.int(n)+' samples');
   });
   const cls=[...new Set(Object.values(ASSOC).flat().filter(s=>countMap[s]).map(s=>classify(s).cls))];
-  document.getElementById('leg').innerHTML=cls.map(c=>{const o=Object.values(ASSOC).flat().find(s=>classify(s).cls===c);return `<span><i style="background:${classify(o).color}"></i>${classify(o).label}</span>`;}).join('');
+  document.getElementById('leg').innerHTML=cls.map(c=>{const o=Object.values(ASSOC).flat().find(s=>classify(s).cls===c);return `<span><i style="background:${subColor(o)}"></i>${classify(o).label}</span>`;}).join('');
 }
+window.__vizRedraw=draw;
 draw();
 addEventListener('resize',draw);

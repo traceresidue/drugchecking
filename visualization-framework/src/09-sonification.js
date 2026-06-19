@@ -2,6 +2,8 @@
    sound: each peak becomes a tone, m/z (or wavenumber) → pitch, abundance → volume.
    An accessibility layer, and a visceral way to "hear" contamination. */
 const {scaffold,stickSpectrum,ftirCurve,classify,fmt,TOKENS}=DCF;
+function subColor(name){const c=classify(name);return window.DCFDesign?DCFDesign.getClassColor(c.cls):c.color;}
+function sigColor(k){return window.DCFDesign?DCFDesign.getClassColor(k):TOKENS[k];}
 const MS=SPEC.ms, F=SPEC.ftir;
 
 const stage=scaffold({
@@ -28,7 +30,7 @@ const sel=document.getElementById('sel');
 let mode='MS';
 function fillSel(){ sel.innerHTML=''; const keys=mode==='MS'?Object.keys(MS):Object.keys(F).filter(k=>Array.isArray(F[k])); for(const k of keys) sel.add(new Option(k,k)); }
 fillSel();
-sel.style.cssText='background:#1a2234;color:#e8ecf4;border:1px solid #26304a;border-radius:8px;padding:7px 10px;font:500 13px Inter';
+sel.className='dcf-ctl-select';
 document.getElementById('modeMS').onclick=()=>setMode('MS');
 document.getElementById('modeIR').onclick=()=>setMode('IR');
 function setMode(m){mode=m;document.getElementById('modeMS').setAttribute('aria-pressed',m==='MS');document.getElementById('modeIR').setAttribute('aria-pressed',m==='IR');fillSel();draw();}
@@ -51,13 +53,14 @@ function draw(){
   const {pts,lo,hi,unit}=peaksData();
   const x=mode==='IR'?d3.scaleLinear([hi,lo],[m.l,W-m.r]):d3.scaleLinear([lo,hi],[m.l,W-m.r]);
   const y=d3.scaleLinear([0,100],[H-m.b,m.t]);
-  const col=classify(sel.value).color;
+  const col=subColor(sel.value);
   x.ticks(7).forEach(t=>svg.append('text').attr('x',x(t)).attr('y',H-14).attr('text-anchor','middle').attr('fill',TOKENS.faint).attr('font-size',11).attr('font-family','ui-monospace').text(t));
   svg.append('text').attr('x',W-m.r).attr('y',H-14).attr('text-anchor','end').attr('fill',TOKENS.muted).attr('font-size',11).text(unit);
   svg.selectAll('line.pk').data(pts).join('line').attr('class','pk').attr('x1',d=>x(d.pos)).attr('x2',d=>x(d.pos)).attr('y1',y(0)).attr('y2',d=>y(d.amp)).attr('stroke',col).attr('stroke-width',2);
   svg.append('line').attr('id','ph').attr('x1',m.l).attr('x2',m.l).attr('y1',m.t).attr('y2',H-m.b).attr('stroke',TOKENS.ink).attr('opacity',0);
   window._S={x,pts,lo,hi,col,W,m};
 }
+window.__vizRedraw=draw;
 draw();
 addEventListener('resize',draw);
 

@@ -3,6 +3,8 @@
    related families fall along diagonal "constellations," so a novel analogue
    announces itself by landing next to its relatives. */
 const {scaffold,classify,tooltip,fmt,TOKENS}=DCF;
+function subColor(name){const c=classify(name);return window.DCFDesign?DCFDesign.getClassColor(c.cls):c.color;}
+function sigColor(k){return window.DCFDesign?DCFDesign.getClassColor(k):TOKENS[k];}
 const SUB=DATA.top_substances, ROLES=DATA.roles, MS=SPEC.ms;
 // approximate monoisotopic-ish masses for the catalog (illustrative)
 const MASS={fentanyl:336.21,'4-anpp':280.19,'phenethyl 4-anpp':308.19,'ethyl-4-anpp':308.22,
@@ -64,5 +66,6 @@ function draw(){
   const classes=[...new Set(P.map(d=>d.cls))];
   document.getElementById('leg').innerHTML=classes.map(c=>{const o=P.find(d=>d.cls===c);return `<span><i style="background:${o.color}"></i>${o.label}</span>`;}).join('');
 }
+window.__vizRedraw=draw;
 draw();
 addEventListener('resize',draw);

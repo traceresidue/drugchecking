@@ -3,6 +3,8 @@
    breakdown, and tailored harm-reduction messaging. The UNC model, productized. */
 const {scaffold,chromatogram,classify,fmt,TOKENS,drawSmiles}=DCF;
 const CH=SPEC.chromatograms, MS=SPEC.ms, RT=Object.fromEntries(DATA.retention_times.map(d=>[d.substance,d.rt]));
+function subColor(name){const c=classify(name);return window.DCFDesign?DCFDesign.getClassColor(c.cls):c.color;}
+function sigColor(k){return window.DCFDesign?DCFDesign.getClassColor(k):TOKENS[k];}
 
 const SAMPLES={
  's1':{id:'WA-44821',expected:'Heroin / "down"',date:'2024-03-08',loc:'King County, WA',key:'fentanyl_street'},
@@ -33,7 +35,7 @@ stage.innerHTML=`
 <div id="card"></div>`;
 const sel=document.getElementById('sel');
 for(const k of Object.keys(SAMPLES)) sel.add(new Option(`${SAMPLES[k].id} — sold as ${SAMPLES[k].expected}`,k));
-sel.style.cssText='background:#1a2234;color:#e8ecf4;border:1px solid #26304a;border-radius:8px;padding:7px 10px;font:500 13px Inter';
+sel.className='dcf-ctl-select';
 sel.onchange=draw;
 
 function draw(){
@@ -41,6 +43,8 @@ function draw(){
   const peaks=arch.peaks.map(([n,rt,amp])=>({s:n,rt:RT[n]||rt,amp,sigma:0.05})).sort((a,b)=>b.amp-a.amp);
   const major=peaks.filter(p=>p.amp>=30), minor=peaks.filter(p=>p.amp<30);
   const primary=peaks[0];
+  const primaryCol=subColor(primary.s);
+  if(window.__vizAccentBar) window.__vizAccentBar(primaryCol);
   // gather harm messages from detected
   const msgs=[]; const seen=new Set();
   peaks.forEach(p=>{const k=Object.keys(HARM).find(h=>p.s.includes(h));if(k&&!seen.has(k)){seen.add(k);HARM[k].forEach(m=>msgs.push(m));}});
@@ -48,10 +52,10 @@ function draw(){
   const c=document.getElementById('card');
   c.innerHTML=`
    <div class="panel" style="padding:0;overflow:hidden">
-     <div style="padding:18px 20px;border-bottom:1px solid ${TOKENS.line};display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px">
+     <div class="dcf-doc-header" style="padding:18px 20px;border-bottom:1px solid ${TOKENS.line};display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px">
        <div><div class="mono" style="font-size:13px;color:${TOKENS.ink}">${s.id}</div>
        <div class="muted" style="font-size:12px">sold as <b style="color:${TOKENS.ink}">${s.expected}</b> · ${s.loc} · ${s.date}</div></div>
-       <div style="text-align:right"><div class="muted" style="font-size:11px">TESTED BY GC–MS</div><div style="font-size:12px;color:${classify(primary.s).color};font-weight:600">${classify(primary.s).label}</div></div>
+       <div style="text-align:right"><div class="muted" style="font-size:11px">TESTED BY GC–MS</div><div style="font-size:12px;color:${primaryCol};font-weight:600">${classify(primary.s).label}</div></div>
      </div>
      <div style="padding:18px 20px;background:${TOKENS.panel2}">
        <div class="muted" style="font-size:11px;letter-spacing:.1em;margin-bottom:6px">PLAIN-LANGUAGE SUMMARY</div>
@@ -69,7 +73,7 @@ function draw(){
        </div>
      </div>
      <div style="padding:16px 20px;border-top:1px solid ${TOKENS.line};background:linear-gradient(${TOKENS.panel},${TOKENS.panel})">
-       <div style="font-size:11px;letter-spacing:.1em;margin-bottom:8px;color:${TOKENS.ok}">⚑ HARM REDUCTION — BASED ON WHAT WE FOUND</div>
+       <div style="font-size:11px;letter-spacing:.1em;margin-bottom:8px;color:${sigColor('ok')}">⚑ HARM REDUCTION — BASED ON WHAT WE FOUND</div>
        <ul style="margin:0;padding-left:18px;font-size:13.5px;line-height:1.6;color:${TOKENS.ink}">${msgs.map(m=>`<li>${m}</li>`).join('')}</ul>
      </div>
    </div>`;
@@ -78,13 +82,13 @@ function draw(){
   const trace=chromatogram(peaks,{x0:3,x1:13,sigma:0.05});
   const x=d3.scaleLinear([3,13],[m.l,w-m.r]),y=d3.scaleLinear([0,105],[H-m.b,m.t]);
   const area=d3.area().x((d,i)=>x(trace.x[i])).y0(y(0)).y1(d=>y(d)).curve(d3.curveBasis);
-  svg.append('path').datum(trace.y).attr('d',area).attr('fill',classify(primary.s).color).attr('opacity',.18);
-  svg.append('path').datum(trace.y).attr('d',d3.line().x((d,i)=>x(trace.x[i])).y(d=>y(d)).curve(d3.curveBasis)).attr('fill','none').attr('stroke',classify(primary.s).color).attr('stroke-width',1.5);
-  peaks.forEach(p=>{if(p.amp>12)svg.append('text').attr('x',x(p.rt)).attr('y',y(p.amp)-4).attr('text-anchor','middle').attr('font-size',8.5).attr('fill',TOKENS.muted).text(p.s.length>10?p.s.slice(0,9)+'…':p.s);});
+  svg.append('path').datum(trace.y).attr('d',area).attr('fill',primaryCol).attr('opacity',.18);
+  svg.append('path').datum(trace.y).attr('d',d3.line().x((d,i)=>x(trace.x[i])).y(d=>y(d)).curve(d3.curveBasis)).attr('fill','none').attr('stroke',primaryCol).attr('stroke-width',1.5);
+  peaks.forEach(p=>{if(p.amp>12&&(!window.DCFDesign||DCFDesign.showTier('peak')))svg.append('text').attr('class','dcf-lbl').attr('data-tier','peak').attr('x',x(p.rt)).attr('y',y(p.amp)-4).attr('text-anchor','middle').attr('font-size',8.5).attr('fill',TOKENS.muted).text(p.s.length>10?p.s.slice(0,9)+'…':p.s);});
   // bars
   const maxA=Math.max(...peaks.map(p=>p.amp));
   document.getElementById('bars').innerHTML=peaks.map(p=>{
-    const col=classify(p.s).color, pct=p.amp/maxA*100;
+    const col=subColor(p.s), pct=p.amp/maxA*100;
     return `<div style="margin-bottom:7px">
       <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:2px"><span style="text-transform:capitalize">${p.s}</span><span class="faint mono">${p.amp>=30?'major':'trace'}</span></div>
       <div style="height:7px;background:${TOKENS.panel2};border-radius:4px;overflow:hidden"><div style="width:${pct}%;height:100%;background:${col}"></div></div></div>`;
@@ -92,3 +96,4 @@ function draw(){
 }
 draw();
 addEventListener('resize',draw);
+window.__vizRedraw=draw;

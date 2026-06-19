@@ -2,6 +2,8 @@
    The molecular ion sits at the center; fragments radiate outward by m/z, sized
    by abundance, with the neutral-loss (mass difference) labeled on each spoke. */
 const {scaffold,stickSpectrum,classify,tooltip,fmt,TOKENS}=DCF;
+function subColor(name){const c=classify(name);return window.DCFDesign?DCFDesign.getClassColor(c.cls):c.color;}
+function sigColor(k){return window.DCFDesign?DCFDesign.getClassColor(k):TOKENS[k];}
 const MS=SPEC.ms;
 const names=Object.keys(MS);
 
@@ -22,14 +24,14 @@ stage.innerHTML=`
 const sel=document.getElementById('sel');
 for(const n of names) sel.add(new Option(n,n));
 sel.value='fentanyl';
-sel.style.cssText='background:#1a2234;color:#e8ecf4;border:1px solid #26304a;border-radius:8px;padding:7px 10px;font:500 13px Inter';
+sel.className='dcf-ctl-select';
 sel.onchange=draw;
 const tt=tooltip();
 
 function draw(){
   const svg=d3.select('#svg'); svg.selectAll('*').remove();
   const W=svg.node().clientWidth,H=520,cx=W/2,cy=H/2;
-  const mol=MS[sel.value]; const col=classify(sel.value).color;
+  const mol=MS[sel.value]; const col=subColor(sel.value);
   const pk=stickSpectrum(mol.peaks);
   const maxmz=Math.max(...pk.map(p=>p.mz),mol.mw);
   const R=Math.min(W,H)/2-50;
@@ -59,5 +61,6 @@ function draw(){
     }
   });
 }
+window.__vizRedraw=draw;
 draw();
 addEventListener('resize',draw);

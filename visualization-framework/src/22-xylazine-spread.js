@@ -2,6 +2,8 @@
    ways at once: a small-multiples sparkline grid of counties, and an animated
    cumulative curve. A case study in tracking one adulterant's geographic march. */
 const {scaffold,classify,fmt,tooltip,TOKENS}=DCF;
+function subColor(name){const c=classify(name);return window.DCFDesign?DCFDesign.getClassColor(c.cls):c.color;}
+function sigColor(k){return window.DCFDesign?DCFDesign.getClassColor(k):TOKENS[k];}
 const XS=DATA.xylazine_status, GEO=DATA.geo;
 
 const stage=scaffold({
@@ -54,6 +56,7 @@ function drawCty(){
   svg.selectAll('text.v').data(counties).join('text').attr('class','v').attr('x',c=>x(c.xyl)+5).attr('y',c=>y(c.county+', '+c.state)+y.bandwidth()/2+3).attr('fill',TOKENS.faint).attr('font-size',9).attr('font-family','ui-monospace').text(c=>c.xyl);
 }
 drawArea();drawCty();
+window.__vizRedraw=()=>{drawArea();drawCty();};
 let timer;
 document.getElementById('play').onclick=e=>{
   if(timer){clearInterval(timer);timer=null;e.target.textContent='▶ play timeline';return;}

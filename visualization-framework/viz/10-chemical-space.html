@@ -12,6 +12,199 @@ window.DATA = {"embedding":[{"substance":"fentanyl","x":-0.817,"y":0.022,"cls":"
 window.SPEC = {};
 </script>
 <script>
+const NAV_REGISTRY = [{"id":"01-mirror-match","n":1,"cat":"MS","title":"Spectral Mirror Match"},{"id":"02-chromatogram-explorer","n":2,"cat":"GC\u2013MS","title":"Annotated Chromatogram Explorer"},{"id":"03-ftir-overlay","n":3,"cat":"FTIR","title":"FTIR Overlay & Subtraction Bench"},{"id":"04-fragment-tree","n":4,"cat":"MS","title":"Fragmentation Radial"},{"id":"05-chromatogram-3d","n":5,"cat":"GC\u2013MS","title":"GC\u2013MS Data Cube (3D)"},{"id":"06-spectral-ridgeline","n":6,"cat":"GC\u2013MS","title":"Batch Ridgeline Fingerprints"},{"id":"06a-ridgeline-filled","n":6,"cat":"GC\u2013MS","title":"Batch Ridgeline \u2014 Class Fills"},{"id":"06b-ridgeline-3d","n":6,"cat":"GC\u2013MS","title":"Batch Ridgeline \u2014 3D Terrain"},{"id":"06c-ridgeline-filter","n":6,"cat":"GC\u2013MS","title":"Batch Ridgeline \u2014 Class Focus"},{"id":"07-ftir-waterfall","n":7,"cat":"FTIR","title":"FTIR Waterfall (3D)"},{"id":"08-mass-defect-map","n":8,"cat":"MS","title":"Mass-Defect Constellation"},{"id":"09-sonification","n":9,"cat":"EXPERIMENTAL","title":"Hear the Spectrum (Sonification)"},{"id":"10-chemical-space","n":10,"cat":"EXPERIMENTAL","title":"Chemical-Space Drift"},{"id":"11-supply-streamgraph","n":11,"cat":"SUPPLY","title":"Supply Composition Streamgraph"},{"id":"12-cooccurrence-chord","n":12,"cat":"SUPPLY","title":"Adulterant Co-occurrence Chord"},{"id":"12a-co-nested","n":12,"cat":"SUPPLY","title":"Nested Co-occurrence Chord"},{"id":"12b-chord-sankey","n":12,"cat":"SUPPLY","title":"Chord \u2192 Sankey Co-occurrence"},{"id":"12c-co-undirected","n":12,"cat":"SUPPLY","title":"Undirected Co-occurrence Chord"},{"id":"13-expected-detected-sankey","n":13,"cat":"SUPPLY","title":"Expected vs. Detected Sankey"},{"id":"14-horizon-wall","n":14,"cat":"SUPPLY","title":"Substance Horizon Wall"},{"id":"15-emergence-beeswarm","n":15,"cat":"SUPPLY","title":"Novel-Substance Emergence Swarm"},{"id":"16-supply-terrain-3d","n":16,"cat":"SUPPLY","title":"Supply Terrain (3D)"},{"id":"17-adulterant-network","n":17,"cat":"SUPPLY","title":"Adulterant Force Network"},{"id":"17a-adulterant-pull","n":17,"cat":"SUPPLY","title":"Adulterant Pull Network"},{"id":"17b-adulterant-3d","n":17,"cat":"SUPPLY","title":"Adulterant Network (3D)"},{"id":"17c-adulterant-orbit","n":17,"cat":"SUPPLY","title":"Adulterant Orbit Graph"},{"id":"18-result-card","n":18,"cat":"RESULT","title":"Sample Result Card"},{"id":"19-expected-reality-gap","n":19,"cat":"RESULT","title":"Expected-Reality Gap"},{"id":"20-potency-uncertainty","n":20,"cat":"RESULT","title":"Potency Uncertainty Gauge"},{"id":"21-geo-tilegrid","n":21,"cat":"GEO","title":"Supply Tile-Grid Cartogram"},{"id":"22-xylazine-spread","n":22,"cat":"GEO","title":"Xylazine Spread Timeline"},{"id":"23-structure-flipbook","n":23,"cat":"MS","title":"Structure Flipbook"},{"id":"24-anatomy-scrolly","n":24,"cat":"RESULT","title":"Anatomy of a Sample (Scrollytelling)"},{"id":"25-glyph-garden","n":25,"cat":"EXPERIMENTAL","title":"Sample Glyph Garden"}];
+const NAV_PAGE_ID = "10-chemical-space";
+const NAV_MODE = "viz";
+(function(){
+/* Compact series navigation — dropdown, prev/next, home link.
+   NAV_REGISTRY is inlined at build time from src/registry.json. */
+
+const PREVIEW_FALLBACK = {
+  '06a-ridgeline-filled': '06-spectral-ridgeline',
+  '06b-ridgeline-3d': '06-spectral-ridgeline',
+  '06c-ridgeline-filter': '06-spectral-ridgeline',
+  '12a-co-nested': '12-cooccurrence-chord',
+  '12b-chord-sankey': '12-cooccurrence-chord',
+  '12c-co-undirected': '12-cooccurrence-chord',
+  '17a-adulterant-pull': '17-adulterant-network',
+  '17b-adulterant-3d': '17-adulterant-network',
+  '17c-adulterant-orbit': '17-adulterant-network',
+};
+
+function pageFile(id, mode) {
+  return mode === 'lab' ? `d-${id}.html` : `${id}.html`;
+}
+
+function previewId(id) {
+  return PREVIEW_FALLBACK[id] || id;
+}
+
+function previewSrc(id, mode) {
+  const base = mode === 'lab' ? '../viz/review-previews' : 'review-previews';
+  return `${base}/${previewId(id)}.png`;
+}
+
+function injectNavCSS() {
+  if (document.getElementById('dcf-nav-css')) return;
+  const s = document.createElement('style');
+  s.id = 'dcf-nav-css';
+  s.textContent = `
+  .dcf-nav{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;padding:10px 14px;margin:0 0 14px;background:var(--panel);border:1px solid var(--line);border-radius:12px;position:sticky;top:0;z-index:30}
+  .dcf-nav-home{font:600 12px/1 var(--font-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-decoration:none;padding:6px 10px;border-radius:8px;border:1px solid transparent;transition:color .15s,background .15s,border-color .15s}
+  .dcf-nav-home:hover,.dcf-nav-home:focus-visible{color:var(--ink);background:var(--panel2);border-color:var(--line);outline:none}
+  .dcf-nav-btn{min-width:40px;min-height:40px;padding:0 12px;background:var(--panel2);color:var(--muted);border:1px solid var(--line);border-radius:999px;font:600 15px/1 var(--font-sans);cursor:pointer;transition:background .15s,color .15s}
+  .dcf-nav-btn:hover,.dcf-nav-btn:focus-visible{background:var(--panel);color:var(--ink);outline:none}
+  .dcf-nav-btn:disabled{opacity:.35;cursor:not-allowed}
+  .dcf-nav-select{flex:1 1 180px;min-width:140px;max-width:420px;min-height:40px;padding:8px 32px 8px 12px;background:var(--panel2);color:var(--ink);border:1px solid var(--line);border-radius:10px;font:500 13px var(--font-sans);cursor:pointer}
+  .dcf-nav-select:hover,.dcf-nav-select:focus-visible{border-color:var(--muted);outline:none}
+  .dcf-nav-pos{margin-left:auto;font:500 11px/1 var(--font-mono);color:var(--faint);white-space:nowrap}
+  .dcf-index-hero{margin-bottom:22px;border-bottom:1px solid var(--line);padding-bottom:18px}
+  .dcf-index-hero h1{font-size:28px;line-height:1.15;margin:0 0 8px;font-weight:700;letter-spacing:-.01em}
+  .dcf-index-hero p{margin:0;color:var(--muted);font-size:15px;line-height:1.5;max-width:72ch}
+  .dcf-index-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;margin:18px 0 32px}
+  .dcf-index-card{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden;text-decoration:none;color:inherit;transition:border-color .15s,transform .15s}
+  .dcf-index-card:hover,.dcf-index-card:focus-visible{border-color:var(--muted);transform:translateY(-1px);outline:none}
+  .dcf-index-thumb{aspect-ratio:16/10;background:var(--panel2);border-bottom:1px solid var(--line);overflow:hidden;display:flex;align-items:center;justify-content:center}
+  .dcf-index-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+  .dcf-index-thumb-fallback{font:600 11px/1.3 var(--font-mono);color:var(--faint);text-align:center;padding:12px}
+  .dcf-index-body{padding:14px 16px 16px}
+  .dcf-index-meta{font:600 10px/1 var(--font-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin-bottom:6px}
+  .dcf-index-title{font-size:15px;font-weight:650;line-height:1.3;margin:0 0 4px;color:var(--ink);font-family:var(--font-sans)}
+  .dcf-index-cat{font-size:12px;color:var(--muted);margin:0}
+  .dcf-index-switch{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+  .dcf-index-switch a{font:500 12px var(--font-sans);color:var(--muted);text-decoration:none;padding:6px 12px;border:1px solid var(--line);border-radius:999px}
+  .dcf-index-switch a[aria-current="page"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+  @media (max-width:640px){.dcf-nav-pos{width:100%;margin-left:0;text-align:right}}
+  @media (prefers-reduced-motion:reduce){.dcf-index-card,.dcf-nav-home,.dcf-nav-btn{transition:none}}
+  `;
+  document.head.appendChild(s);
+}
+
+function navLabel(entry) {
+  const n = String(entry.n).padStart(2, '0');
+  const variant = entry.id.match(/^\d+[a-z]-/);
+  const suffix = variant ? ` · ${entry.id.split('-').slice(1).join(' ')}` : '';
+  return `Nº ${n} · ${entry.title}${suffix}`;
+}
+
+function injectNav({ pageId, mode = 'viz' } = {}) {
+  if (!pageId || document.querySelector('.dcf-nav')) return;
+  injectNavCSS();
+  const items = typeof NAV_REGISTRY !== 'undefined' ? NAV_REGISTRY : [];
+  if (!items.length) return;
+
+  const idx = items.findIndex(e => e.id === pageId);
+  const cur = idx >= 0 ? idx : 0;
+  const prev = items[(cur - 1 + items.length) % items.length];
+  const next = items[(cur + 1) % items.length];
+
+  const nav = document.createElement('nav');
+  nav.className = 'dcf-nav';
+  nav.setAttribute('aria-label', 'Visualization series navigation');
+
+  const home = document.createElement('a');
+  home.className = 'dcf-nav-home';
+  home.href = 'index.html';
+  home.textContent = mode === 'lab' ? 'Design Lab' : 'All viz';
+
+  const prevBtn = document.createElement('button');
+  prevBtn.type = 'button';
+  prevBtn.className = 'dcf-nav-btn';
+  prevBtn.setAttribute('aria-label', `Previous: ${prev.title}`);
+  prevBtn.textContent = '←';
+  prevBtn.onclick = () => { location.href = pageFile(prev.id, mode); };
+
+  const sel = document.createElement('select');
+  sel.className = 'dcf-nav-select';
+  sel.setAttribute('aria-label', 'Jump to visualization');
+  items.forEach(entry => {
+    const opt = document.createElement('option');
+    opt.value = pageFile(entry.id, mode);
+    opt.textContent = navLabel(entry);
+    if (entry.id === pageId) opt.selected = true;
+    sel.appendChild(opt);
+  });
+  sel.onchange = () => { if (sel.value) location.href = sel.value; };
+
+  const nextBtn = document.createElement('button');
+  nextBtn.type = 'button';
+  nextBtn.className = 'dcf-nav-btn';
+  nextBtn.setAttribute('aria-label', `Next: ${next.title}`);
+  nextBtn.textContent = '→';
+  nextBtn.onclick = () => { location.href = pageFile(next.id, mode); };
+
+  const pos = document.createElement('span');
+  pos.className = 'dcf-nav-pos';
+  pos.textContent = `${cur + 1} / ${items.length}`;
+
+  nav.append(home, prevBtn, sel, nextBtn, pos);
+
+  const hdr = document.querySelector('.dcf-h');
+  if (hdr) document.body.insertBefore(nav, hdr);
+  else document.body.prepend(nav);
+}
+
+function buildIndexPage({ mode = 'viz', title, dek, switchHref } = {}) {
+  injectNavCSS();
+  const items = typeof NAV_REGISTRY !== 'undefined' ? NAV_REGISTRY : [];
+  const prodHref = mode === 'lab' ? '../viz/index.html' : 'index.html';
+  const labHref = mode === 'lab' ? 'index.html' : (switchHref || '../viz2/index.html');
+  const hero = document.createElement('header');
+  hero.className = 'dcf-index-hero';
+  hero.innerHTML = `
+    <h1>${title || 'Drug Checking Visualizations'}</h1>
+    <p>${dek || ''}</p>
+    <div class="dcf-index-switch">
+      <a href="${prodHref}" aria-current="${mode === 'viz' ? 'page' : 'false'}">Production viz</a>
+      <a href="${labHref}" aria-current="${mode === 'lab' ? 'page' : 'false'}">Design Lab</a>
+    </div>`;
+
+  const grid = document.createElement('div');
+  grid.className = 'dcf-index-grid';
+  grid.setAttribute('role', 'list');
+
+  items.forEach(entry => {
+    const card = document.createElement('a');
+    card.className = 'dcf-index-card';
+    card.href = pageFile(entry.id, mode);
+    card.setAttribute('role', 'listitem');
+    card.setAttribute('aria-label', `${entry.title} — ${entry.cat}`);
+
+    const thumb = document.createElement('div');
+    thumb.className = 'dcf-index-thumb';
+    const img = document.createElement('img');
+    img.src = previewSrc(entry.id, mode);
+    img.alt = '';
+    img.loading = 'lazy';
+    img.onerror = () => {
+      img.remove();
+      const fb = document.createElement('div');
+      fb.className = 'dcf-index-thumb-fallback';
+      fb.textContent = entry.cat;
+      thumb.appendChild(fb);
+    };
+    thumb.appendChild(img);
+
+    const body = document.createElement('div');
+    body.className = 'dcf-index-body';
+    body.innerHTML = `
+      <div class="dcf-index-meta">Nº ${String(entry.n).padStart(2, '0')} · ${entry.cat}</div>
+      <h2 class="dcf-index-title">${entry.title}</h2>
+      <p class="dcf-index-cat">${entry.id.replace(/-/g, ' ')}</p>`;
+
+    card.append(thumb, body);
+    grid.appendChild(card);
+  });
+
+  document.body.append(hero, grid);
+}
+
+
+window.DCF_NAV={injectNav,buildIndexPage,pageFile,previewSrc};
+
+})();
+</script>
+<script>
 (function(){
 /* Drug Checking Visualization Framework — shared helpers
    Loaded by every standalone visualization. Pure ES module, no dependencies.
@@ -25,6 +218,12 @@ const TOKENS = {
   opioid:'#ff8a5c', fent:'#ff5c7a', xyl:'#b388ff', stim:'#ffd166',
   coke:'#4cc9f0', benzo:'#7aa2ff', cut:'#6ee7a8', other:'#94a3b8',
   alert:'#ff5c7a', watch:'#ffd166', ok:'#6ee7a8', info:'#4cc9f0'
+};
+
+/* Sans-only UI prose + mono instrument readouts — always terminate with generic family. */
+const FONTS = {
+  sans:'Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+  mono:'"Cascadia Mono", ui-monospace, "SF Mono", "Roboto Mono", Consolas, monospace',
 };
 
 /* Map a substance name -> {class, color, label, action} */
@@ -48,10 +247,29 @@ const RULES = [
   [/cocaine|benzoylecgonine|ecgonine/i,'coke'],
   [/caffeine|acetaminophen|paracetamol|lidocaine|levamisole|quinine|mannitol|lactose|sucrose|cellulose|diphenhydramine|sulfone|msm|sugar|inositol|procaine|benzocaine|phenacetin|gabapentin|dimethyl|sebacate|btmps|piperidyl|boric|sorbitol|maltose|glucose|creatine|diacetin|tetramethyl/i,'cut'],
 ];
+/* Broad families for filters and labels — cls stays fine-grained for chart colors. */
+const FAMILY_MAP = {
+  fent:'opioid', opioid:'opioid',
+  stim:'stim', coke:'stim',
+  xyl:'xyl', benzo:'benzo', cut:'cut', other:'other',
+};
+const FAMILY_LABEL = {
+  opioid:'Opioid',
+  stim:'Stimulant',
+  xyl:'Sedative / xylazine',
+  benzo:'Benzodiazepine',
+  cut:'Cut / diluent',
+  other:'Other',
+};
 function classify(name=''){
   const n = String(name).toLowerCase();
-  for(const [re,c] of RULES) if(re.test(n)) return {cls:c,...CLASS[c]};
-  return {cls:'other',...CLASS.other};
+  for(const [re,c] of RULES){
+    if(re.test(n)){
+      const family = FAMILY_MAP[c] || c;
+      return {cls:c,color:CLASS[c].color,label:CLASS[c].label,family,familyLabel:FAMILY_LABEL[family]||FAMILY_LABEL.other};
+    }
+  }
+  return {cls:'other',...CLASS.other,family:'other',familyLabel:FAMILY_LABEL.other};
 }
 
 /* ---- formatting ---- */
@@ -104,7 +322,7 @@ let _tt;
 function tooltip(){
   if(_tt) return _tt;
   _tt=document.createElement('div');
-  _tt.style.cssText=`position:fixed;pointer-events:none;z-index:99;background:${TOKENS.panel2};border:1px solid ${TOKENS.line};border-radius:8px;padding:8px 10px;font:12px/1.4 Inter,system-ui;color:${TOKENS.ink};box-shadow:0 6px 24px rgba(0,0,0,.5);opacity:0;transition:opacity .12s;max-width:260px`;
+  _tt.style.cssText=`position:fixed;pointer-events:none;z-index:99;background:${TOKENS.panel2};border:1px solid ${TOKENS.line};border-radius:8px;padding:8px 10px;font:12px/1.4 ${FONTS.sans};color:${TOKENS.ink};box-shadow:0 6px 24px rgba(0,0,0,.5);opacity:0;transition:opacity .12s;max-width:260px`;
   document.body.appendChild(_tt);
   return {
     show(html,x,y){_tt.innerHTML=html;_tt.style.opacity=1;const r=_tt.getBoundingClientRect();let nx=x+14,ny=y+14;if(nx+r.width>innerWidth)nx=x-r.width-14;if(ny+r.height>innerHeight)ny=y-r.height-14;_tt.style.left=nx+'px';_tt.style.top=ny+'px';},
@@ -113,7 +331,7 @@ function tooltip(){
 }
 
 /* ---- page scaffold + global CSS ---- */
-function scaffold({tag,title,dek,how,provenance,harm}={}){
+function scaffold({tag,title,dek,how,provenance,harm,pageId}={}){
   injectCSS();
   document.body.innerHTML=`
     <header class="dcf-h">
@@ -127,20 +345,37 @@ function scaffold({tag,title,dek,how,provenance,harm}={}){
       <p class="prov">${provenance||''}</p>
       ${harm?`<p class="harm">${harm}</p>`:''}
     </footer>`;
+  const pid = pageId || (typeof NAV_PAGE_ID !== 'undefined' ? NAV_PAGE_ID : '');
+  const mode = typeof NAV_MODE !== 'undefined' ? NAV_MODE : 'viz';
+  if (pid && window.DCF_NAV) window.DCF_NAV.injectNav({ pageId: pid, mode });
   return document.getElementById('stage');
 }
+function injectFontLink(){
+  if(document.getElementById('dcf-fonts')) return;
+  const link=document.createElement('link');
+  link.id='dcf-fonts';
+  link.rel='stylesheet';
+  link.href='https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap';
+  document.head.appendChild(link);
+}
+
 function injectCSS(){
   if(document.getElementById('dcf-css')) return;
+  injectFontLink();
   const s=document.createElement('style'); s.id='dcf-css';
   s.textContent=`
-  :root{--bg:${TOKENS.bg};--panel:${TOKENS.panel};--panel2:${TOKENS.panel2};--line:${TOKENS.line};--ink:${TOKENS.ink};--muted:${TOKENS.muted};--faint:${TOKENS.faint}}
+  :root{
+    --bg:${TOKENS.bg};--panel:${TOKENS.panel};--panel2:${TOKENS.panel2};--line:${TOKENS.line};
+    --ink:${TOKENS.ink};--muted:${TOKENS.muted};--faint:${TOKENS.faint};
+    --font-sans:${FONTS.sans};--font-mono:${FONTS.mono}
+  }
   *{box-sizing:border-box}
-  html,body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
+  html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-sans);-webkit-font-smoothing:antialiased;font-feature-settings:"kern","liga","calt"}
   body{max-width:1180px;margin:0 auto;padding:28px 22px 64px}
-  .mono{font-family:ui-monospace,"SF Mono","Cascadia Mono",monospace}
+  .mono{font-family:var(--font-mono);font-variant-numeric:tabular-nums}
   .muted{color:var(--muted)} .faint{color:var(--faint)}
   .dcf-h{margin-bottom:18px;border-bottom:1px solid var(--line);padding-bottom:16px}
-  .dcf-tag{font:600 11px/1 ui-monospace,monospace;letter-spacing:.14em;color:var(--muted);text-transform:uppercase;margin-bottom:10px}
+  .dcf-tag{font:600 11px/1 var(--font-mono);letter-spacing:.14em;color:var(--muted);text-transform:uppercase;margin-bottom:10px}
   .dcf-h h1{font-size:27px;line-height:1.15;margin:0 0 8px;font-weight:700;letter-spacing:-.01em}
   .dek{font-size:15px;line-height:1.5;color:var(--muted);margin:0;max-width:74ch}
   #stage{margin:18px 0}
@@ -154,7 +389,9 @@ function injectCSS(){
   .dcf-f{margin-top:26px;padding-top:14px;border-top:1px solid var(--line);font-size:12px;line-height:1.5}
   .dcf-f .prov{color:var(--faint);margin:0 0 6px}
   .dcf-f .harm{color:var(--muted);margin:0;padding-left:11px;border-left:3px solid ${TOKENS.ok}}
-  button.tgl{background:var(--panel);color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:7px 13px;font:500 13px Inter;cursor:pointer;transition:.15s}
+  button.tgl{background:var(--panel);color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:7px 13px;font:500 13px var(--font-sans);cursor:pointer;transition:.15s}
+  .dcf-ctl-select{background:var(--panel2);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:7px 10px;font:500 13px var(--font-sans);min-height:40px}
+  svg text{font-family:var(--font-mono);font-variant-numeric:tabular-nums}
   button.tgl:hover{background:var(--panel2);color:var(--ink)}
   button.tgl[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
   .controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
@@ -167,20 +404,40 @@ function injectCSS(){
 }
 
 /* draw a 2D structure from SMILES into a <canvas id=...>; needs SmilesDrawer loaded.
-   Uses the dark theme tuned to the framework background. No-ops gracefully if absent. */
+   Uses the canvas DrawerBase path (SmilesDrawer.Drawer SVG→canvas is broken in the vendored build). */
+let _smilesCanvasDrawer=null;
+function smilesCanvasDrawer(w,h){
+  if(_smilesCanvasDrawer) return _smilesCanvasDrawer;
+  _smilesCanvasDrawer=new SmilesDrawer.SvgDrawer({
+    width:w,height:h,padding:14,bondThickness:1.1,
+    themes:{
+      dcf:{
+        C:'#cfd6e4',N:'#7aa2ff',O:'#ff8a5c',F:'#6ee7a8',S:'#ffd166',
+        CL:'#6ee7a8',BR:'#ff8a5c',I:'#b388ff',P:'#d35400',B:'#e67e22',SI:'#e67e22',
+        H:'#8b94a8',BACKGROUND:'#0e1320',
+      },
+    },
+  }).preprocessor;
+  return _smilesCanvasDrawer;
+}
+function smilesStructureNA(el,h){
+  const c=el.getContext&&el.getContext('2d');
+  if(c){c.fillStyle='#5b6478';c.font='11px '+FONTS.sans;c.fillText('structure n/a',8,h/2);}
+}
 function drawSmiles(smiles,canvasId,w=160,h=120){
   const el=document.getElementById(canvasId);
-  if(!el||typeof SmilesDrawer==='undefined'||!smiles){ if(el){const c=el.getContext&&el.getContext('2d');if(c){c.fillStyle='#5b6478';c.font='11px Inter';c.fillText('structure n/a',8,h/2);}} return; }
+  if(!el||typeof SmilesDrawer==='undefined'||!smiles){ if(el) smilesStructureNA(el,h); return; }
   try{
-    const drawer=new SmilesDrawer.Drawer({width:w,height:h,padding:14,bondThickness:1.1,
-      themes:{dcf:{C:'#cfd6e4',N:'#7aa2ff',O:'#ff8a5c',F:'#6ee7a8',S:'#ffd166',Cl:'#6ee7a8',Br:'#ff8a5c',
-        BACKGROUND:'#0e1320',bond:'#9aa6bd',default:'#cfd6e4'}}});
-    SmilesDrawer.parse(smiles,t=>drawer.draw(t,canvasId,'dcf',false),()=>{});
-  }catch(e){}
+    const drawer=smilesCanvasDrawer(w,h);
+    SmilesDrawer.parse(smiles,t=>{
+      try{ drawer.draw(t,el,'dcf',false); }
+      catch(_){ try{ drawer.draw(t,el,'dark',false); } catch(__){ smilesStructureNA(el,h); } }
+    },()=>{ smilesStructureNA(el,h); });
+  }catch(e){ smilesStructureNA(el,h); }
 }
 
 
-window.DCF={TOKENS,classify,fmt,chromatogram,ftirCurve,stickSpectrum,cosine,tooltip,scaffold,injectCSS,drawSmiles};
+window.DCF={TOKENS,FONTS,classify,fmt,chromatogram,ftirCurve,stickSpectrum,cosine,tooltip,scaffold,injectCSS,drawSmiles};
 
 })();
 </script>
@@ -189,6 +446,8 @@ window.DCF={TOKENS,classify,fmt,chromatogram,ftirCurve,stickSpectrum,cosine,tool
    (a classical-MDS layout learned from which substances co-occur). Scrub through
    time and watch the whole supply migrate as its composition shifts. */
 const {scaffold,classify,tooltip,fmt,TOKENS}=DCF;
+function subColor(name){const c=classify(name);return window.DCFDesign?DCFDesign.getClassColor(c.cls):c.color;}
+function sigColor(k){return window.DCFDesign?DCFDesign.getClassColor(k):TOKENS[k];}
 const EMB=DATA.embedding, PTS=DATA.space_points;
 const months=[...new Set(PTS.map(p=>p.m))].sort();
 
@@ -230,7 +489,7 @@ function render(idx){
   svg.append('rect').attr('x',0).attr('y',0).attr('width',w).attr('height',H).attr('fill','none');
   // anchors
   svg.selectAll('text.anc').data(EMB.filter(d=>d.n>120)).join('text').attr('class','anc')
-    .attr('x',d=>x(d.x)).attr('y',d=>y(d.y)).attr('fill',d=>classify(d.substance).color).attr('opacity',.5)
+    .attr('x',d=>x(d.x)).attr('y',d=>y(d.y)).attr('fill',d=>subColor(d.substance)).attr('opacity',.5)
     .attr('font-size',10).attr('text-anchor','middle').text(d=>d.substance.length>12?d.substance.slice(0,11)+'…':d.substance);
   // drift trail: centroids of each month up to idx
   if(document.getElementById('trail').getAttribute('aria-pressed')==='true'){
@@ -243,7 +502,7 @@ function render(idx){
   const cur=PTS.filter(p=>widx.includes(p.m));
   svg.selectAll('circle.pt').data(cur,(d,i)=>i).join('circle').attr('class','pt')
     .attr('cx',d=>x(d.x)).attr('cy',d=>y(d.y)).attr('r',3.4)
-    .attr('fill',d=>classify(d.c==='fent'?'fentanyl':d.c==='xyl'?'xylazine':d.c==='stim'?'methamphetamine':d.c==='coke'?'cocaine':d.c==='opioid'?'heroin':d.c==='benzo'?'bromazolam':'other').color)
+    .attr('fill',d=>subColor(d.c==='fent'?'fentanyl':d.c==='xyl'?'xylazine':d.c==='stim'?'methamphetamine':d.c==='coke'?'cocaine':d.c==='opioid'?'heroin':d.c==='benzo'?'bromazolam':'other'))
     .attr('opacity',d=>d.m===mo?.9:.3)
     .on('mousemove',(e,d)=>tt.show(`<span class="muted">${fmt.month(d.m)}</span> · ${classify(d.c==='fent'?'fentanyl':d.c).label}`,e.clientX,e.clientY)).on('mouseleave',tt.hide);
   document.getElementById('leg').innerHTML=['fent','opioid','xyl','stim','coke','benzo'].map(c=>{const cl=classify(c==='fent'?'fentanyl':c==='xyl'?'xylazine':c==='stim'?'methamphetamine':c==='coke'?'cocaine':c==='opioid'?'heroin':'bromazolam');return `<span><i style="background:${cl.color}"></i>${cl.label}</span>`;}).join('')+`<span class="faint">showing ${win}-month window around ${fmt.month(mo)}</span>`;
@@ -259,6 +518,7 @@ document.getElementById('play').onclick=e=>{
   timer=setInterval(()=>{i++;if(i>=months.length){clearInterval(timer);timer=null;e.target.textContent='▶ animate';e.target.setAttribute('aria-pressed',false);return;}slider.value=i;render(i);},520);
 };
 render(months.length-1);
+window.__vizRedraw=()=>{setup();render(+slider.value);};
 addEventListener('resize',()=>{setup();render(+slider.value);});
 
 </script>

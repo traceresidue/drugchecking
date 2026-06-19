@@ -2,6 +2,7 @@
    checking: a qualitative result cannot tell you the dose. This visualization
    refuses to show a single number, displaying the full plausible range instead. */
 const {scaffold,fmt,TOKENS}=DCF;
+function sigColor(k){return window.DCFDesign?DCFDesign.getClassColor(k):TOKENS[k];}
 const SPS=DATA.substances_per_sample;
 
 const stage=scaffold({
@@ -67,4 +68,5 @@ function drawDist(){
   svg.append('text').attr('x',W/2).attr('y',H-2).attr('text-anchor','middle').attr('fill',TOKENS.muted).attr('font-size',11).text('number of distinct substances detected in one sample');
 }
 drawGauge();drawDist();
+window.__vizRedraw=()=>{drawGauge();drawDist();};
 addEventListener('resize',()=>{drawGauge();drawDist();});

@@ -12,6 +12,12 @@ export const TOKENS = {
   alert:'#ff5c7a', watch:'#ffd166', ok:'#6ee7a8', info:'#4cc9f0'
 };
 
+/* Sans-only UI prose + mono instrument readouts — always terminate with generic family. */
+export const FONTS = {
+  sans:'Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+  mono:'"Cascadia Mono", ui-monospace, "SF Mono", "Roboto Mono", Consolas, monospace',
+};
+
 /* Map a substance name -> {class, color, label, action} */
 const CLASS = {
   fent:{color:TOKENS.fent,label:'Fentanyl & analogs'},
@@ -33,10 +39,29 @@ const RULES = [
   [/cocaine|benzoylecgonine|ecgonine/i,'coke'],
   [/caffeine|acetaminophen|paracetamol|lidocaine|levamisole|quinine|mannitol|lactose|sucrose|cellulose|diphenhydramine|sulfone|msm|sugar|inositol|procaine|benzocaine|phenacetin|gabapentin|dimethyl|sebacate|btmps|piperidyl|boric|sorbitol|maltose|glucose|creatine|diacetin|tetramethyl/i,'cut'],
 ];
+/* Broad families for filters and labels — cls stays fine-grained for chart colors. */
+const FAMILY_MAP = {
+  fent:'opioid', opioid:'opioid',
+  stim:'stim', coke:'stim',
+  xyl:'xyl', benzo:'benzo', cut:'cut', other:'other',
+};
+const FAMILY_LABEL = {
+  opioid:'Opioid',
+  stim:'Stimulant',
+  xyl:'Sedative / xylazine',
+  benzo:'Benzodiazepine',
+  cut:'Cut / diluent',
+  other:'Other',
+};
 export function classify(name=''){
   const n = String(name).toLowerCase();
-  for(const [re,c] of RULES) if(re.test(n)) return {cls:c,...CLASS[c]};
-  return {cls:'other',...CLASS.other};
+  for(const [re,c] of RULES){
+    if(re.test(n)){
+      const family = FAMILY_MAP[c] || c;
+      return {cls:c,color:CLASS[c].color,label:CLASS[c].label,family,familyLabel:FAMILY_LABEL[family]||FAMILY_LABEL.other};
+    }
+  }
+  return {cls:'other',...CLASS.other,family:'other',familyLabel:FAMILY_LABEL.other};
 }
 
 /* ---- formatting ---- */
@@ -89,7 +114,7 @@ let _tt;
 export function tooltip(){
   if(_tt) return _tt;
   _tt=document.createElement('div');
-  _tt.style.cssText=`position:fixed;pointer-events:none;z-index:99;background:${TOKENS.panel2};border:1px solid ${TOKENS.line};border-radius:8px;padding:8px 10px;font:12px/1.4 Inter,system-ui;color:${TOKENS.ink};box-shadow:0 6px 24px rgba(0,0,0,.5);opacity:0;transition:opacity .12s;max-width:260px`;
+  _tt.style.cssText=`position:fixed;pointer-events:none;z-index:99;background:${TOKENS.panel2};border:1px solid ${TOKENS.line};border-radius:8px;padding:8px 10px;font:12px/1.4 ${FONTS.sans};color:${TOKENS.ink};box-shadow:0 6px 24px rgba(0,0,0,.5);opacity:0;transition:opacity .12s;max-width:260px`;
   document.body.appendChild(_tt);
   return {
     show(html,x,y){_tt.innerHTML=html;_tt.style.opacity=1;const r=_tt.getBoundingClientRect();let nx=x+14,ny=y+14;if(nx+r.width>innerWidth)nx=x-r.width-14;if(ny+r.height>innerHeight)ny=y-r.height-14;_tt.style.left=nx+'px';_tt.style.top=ny+'px';},
@@ -98,7 +123,7 @@ export function tooltip(){
 }
 
 /* ---- page scaffold + global CSS ---- */
-export function scaffold({tag,title,dek,how,provenance,harm}={}){
+export function scaffold({tag,title,dek,how,provenance,harm,pageId}={}){
   injectCSS();
   document.body.innerHTML=`
     <header class="dcf-h">
@@ -112,20 +137,37 @@ export function scaffold({tag,title,dek,how,provenance,harm}={}){
       <p class="prov">${provenance||''}</p>
       ${harm?`<p class="harm">${harm}</p>`:''}
     </footer>`;
+  const pid = pageId || (typeof NAV_PAGE_ID !== 'undefined' ? NAV_PAGE_ID : '');
+  const mode = typeof NAV_MODE !== 'undefined' ? NAV_MODE : 'viz';
+  if (pid && window.DCF_NAV) window.DCF_NAV.injectNav({ pageId: pid, mode });
   return document.getElementById('stage');
 }
+function injectFontLink(){
+  if(document.getElementById('dcf-fonts')) return;
+  const link=document.createElement('link');
+  link.id='dcf-fonts';
+  link.rel='stylesheet';
+  link.href='https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap';
+  document.head.appendChild(link);
+}
+
 export function injectCSS(){
   if(document.getElementById('dcf-css')) return;
+  injectFontLink();
   const s=document.createElement('style'); s.id='dcf-css';
   s.textContent=`
-  :root{--bg:${TOKENS.bg};--panel:${TOKENS.panel};--panel2:${TOKENS.panel2};--line:${TOKENS.line};--ink:${TOKENS.ink};--muted:${TOKENS.muted};--faint:${TOKENS.faint}}
+  :root{
+    --bg:${TOKENS.bg};--panel:${TOKENS.panel};--panel2:${TOKENS.panel2};--line:${TOKENS.line};
+    --ink:${TOKENS.ink};--muted:${TOKENS.muted};--faint:${TOKENS.faint};
+    --font-sans:${FONTS.sans};--font-mono:${FONTS.mono}
+  }
   *{box-sizing:border-box}
-  html,body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
+  html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-sans);-webkit-font-smoothing:antialiased;font-feature-settings:"kern","liga","calt"}
   body{max-width:1180px;margin:0 auto;padding:28px 22px 64px}
-  .mono{font-family:ui-monospace,"SF Mono","Cascadia Mono",monospace}
+  .mono{font-family:var(--font-mono);font-variant-numeric:tabular-nums}
   .muted{color:var(--muted)} .faint{color:var(--faint)}
   .dcf-h{margin-bottom:18px;border-bottom:1px solid var(--line);padding-bottom:16px}
-  .dcf-tag{font:600 11px/1 ui-monospace,monospace;letter-spacing:.14em;color:var(--muted);text-transform:uppercase;margin-bottom:10px}
+  .dcf-tag{font:600 11px/1 var(--font-mono);letter-spacing:.14em;color:var(--muted);text-transform:uppercase;margin-bottom:10px}
   .dcf-h h1{font-size:27px;line-height:1.15;margin:0 0 8px;font-weight:700;letter-spacing:-.01em}
   .dek{font-size:15px;line-height:1.5;color:var(--muted);margin:0;max-width:74ch}
   #stage{margin:18px 0}
@@ -139,7 +181,9 @@ export function injectCSS(){
   .dcf-f{margin-top:26px;padding-top:14px;border-top:1px solid var(--line);font-size:12px;line-height:1.5}
   .dcf-f .prov{color:var(--faint);margin:0 0 6px}
   .dcf-f .harm{color:var(--muted);margin:0;padding-left:11px;border-left:3px solid ${TOKENS.ok}}
-  button.tgl{background:var(--panel);color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:7px 13px;font:500 13px Inter;cursor:pointer;transition:.15s}
+  button.tgl{background:var(--panel);color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:7px 13px;font:500 13px var(--font-sans);cursor:pointer;transition:.15s}
+  .dcf-ctl-select{background:var(--panel2);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:7px 10px;font:500 13px var(--font-sans);min-height:40px}
+  svg text{font-family:var(--font-mono);font-variant-numeric:tabular-nums}
   button.tgl:hover{background:var(--panel2);color:var(--ink)}
   button.tgl[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
   .controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
@@ -152,16 +196,36 @@ export function injectCSS(){
 }
 
 /* draw a 2D structure from SMILES into a <canvas id=...>; needs SmilesDrawer loaded.
-   Uses the dark theme tuned to the framework background. No-ops gracefully if absent. */
+   Uses the canvas DrawerBase path (SmilesDrawer.Drawer SVG→canvas is broken in the vendored build). */
+let _smilesCanvasDrawer=null;
+function smilesCanvasDrawer(w,h){
+  if(_smilesCanvasDrawer) return _smilesCanvasDrawer;
+  _smilesCanvasDrawer=new SmilesDrawer.SvgDrawer({
+    width:w,height:h,padding:14,bondThickness:1.1,
+    themes:{
+      dcf:{
+        C:'#cfd6e4',N:'#7aa2ff',O:'#ff8a5c',F:'#6ee7a8',S:'#ffd166',
+        CL:'#6ee7a8',BR:'#ff8a5c',I:'#b388ff',P:'#d35400',B:'#e67e22',SI:'#e67e22',
+        H:'#8b94a8',BACKGROUND:'#0e1320',
+      },
+    },
+  }).preprocessor;
+  return _smilesCanvasDrawer;
+}
+function smilesStructureNA(el,h){
+  const c=el.getContext&&el.getContext('2d');
+  if(c){c.fillStyle='#5b6478';c.font='11px '+FONTS.sans;c.fillText('structure n/a',8,h/2);}
+}
 export function drawSmiles(smiles,canvasId,w=160,h=120){
   const el=document.getElementById(canvasId);
-  if(!el||typeof SmilesDrawer==='undefined'||!smiles){ if(el){const c=el.getContext&&el.getContext('2d');if(c){c.fillStyle='#5b6478';c.font='11px Inter';c.fillText('structure n/a',8,h/2);}} return; }
+  if(!el||typeof SmilesDrawer==='undefined'||!smiles){ if(el) smilesStructureNA(el,h); return; }
   try{
-    const drawer=new SmilesDrawer.Drawer({width:w,height:h,padding:14,bondThickness:1.1,
-      themes:{dcf:{C:'#cfd6e4',N:'#7aa2ff',O:'#ff8a5c',F:'#6ee7a8',S:'#ffd166',Cl:'#6ee7a8',Br:'#ff8a5c',
-        BACKGROUND:'#0e1320',bond:'#9aa6bd',default:'#cfd6e4'}}});
-    SmilesDrawer.parse(smiles,t=>drawer.draw(t,canvasId,'dcf',false),()=>{});
-  }catch(e){}
+    const drawer=smilesCanvasDrawer(w,h);
+    SmilesDrawer.parse(smiles,t=>{
+      try{ drawer.draw(t,el,'dcf',false); }
+      catch(_){ try{ drawer.draw(t,el,'dark',false); } catch(__){ smilesStructureNA(el,h); } }
+    },()=>{ smilesStructureNA(el,h); });
+  }catch(e){ smilesStructureNA(el,h); }
 }
 
 /* fetch the shared datasets (relative to viz/ files) */

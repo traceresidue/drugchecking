@@ -1,0 +1,52 @@
+---
+description: Drug checking viz and Streamlit UI — tokens, anatomy, harm-reduction UX
+globs: visualization-framework/**,datasets/code/Streamlit/**
+alwaysApply: false
+---
+
+# Design System Rule
+
+**Source of truth:** [visualization-framework/DESIGN_SYSTEM.md](../../visualization-framework/DESIGN_SYSTEM.md)
+
+Read that file before editing any visualization HTML, shared CSS, or Streamlit dashboard in this repo.
+
+## Non-negotiables
+
+1. **Tokens only** — Use CSS variables from `:root` (`--bg`, `--panel`, `--ink`, substance palette `--c-*`, signal colors). Do not hardcode hex outside `:root` unless extending the palette with documented rationale in DESIGN_SYSTEM.md.
+
+2. **Page anatomy** — Every standalone viz HTML file:
+   - `<header>` — series tag (`Nº 07 · GC–MS`), title, plain-language dek
+   - `<main>` — visualization + controls
+   - `<details>` — "How to read this" (methods & limits)
+   - `<footer>` — data provenance + harm-reduction line where relevant
+
+3. **Harm reduction** — Emphasis encodes actionability, not moral judgment. No skull icons, no "danger drug" framing. Supply is the hazard, not the person.
+
+4. **Two-layer reading** — Plain-language takeaway visible alongside technically faithful data (annotation layer, not replacement).
+
+5. **Honest uncertainty** — Spectral viz includes disclosure of what the method can and cannot say. Peak height ≠ purity.
+
+6. **Interaction grammar** — Hover/tap = identify; click = pin/drill; toggles use `<button aria-pressed>`; respect `prefers-reduced-motion`; touch targets ≥ 40px.
+
+7. **Accessibility** — Text ≥ 4.5:1 contrast on dark panels; never encode by hue alone (pair with label/shape/position); charts need `aria-label` summary + visible takeaway.
+
+## Anti-slop (align with Canvas skill)
+
+Forbidden: gradients, emoji icons, decorative box-shadows, rainbow coloring, uniform card walls with no hierarchy, giant decorative headings.
+
+## Creative variation (within coherence)
+
+**Fixed:** tokens, typography families, footer patterns, substance-class color semantics, interaction grammar.
+
+**Variable:** layout archetype (asymmetric split, bento, hero chart, sidebar inspector, full-bleed map), chart emphasis (one primary visual), motion personality per category, annotation style (callouts vs badges vs `details` depth). Avoid repeating the same layout as adjacent viz pages in the series.
+
+## Pre-delivery checklist
+
+1. Squint test — one clear focal point?
+2. Token audit — colors only via CSS variables?
+3. Variation — not a generic card-wall template?
+4. Coherence — fits the Nº series alongside sibling pages?
+5. A11y — keyboard, contrast, reduced motion?
+6. "How to read this" present where required?
+
+For Streamlit apps, match the same dark tokens, substance colors, Inter + mono numerics, and harm-reduction tone. See project skill `drugchecking-viz-design`.

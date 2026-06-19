@@ -1,0 +1,1032 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sample Result Card — Design Lab</title>
+<script src="../viz/lib/d3.min.js"></script>
+<script src="../viz/lib/smiles-drawer.min.js"></script>
+</head>
+<body>
+<script>
+window.DATA = {"retention_times":[{"substance":"fentanyl","rt":10.59,"n":2494},{"substance":"4-anpp","rt":9.35,"n":1990},{"substance":"methamphetamine","rt":4.11,"n":1348},{"substance":"acetaminophen","rt":6.51,"n":1046},{"substance":"cocaine","rt":8.39,"n":771},{"substance":"heroin","rt":10.12,"n":695},{"substance":"xylazine","rt":7.67,"n":656},{"substance":"lidocaine","rt":7.26,"n":524},{"substance":"caffeine","rt":7.12,"n":444},{"substance":"diphenhydramine","rt":7.1,"n":408},{"substance":"bis(2,2,6,6-tetramethyl-4-piperidyl) sebacate","rt":12.82,"n":407},{"substance":"p-fluorofentanyl","rt":10.37,"n":297},{"substance":"despropionyl p-fluorofentanyl","rt":9.35,"n":269},{"substance":"ketamine","rt":6.89,"n":234},{"substance":"bromazolam","rt":13.36,"n":201},{"substance":"3,4-mdma","rt":5.63,"n":178},{"substance":"acetylcodeine","rt":9.25,"n":166},{"substance":"phenethyl 4-anpp","rt":13.27,"n":157},{"substance":"ethyl 4-anpp","rt":9.5,"n":144},{"substance":"6-monoacetylmorphine (6-mam)","rt":9.66,"n":138},{"substance":"dimethyl sulfone (methylsulfonylmethane msm)","rt":2.43,"n":138},{"substance":"procaine","rt":7.82,"n":116},{"substance":"quinine","rt":11.25,"n":110},{"substance":"n-phenylpropanamide","rt":5.47,"n":87},{"substance":"tramadol","rt":7.56,"n":70},{"substance":"noramidopyrine","rt":7.31,"n":68},{"substance":"n,n-dimethylpentylone","rt":6.93,"n":52},{"substance":"delta-9-thc","rt":9.33,"n":48},{"substance":"2-fluoro-2-oxo pce","rt":6.31,"n":42},{"substance":"phenacetin","rt":6.52,"n":40},{"substance":"1-phenethyl-4-propionyloxypiperidine","rt":7.22,"n":38},{"substance":"mda","rt":5.53,"n":36},{"substance":"medetomidine","rt":7.49,"n":35},{"substance":"alprazolam","rt":11.6,"n":33},{"substance":"diacetamate","rt":6.82,"n":29},{"substance":"2c-b","rt":6.64,"n":29},{"substance":"mdmb-4en-pinaca","rt":9.21,"n":26},{"substance":"benzocaine","rt":6.04,"n":26},{"substance":"mannitol","rt":7.12,"n":24},{"substance":"4-anilino-1-boc-piperidine","rt":7.77,"n":22},{"substance":"carfentanil","rt":11.46,"n":22},{"substance":"amphetamine","rt":3.54,"n":20},{"substance":"n-phenethyl-n-phenylpropionamide","rt":7.8,"n":19},{"substance":"npp","rt":6.74,"n":18},{"substance":"oxycodone","rt":9.6,"n":18},{"substance":"clonazepam","rt":10.66,"n":18},{"substance":"1,3-diacetin","rt":4.81,"n":16},{"substance":"n,n-dimethyltryptamine (dmt)","rt":6.94,"n":16},{"substance":"etizolam","rt":12.53,"n":16},{"substance":"tetracaine","rt":8.47,"n":16},{"substance":"n,n-dimethylamphetamine (dma)","rt":4.16,"n":16},{"substance":"benzyl alcohol","rt":2.72,"n":15},{"substance":"p-fluoro phenethyl 4-anpp","rt":14.01,"n":15},{"substance":"gabapentin","rt":6.12,"n":14},{"substance":"clonazolam","rt":14.53,"n":13},{"substance":"mdmb-inaca","rt":8.86,"n":13},{"substance":"glycerin","rt":2.67,"n":13},{"substance":"morphine","rt":9.4,"n":12},{"substance":"cannabinol","rt":9.4,"n":12},{"substance":"acetanilide","rt":5.08,"n":12}]};
+window.SPEC = {"ms":{"fentanyl":{"mw":336,"smiles":"CCC(=O)N(c1ccccc1)C1CCN(CCc2ccccc2)CC1","peaks":[[42,30],[57,14],[77,20],[91,26],[105,44],[132,30],[146,79],[158,34],[189,60],[202,14],[245,100],[287,9],[336,7]]},"4-anpp":{"mw":280,"smiles":"c1ccc(CCN2CCC(Nc3ccccc3)CC2)cc1","peaks":[[56,18],[77,22],[91,32],[105,58],[120,20],[146,100],[189,42],[207,12],[280,16]]},"cocaine":{"mw":303,"smiles":"COC(=O)C1C(OC(=O)c2ccccc2)CC2CCC1N2C","peaks":[[42,22],[82,100],[94,30],[105,26],[122,18],[152,12],[182,86],[198,22],[272,10],[303,16]]},"methamphetamine":{"mw":149,"smiles":"CC(Cc1ccccc1)NC","peaks":[[58,100],[65,7],[91,16],[115,4],[134,5],[148,2]]},"xylazine":{"mw":220,"smiles":"Cc1cccc(C)c1NC1=NCCCS1","peaks":[[68,18],[105,22],[130,26],[145,34],[172,28],[187,20],[205,100],[220,46]]},"heroin":{"mw":369,"smiles":"CC(=O)Oc1ccc2c3c1OC1C(OC(C)=O)C=CC4C(C2)N(C)CCC314","peaks":[[43,62],[81,28],[146,22],[204,32],[215,24],[268,56],[310,42],[327,72],[369,48]]},"caffeine":{"mw":194,"smiles":"Cn1cnc2c1c(=O)n(C)c(=O)n2C","peaks":[[55,34],[67,18],[82,30],[109,42],[137,10],[165,14],[194,100]]},"acetaminophen":{"mw":151,"smiles":"CC(=O)Nc1ccc(O)cc1","peaks":[[43,42],[65,16],[80,26],[109,62],[151,100]]},"lidocaine":{"mw":234,"smiles":"CCN(CC)CC(=O)Nc1c(C)cccc1C","peaks":[[58,42],[72,22],[86,100],[120,8],[234,9]]},"diphenhydramine":{"mw":255,"smiles":"CN(C)CCOC(c1ccccc1)c1ccccc1","peaks":[[58,100],[73,16],[152,10],[165,42],[167,26],[183,8]]},"bromazolam":{"mw":353,"smiles":"Cc1nnc2n1-c1ccc(Br)cc1C(c1ccccc1)=NC2","peaks":[[77,18],[179,22],[246,20],[275,42],[326,32],[352,100]]},"levamisole":{"mw":204,"smiles":"C1CN2CC(c3ccccc3)N=C2S1","peaks":[[73,30],[148,40],[176,22],[204,100]]},"quinine":{"mw":324,"smiles":"COc1ccc2nccc(C(O)C3CC4CCN3CC4C=C)c2c1","peaks":[[81,40],[136,100],[172,18],[189,14],[324,30]]},"p-fluorofentanyl":{"mw":354,"smiles":"CCC(=O)N(c1ccc(F)cc1)C1CCN(CCc2ccccc2)CC1","peaks":[[105,40],[146,72],[164,38],[189,52],[245,30],[263,100],[305,8],[354,6]]}},"chromatograms":{"fentanyl_street":{"label":"Street 'dope' sample (fentanyl mixture)","peaks":[["acetaminophen",6.51,38],["diphenhydramine",7.1,14],["caffeine",7.12,22],["lidocaine",7.26,11],["xylazine",7.67,46],["4-anpp",9.35,27],["phenethyl 4-anpp",9.82,8],["heroin",10.12,6],["fentanyl",10.59,100],["p-fluorofentanyl",10.84,12]]},"meth":{"label":"Crystal methamphetamine sample","peaks":[["methamphetamine",4.11,100],["dimethyl sulfone",5.02,17],["caffeine",7.12,5],["n,n-dimethylamphetamine",4.55,3]]},"cocaine":{"label":"Powder cocaine sample","peaks":[["benzocaine",6.2,8],["caffeine",7.12,10],["lidocaine",7.26,16],["levamisole",8.02,24],["cocaine",8.39,100],["benzoylecgonine",9.05,6]]},"pressed_pill":{"label":"Counterfeit 'M30' pressed pill","peaks":[["acetaminophen",6.51,42],["caffeine",7.12,9],["4-anpp",9.35,16],["fentanyl",10.59,64],["bromazolam",11.42,12]]}}};
+</script>
+<script>
+const NAV_REGISTRY = [{"id":"01-mirror-match","n":1,"cat":"MS","title":"Spectral Mirror Match"},{"id":"02-chromatogram-explorer","n":2,"cat":"GC\u2013MS","title":"Annotated Chromatogram Explorer"},{"id":"03-ftir-overlay","n":3,"cat":"FTIR","title":"FTIR Overlay & Subtraction Bench"},{"id":"04-fragment-tree","n":4,"cat":"MS","title":"Fragmentation Radial"},{"id":"05-chromatogram-3d","n":5,"cat":"GC\u2013MS","title":"GC\u2013MS Data Cube (3D)"},{"id":"06-spectral-ridgeline","n":6,"cat":"GC\u2013MS","title":"Batch Ridgeline Fingerprints"},{"id":"06a-ridgeline-filled","n":6,"cat":"GC\u2013MS","title":"Batch Ridgeline \u2014 Class Fills"},{"id":"06b-ridgeline-3d","n":6,"cat":"GC\u2013MS","title":"Batch Ridgeline \u2014 3D Terrain"},{"id":"06c-ridgeline-filter","n":6,"cat":"GC\u2013MS","title":"Batch Ridgeline \u2014 Class Focus"},{"id":"07-ftir-waterfall","n":7,"cat":"FTIR","title":"FTIR Waterfall (3D)"},{"id":"08-mass-defect-map","n":8,"cat":"MS","title":"Mass-Defect Constellation"},{"id":"09-sonification","n":9,"cat":"EXPERIMENTAL","title":"Hear the Spectrum (Sonification)"},{"id":"10-chemical-space","n":10,"cat":"EXPERIMENTAL","title":"Chemical-Space Drift"},{"id":"11-supply-streamgraph","n":11,"cat":"SUPPLY","title":"Supply Composition Streamgraph"},{"id":"12-cooccurrence-chord","n":12,"cat":"SUPPLY","title":"Adulterant Co-occurrence Chord"},{"id":"12a-co-nested","n":12,"cat":"SUPPLY","title":"Nested Co-occurrence Chord"},{"id":"12b-chord-sankey","n":12,"cat":"SUPPLY","title":"Chord \u2192 Sankey Co-occurrence"},{"id":"12c-co-undirected","n":12,"cat":"SUPPLY","title":"Undirected Co-occurrence Chord"},{"id":"13-expected-detected-sankey","n":13,"cat":"SUPPLY","title":"Expected vs. Detected Sankey"},{"id":"14-horizon-wall","n":14,"cat":"SUPPLY","title":"Substance Horizon Wall"},{"id":"15-emergence-beeswarm","n":15,"cat":"SUPPLY","title":"Novel-Substance Emergence Swarm"},{"id":"16-supply-terrain-3d","n":16,"cat":"SUPPLY","title":"Supply Terrain (3D)"},{"id":"17-adulterant-network","n":17,"cat":"SUPPLY","title":"Adulterant Force Network"},{"id":"17a-adulterant-pull","n":17,"cat":"SUPPLY","title":"Adulterant Pull Network"},{"id":"17b-adulterant-3d","n":17,"cat":"SUPPLY","title":"Adulterant Network (3D)"},{"id":"17c-adulterant-orbit","n":17,"cat":"SUPPLY","title":"Adulterant Orbit Graph"},{"id":"18-result-card","n":18,"cat":"RESULT","title":"Sample Result Card"},{"id":"19-expected-reality-gap","n":19,"cat":"RESULT","title":"Expected-Reality Gap"},{"id":"20-potency-uncertainty","n":20,"cat":"RESULT","title":"Potency Uncertainty Gauge"},{"id":"21-geo-tilegrid","n":21,"cat":"GEO","title":"Supply Tile-Grid Cartogram"},{"id":"22-xylazine-spread","n":22,"cat":"GEO","title":"Xylazine Spread Timeline"},{"id":"23-structure-flipbook","n":23,"cat":"MS","title":"Structure Flipbook"},{"id":"24-anatomy-scrolly","n":24,"cat":"RESULT","title":"Anatomy of a Sample (Scrollytelling)"},{"id":"25-glyph-garden","n":25,"cat":"EXPERIMENTAL","title":"Sample Glyph Garden"}];
+const NAV_PAGE_ID = "18-result-card";
+const NAV_MODE = "lab";
+(function(){
+/* Compact series navigation — dropdown, prev/next, home link.
+   NAV_REGISTRY is inlined at build time from src/registry.json. */
+
+const PREVIEW_FALLBACK = {
+  '06a-ridgeline-filled': '06-spectral-ridgeline',
+  '06b-ridgeline-3d': '06-spectral-ridgeline',
+  '06c-ridgeline-filter': '06-spectral-ridgeline',
+  '12a-co-nested': '12-cooccurrence-chord',
+  '12b-chord-sankey': '12-cooccurrence-chord',
+  '12c-co-undirected': '12-cooccurrence-chord',
+  '17a-adulterant-pull': '17-adulterant-network',
+  '17b-adulterant-3d': '17-adulterant-network',
+  '17c-adulterant-orbit': '17-adulterant-network',
+};
+
+function pageFile(id, mode) {
+  return mode === 'lab' ? `d-${id}.html` : `${id}.html`;
+}
+
+function previewId(id) {
+  return PREVIEW_FALLBACK[id] || id;
+}
+
+function previewSrc(id, mode) {
+  const base = mode === 'lab' ? '../viz/review-previews' : 'review-previews';
+  return `${base}/${previewId(id)}.png`;
+}
+
+function injectNavCSS() {
+  if (document.getElementById('dcf-nav-css')) return;
+  const s = document.createElement('style');
+  s.id = 'dcf-nav-css';
+  s.textContent = `
+  .dcf-nav{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;padding:10px 14px;margin:0 0 14px;background:var(--panel);border:1px solid var(--line);border-radius:12px;position:sticky;top:0;z-index:30}
+  .dcf-nav-home{font:600 12px/1 var(--font-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-decoration:none;padding:6px 10px;border-radius:8px;border:1px solid transparent;transition:color .15s,background .15s,border-color .15s}
+  .dcf-nav-home:hover,.dcf-nav-home:focus-visible{color:var(--ink);background:var(--panel2);border-color:var(--line);outline:none}
+  .dcf-nav-btn{min-width:40px;min-height:40px;padding:0 12px;background:var(--panel2);color:var(--muted);border:1px solid var(--line);border-radius:999px;font:600 15px/1 var(--font-sans);cursor:pointer;transition:background .15s,color .15s}
+  .dcf-nav-btn:hover,.dcf-nav-btn:focus-visible{background:var(--panel);color:var(--ink);outline:none}
+  .dcf-nav-btn:disabled{opacity:.35;cursor:not-allowed}
+  .dcf-nav-select{flex:1 1 180px;min-width:140px;max-width:420px;min-height:40px;padding:8px 32px 8px 12px;background:var(--panel2);color:var(--ink);border:1px solid var(--line);border-radius:10px;font:500 13px var(--font-sans);cursor:pointer}
+  .dcf-nav-select:hover,.dcf-nav-select:focus-visible{border-color:var(--muted);outline:none}
+  .dcf-nav-pos{margin-left:auto;font:500 11px/1 var(--font-mono);color:var(--faint);white-space:nowrap}
+  .dcf-index-hero{margin-bottom:22px;border-bottom:1px solid var(--line);padding-bottom:18px}
+  .dcf-index-hero h1{font-size:28px;line-height:1.15;margin:0 0 8px;font-weight:700;letter-spacing:-.01em}
+  .dcf-index-hero p{margin:0;color:var(--muted);font-size:15px;line-height:1.5;max-width:72ch}
+  .dcf-index-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;margin:18px 0 32px}
+  .dcf-index-card{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden;text-decoration:none;color:inherit;transition:border-color .15s,transform .15s}
+  .dcf-index-card:hover,.dcf-index-card:focus-visible{border-color:var(--muted);transform:translateY(-1px);outline:none}
+  .dcf-index-thumb{aspect-ratio:16/10;background:var(--panel2);border-bottom:1px solid var(--line);overflow:hidden;display:flex;align-items:center;justify-content:center}
+  .dcf-index-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+  .dcf-index-thumb-fallback{font:600 11px/1.3 var(--font-mono);color:var(--faint);text-align:center;padding:12px}
+  .dcf-index-body{padding:14px 16px 16px}
+  .dcf-index-meta{font:600 10px/1 var(--font-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin-bottom:6px}
+  .dcf-index-title{font-size:15px;font-weight:650;line-height:1.3;margin:0 0 4px;color:var(--ink);font-family:var(--font-sans)}
+  .dcf-index-cat{font-size:12px;color:var(--muted);margin:0}
+  .dcf-index-switch{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+  .dcf-index-switch a{font:500 12px var(--font-sans);color:var(--muted);text-decoration:none;padding:6px 12px;border:1px solid var(--line);border-radius:999px}
+  .dcf-index-switch a[aria-current="page"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+  @media (max-width:640px){.dcf-nav-pos{width:100%;margin-left:0;text-align:right}}
+  @media (prefers-reduced-motion:reduce){.dcf-index-card,.dcf-nav-home,.dcf-nav-btn{transition:none}}
+  `;
+  document.head.appendChild(s);
+}
+
+function navLabel(entry) {
+  const n = String(entry.n).padStart(2, '0');
+  const variant = entry.id.match(/^\d+[a-z]-/);
+  const suffix = variant ? ` · ${entry.id.split('-').slice(1).join(' ')}` : '';
+  return `Nº ${n} · ${entry.title}${suffix}`;
+}
+
+function injectNav({ pageId, mode = 'viz' } = {}) {
+  if (!pageId || document.querySelector('.dcf-nav')) return;
+  injectNavCSS();
+  const items = typeof NAV_REGISTRY !== 'undefined' ? NAV_REGISTRY : [];
+  if (!items.length) return;
+
+  const idx = items.findIndex(e => e.id === pageId);
+  const cur = idx >= 0 ? idx : 0;
+  const prev = items[(cur - 1 + items.length) % items.length];
+  const next = items[(cur + 1) % items.length];
+
+  const nav = document.createElement('nav');
+  nav.className = 'dcf-nav';
+  nav.setAttribute('aria-label', 'Visualization series navigation');
+
+  const home = document.createElement('a');
+  home.className = 'dcf-nav-home';
+  home.href = 'index.html';
+  home.textContent = mode === 'lab' ? 'Design Lab' : 'All viz';
+
+  const prevBtn = document.createElement('button');
+  prevBtn.type = 'button';
+  prevBtn.className = 'dcf-nav-btn';
+  prevBtn.setAttribute('aria-label', `Previous: ${prev.title}`);
+  prevBtn.textContent = '←';
+  prevBtn.onclick = () => { location.href = pageFile(prev.id, mode); };
+
+  const sel = document.createElement('select');
+  sel.className = 'dcf-nav-select';
+  sel.setAttribute('aria-label', 'Jump to visualization');
+  items.forEach(entry => {
+    const opt = document.createElement('option');
+    opt.value = pageFile(entry.id, mode);
+    opt.textContent = navLabel(entry);
+    if (entry.id === pageId) opt.selected = true;
+    sel.appendChild(opt);
+  });
+  sel.onchange = () => { if (sel.value) location.href = sel.value; };
+
+  const nextBtn = document.createElement('button');
+  nextBtn.type = 'button';
+  nextBtn.className = 'dcf-nav-btn';
+  nextBtn.setAttribute('aria-label', `Next: ${next.title}`);
+  nextBtn.textContent = '→';
+  nextBtn.onclick = () => { location.href = pageFile(next.id, mode); };
+
+  const pos = document.createElement('span');
+  pos.className = 'dcf-nav-pos';
+  pos.textContent = `${cur + 1} / ${items.length}`;
+
+  nav.append(home, prevBtn, sel, nextBtn, pos);
+
+  const hdr = document.querySelector('.dcf-h');
+  if (hdr) document.body.insertBefore(nav, hdr);
+  else document.body.prepend(nav);
+}
+
+function buildIndexPage({ mode = 'viz', title, dek, switchHref } = {}) {
+  injectNavCSS();
+  const items = typeof NAV_REGISTRY !== 'undefined' ? NAV_REGISTRY : [];
+  const prodHref = mode === 'lab' ? '../viz/index.html' : 'index.html';
+  const labHref = mode === 'lab' ? 'index.html' : (switchHref || '../viz2/index.html');
+  const hero = document.createElement('header');
+  hero.className = 'dcf-index-hero';
+  hero.innerHTML = `
+    <h1>${title || 'Drug Checking Visualizations'}</h1>
+    <p>${dek || ''}</p>
+    <div class="dcf-index-switch">
+      <a href="${prodHref}" aria-current="${mode === 'viz' ? 'page' : 'false'}">Production viz</a>
+      <a href="${labHref}" aria-current="${mode === 'lab' ? 'page' : 'false'}">Design Lab</a>
+    </div>`;
+
+  const grid = document.createElement('div');
+  grid.className = 'dcf-index-grid';
+  grid.setAttribute('role', 'list');
+
+  items.forEach(entry => {
+    const card = document.createElement('a');
+    card.className = 'dcf-index-card';
+    card.href = pageFile(entry.id, mode);
+    card.setAttribute('role', 'listitem');
+    card.setAttribute('aria-label', `${entry.title} — ${entry.cat}`);
+
+    const thumb = document.createElement('div');
+    thumb.className = 'dcf-index-thumb';
+    const img = document.createElement('img');
+    img.src = previewSrc(entry.id, mode);
+    img.alt = '';
+    img.loading = 'lazy';
+    img.onerror = () => {
+      img.remove();
+      const fb = document.createElement('div');
+      fb.className = 'dcf-index-thumb-fallback';
+      fb.textContent = entry.cat;
+      thumb.appendChild(fb);
+    };
+    thumb.appendChild(img);
+
+    const body = document.createElement('div');
+    body.className = 'dcf-index-body';
+    body.innerHTML = `
+      <div class="dcf-index-meta">Nº ${String(entry.n).padStart(2, '0')} · ${entry.cat}</div>
+      <h2 class="dcf-index-title">${entry.title}</h2>
+      <p class="dcf-index-cat">${entry.id.replace(/-/g, ' ')}</p>`;
+
+    card.append(thumb, body);
+    grid.appendChild(card);
+  });
+
+  document.body.append(hero, grid);
+}
+
+
+window.DCF_NAV={injectNav,buildIndexPage,pageFile,previewSrc};
+
+})();
+</script>
+<script>
+(function(){
+/* Drug Checking Visualization Framework — shared helpers
+   Loaded by every standalone visualization. Pure ES module, no dependencies.
+   Provides: design tokens (CSS injection), substance classification + palette,
+   spectral synthesis (Gaussian chromatograms, stick spectra, FTIR curves),
+   formatting, tooltip, and a small DOM scaffold builder. */
+
+const TOKENS = {
+  bg:'#0b0e14', panel:'#121826', panel2:'#1a2234', line:'#26304a',
+  ink:'#e8ecf4', muted:'#8b94a8', faint:'#5b6478',
+  opioid:'#ff8a5c', fent:'#ff5c7a', xyl:'#b388ff', stim:'#ffd166',
+  coke:'#4cc9f0', benzo:'#7aa2ff', cut:'#6ee7a8', other:'#94a3b8',
+  alert:'#ff5c7a', watch:'#ffd166', ok:'#6ee7a8', info:'#4cc9f0'
+};
+
+/* Sans-only UI prose + mono instrument readouts — always terminate with generic family. */
+const FONTS = {
+  sans:'Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+  mono:'"Cascadia Mono", ui-monospace, "SF Mono", "Roboto Mono", Consolas, monospace',
+};
+
+/* Map a substance name -> {class, color, label, action} */
+const CLASS = {
+  fent:{color:TOKENS.fent,label:'Fentanyl & analogs'},
+  opioid:{color:TOKENS.opioid,label:'Opioid'},
+  xyl:{color:TOKENS.xyl,label:'Sedative / xylazine'},
+  stim:{color:TOKENS.stim,label:'Stimulant'},
+  coke:{color:TOKENS.coke,label:'Cocaine'},
+  benzo:{color:TOKENS.benzo,label:'Benzodiazepine'},
+  cut:{color:TOKENS.cut,label:'Cut / diluent'},
+  other:{color:TOKENS.other,label:'Other'}
+};
+const RULES = [
+  [/fentanyl|anpp|despropionyl|norfentanyl|acetylfentanyl|n-phenylpropanamide|phenethyl/i,'fent'],
+  [/nitazene|etonitazene|metonitazene|protonitazene|isotonitazene/i,'fent'],
+  [/heroin|morphine|codeine|6-mam|monoacetylmorphine|oxycodone|hydromorphone|tramadol|mitragynine|opioid/i,'opioid'],
+  [/xylazine|medetomidine|detomidine|clonidine/i,'xyl'],
+  [/bromazolam|flualprazolam|alprazolam|etizolam|diazepam|clonazolam|benzodiazep|flubromazolam|diclazepam/i,'benzo'],
+  [/methamphetamine|amphetamine|mdma|cathinone|methylenedioxy|n,n-dimethylamphetamine/i,'stim'],
+  [/cocaine|benzoylecgonine|ecgonine/i,'coke'],
+  [/caffeine|acetaminophen|paracetamol|lidocaine|levamisole|quinine|mannitol|lactose|sucrose|cellulose|diphenhydramine|sulfone|msm|sugar|inositol|procaine|benzocaine|phenacetin|gabapentin|dimethyl|sebacate|btmps|piperidyl|boric|sorbitol|maltose|glucose|creatine|diacetin|tetramethyl/i,'cut'],
+];
+/* Broad families for filters and labels — cls stays fine-grained for chart colors. */
+const FAMILY_MAP = {
+  fent:'opioid', opioid:'opioid',
+  stim:'stim', coke:'stim',
+  xyl:'xyl', benzo:'benzo', cut:'cut', other:'other',
+};
+const FAMILY_LABEL = {
+  opioid:'Opioid',
+  stim:'Stimulant',
+  xyl:'Sedative / xylazine',
+  benzo:'Benzodiazepine',
+  cut:'Cut / diluent',
+  other:'Other',
+};
+function classify(name=''){
+  const n = String(name).toLowerCase();
+  for(const [re,c] of RULES){
+    if(re.test(n)){
+      const family = FAMILY_MAP[c] || c;
+      return {cls:c,color:CLASS[c].color,label:CLASS[c].label,family,familyLabel:FAMILY_LABEL[family]||FAMILY_LABEL.other};
+    }
+  }
+  return {cls:'other',...CLASS.other,family:'other',familyLabel:FAMILY_LABEL.other};
+}
+
+/* ---- formatting ---- */
+const fmt = {
+  mz:v=>`${(+v).toFixed(0)}`,
+  rt:v=>`${(+v).toFixed(2)}`,
+  pct:v=>`${(+v).toFixed(0)}%`,
+  int:v=>(+v).toLocaleString('en-US'),
+  month:m=>{const [y,mo]=m.split('-');return new Date(y,mo-1).toLocaleDateString('en-US',{month:'short',year:'2-digit'});}
+};
+
+/* ---- spectral synthesis ---- */
+// Sum-of-Gaussians chromatogram trace. peaks:[{rt,amp}], returns {x:[],y:[]}
+function chromatogram(peaks,{x0=2,x1=13,n=900,sigma=0.045}={}){
+  const x=[],y=[];
+  for(let i=0;i<n;i++){
+    const t=x0+(x1-x0)*i/(n-1); x.push(t);
+    let v=0; for(const p of peaks){const d=(t-p.rt)/(p.sigma||sigma); v+=p.amp*Math.exp(-0.5*d*d);}
+    y.push(v);
+  }
+  const mx=Math.max(...y,1e-9);
+  return {x,y:y.map(v=>v/mx*100)};
+}
+// FTIR absorbance curve from bands [[center,intensity,width],...]; reversed x handled by caller
+function ftirCurve(bands,{x0=4000,x1=400,n=1100}={}){
+  const x=[],y=[];
+  for(let i=0;i<n;i++){
+    const w=x0+(x1-x0)*i/(n-1); x.push(w);
+    let v=0; for(const [c,I,wd] of bands){const d=(w-c)/(wd||20); v+=I*Math.exp(-0.5*d*d);}
+    y.push(v);
+  }
+  return {x,y}; // y in absorbance-ish 0..~1
+}
+// Mass spectrum sticks: returns sorted peaks with base-peak normalization
+function stickSpectrum(peaks){
+  const mx=Math.max(...peaks.map(p=>p[1]),1);
+  return peaks.map(([mz,i])=>({mz,i:i/mx*100})).sort((a,b)=>a.mz-b.mz);
+}
+// cosine similarity between two stick spectra (binned at 1 m/z)
+function cosine(a,b,tol=0.5){
+  let dot=0,na=0,nb=0; const used=new Set();
+  for(const pa of a){na+=pa.i*pa.i;}
+  for(const pb of b){nb+=pb.i*pb.i;}
+  for(const pa of a){let best=null,bd=tol; for(let k=0;k<b.length;k++){if(used.has(k))continue;const d=Math.abs(pa.mz-b[k].mz); if(d<=bd){bd=d;best=k;}} if(best!=null){dot+=pa.i*b[best].i;used.add(best);}}
+  return dot/(Math.sqrt(na)*Math.sqrt(nb)||1);
+}
+
+/* ---- tooltip ---- */
+let _tt;
+function tooltip(){
+  if(_tt) return _tt;
+  _tt=document.createElement('div');
+  _tt.style.cssText=`position:fixed;pointer-events:none;z-index:99;background:${TOKENS.panel2};border:1px solid ${TOKENS.line};border-radius:8px;padding:8px 10px;font:12px/1.4 ${FONTS.sans};color:${TOKENS.ink};box-shadow:0 6px 24px rgba(0,0,0,.5);opacity:0;transition:opacity .12s;max-width:260px`;
+  document.body.appendChild(_tt);
+  return {
+    show(html,x,y){_tt.innerHTML=html;_tt.style.opacity=1;const r=_tt.getBoundingClientRect();let nx=x+14,ny=y+14;if(nx+r.width>innerWidth)nx=x-r.width-14;if(ny+r.height>innerHeight)ny=y-r.height-14;_tt.style.left=nx+'px';_tt.style.top=ny+'px';},
+    hide(){_tt.style.opacity=0;}
+  };
+}
+
+/* ---- page scaffold + global CSS ---- */
+function scaffold({tag,title,dek,how,provenance,harm,pageId}={}){
+  injectCSS();
+  document.body.innerHTML=`
+    <header class="dcf-h">
+      <div class="dcf-tag">${tag||''}</div>
+      <h1>${title||''}</h1>
+      <p class="dek">${dek||''}</p>
+    </header>
+    <main id="stage"></main>
+    <details class="dcf-how"><summary>How to read this</summary><div>${how||''}</div></details>
+    <footer class="dcf-f">
+      <p class="prov">${provenance||''}</p>
+      ${harm?`<p class="harm">${harm}</p>`:''}
+    </footer>`;
+  const pid = pageId || (typeof NAV_PAGE_ID !== 'undefined' ? NAV_PAGE_ID : '');
+  const mode = typeof NAV_MODE !== 'undefined' ? NAV_MODE : 'viz';
+  if (pid && window.DCF_NAV) window.DCF_NAV.injectNav({ pageId: pid, mode });
+  return document.getElementById('stage');
+}
+function injectFontLink(){
+  if(document.getElementById('dcf-fonts')) return;
+  const link=document.createElement('link');
+  link.id='dcf-fonts';
+  link.rel='stylesheet';
+  link.href='https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap';
+  document.head.appendChild(link);
+}
+
+function injectCSS(){
+  if(document.getElementById('dcf-css')) return;
+  injectFontLink();
+  const s=document.createElement('style'); s.id='dcf-css';
+  s.textContent=`
+  :root{
+    --bg:${TOKENS.bg};--panel:${TOKENS.panel};--panel2:${TOKENS.panel2};--line:${TOKENS.line};
+    --ink:${TOKENS.ink};--muted:${TOKENS.muted};--faint:${TOKENS.faint};
+    --font-sans:${FONTS.sans};--font-mono:${FONTS.mono}
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-sans);-webkit-font-smoothing:antialiased;font-feature-settings:"kern","liga","calt"}
+  body{max-width:1180px;margin:0 auto;padding:28px 22px 64px}
+  .mono{font-family:var(--font-mono);font-variant-numeric:tabular-nums}
+  .muted{color:var(--muted)} .faint{color:var(--faint)}
+  .dcf-h{margin-bottom:18px;border-bottom:1px solid var(--line);padding-bottom:16px}
+  .dcf-tag{font:600 11px/1 var(--font-mono);letter-spacing:.14em;color:var(--muted);text-transform:uppercase;margin-bottom:10px}
+  .dcf-h h1{font-size:27px;line-height:1.15;margin:0 0 8px;font-weight:700;letter-spacing:-.01em}
+  .dek{font-size:15px;line-height:1.5;color:var(--muted);margin:0;max-width:74ch}
+  #stage{margin:18px 0}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px}
+  .dcf-how{margin:22px 0 8px;border:1px solid var(--line);border-radius:10px;background:var(--panel);overflow:hidden}
+  .dcf-how summary{cursor:pointer;padding:12px 16px;font-weight:600;font-size:13px;color:var(--ink);list-style:none}
+  .dcf-how summary::before{content:"ⓘ ";color:var(--muted)}
+  .dcf-how[open] summary{border-bottom:1px solid var(--line)}
+  .dcf-how>div{padding:14px 16px;font-size:13.5px;line-height:1.6;color:var(--muted)}
+  .dcf-how b{color:var(--ink)}
+  .dcf-f{margin-top:26px;padding-top:14px;border-top:1px solid var(--line);font-size:12px;line-height:1.5}
+  .dcf-f .prov{color:var(--faint);margin:0 0 6px}
+  .dcf-f .harm{color:var(--muted);margin:0;padding-left:11px;border-left:3px solid ${TOKENS.ok}}
+  button.tgl{background:var(--panel);color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:7px 13px;font:500 13px var(--font-sans);cursor:pointer;transition:.15s}
+  .dcf-ctl-select{background:var(--panel2);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:7px 10px;font:500 13px var(--font-sans);min-height:40px}
+  svg text{font-family:var(--font-mono);font-variant-numeric:tabular-nums}
+  button.tgl:hover{background:var(--panel2);color:var(--ink)}
+  button.tgl[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+  .controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+  input[type=range]{accent-color:${TOKENS.info}}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:10px}
+  .legend i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+  @media (prefers-reduced-motion:reduce){*{animation-duration:.001ms!important;transition-duration:.001ms!important}}
+  `;
+  document.head.appendChild(s);
+}
+
+/* draw a 2D structure from SMILES into a <canvas id=...>; needs SmilesDrawer loaded.
+   Uses the canvas DrawerBase path (SmilesDrawer.Drawer SVG→canvas is broken in the vendored build). */
+let _smilesCanvasDrawer=null;
+function smilesCanvasDrawer(w,h){
+  if(_smilesCanvasDrawer) return _smilesCanvasDrawer;
+  _smilesCanvasDrawer=new SmilesDrawer.SvgDrawer({
+    width:w,height:h,padding:14,bondThickness:1.1,
+    themes:{
+      dcf:{
+        C:'#cfd6e4',N:'#7aa2ff',O:'#ff8a5c',F:'#6ee7a8',S:'#ffd166',
+        CL:'#6ee7a8',BR:'#ff8a5c',I:'#b388ff',P:'#d35400',B:'#e67e22',SI:'#e67e22',
+        H:'#8b94a8',BACKGROUND:'#0e1320',
+      },
+    },
+  }).preprocessor;
+  return _smilesCanvasDrawer;
+}
+function smilesStructureNA(el,h){
+  const c=el.getContext&&el.getContext('2d');
+  if(c){c.fillStyle='#5b6478';c.font='11px '+FONTS.sans;c.fillText('structure n/a',8,h/2);}
+}
+function drawSmiles(smiles,canvasId,w=160,h=120){
+  const el=document.getElementById(canvasId);
+  if(!el||typeof SmilesDrawer==='undefined'||!smiles){ if(el) smilesStructureNA(el,h); return; }
+  try{
+    const drawer=smilesCanvasDrawer(w,h);
+    SmilesDrawer.parse(smiles,t=>{
+      try{ drawer.draw(t,el,'dcf',false); }
+      catch(_){ try{ drawer.draw(t,el,'dark',false); } catch(__){ smilesStructureNA(el,h); } }
+    },()=>{ smilesStructureNA(el,h); });
+  }catch(e){ smilesStructureNA(el,h); }
+}
+
+
+window.DCF={TOKENS,FONTS,classify,fmt,chromatogram,ftirCurve,stickSpectrum,cosine,tooltip,scaffold,injectCSS,drawSmiles};
+
+})();
+</script>
+<script>
+(function(){
+/* viz2 Design Lab — theme engine, toolbar, label density, critique panel.
+   Loaded after viz/_shared.js (window.DCF). Patches DCF.scaffold when present. */
+
+const SUBSTANCE_KEYS = ['fent', 'opioid', 'xyl', 'stim', 'coke', 'benzo', 'cut', 'other'];
+const SIGNAL_KEYS = ['alert', 'watch', 'ok', 'info'];
+const CHROME_KEYS = ['bg', 'panel', 'panel2', 'line', 'ink', 'muted', 'faint'];
+
+const DEFAULT_CHROME_DARK = {
+  bg: '#0b0e14', panel: '#121826', panel2: '#1a2234', line: '#26304a',
+  ink: '#e8ecf4', muted: '#8b94a8', faint: '#5b6478'
+};
+const DEFAULT_CHROME_LIGHT = {
+  bg: '#f4f6fa', panel: '#ffffff', panel2: '#eef1f7', line: '#d4dae8',
+  ink: '#121826', muted: '#5b6478', faint: '#8b94a8'
+};
+const DEFAULT_SUBSTANCES = {
+  fent: '#ff5c7a', opioid: '#ff8a5c', xyl: '#b388ff', stim: '#ffd166',
+  coke: '#4cc9f0', benzo: '#7aa2ff', cut: '#6ee7a8', other: '#94a3b8'
+};
+const DEFAULT_SIGNAL = {
+  alert: '#ff5c7a', watch: '#ffd166', ok: '#6ee7a8', info: '#4cc9f0'
+};
+
+function cs(stops) {
+  return stops.map((c, i) => [i / (stops.length - 1), c]);
+}
+
+const PALETTES = {
+  default: {
+    id: 'default', name: 'DCF Default', group: 'recommended',
+    stops: ['#0b0e14', '#ff5c7a', '#ffd166', '#4cc9f0', '#6ee7a8', '#e8ecf4'],
+    chrome: { dark: { ...DEFAULT_CHROME_DARK }, light: { ...DEFAULT_CHROME_LIGHT } },
+    substances: { ...DEFAULT_SUBSTANCES },
+    signal: { ...DEFAULT_SIGNAL },
+    colorscale: cs(['#0b0e14', '#26304a', '#ff5c7a', '#ffd166', '#4cc9f0', '#6ee7a8'])
+  },
+  clinical: {
+    id: 'clinical', name: 'Clinical', group: 'recommended',
+    stops: ['#0d1117', '#5b8def', '#7eb8da', '#a8c4e0', '#c5d4e8', '#e8eef5'],
+    chrome: {
+      dark: { bg: '#0d1117', panel: '#141b26', panel2: '#1c2638', line: '#2a3850', ink: '#e4eaf2', muted: '#8a9bb5', faint: '#5c6d85' },
+      light: { bg: '#eef2f7', panel: '#ffffff', panel2: '#e4ebf4', line: '#c8d4e4', ink: '#141b26', muted: '#5c6d85', faint: '#8a9bb5' }
+    },
+    substances: { fent: '#e85d7a', opioid: '#d4896a', xyl: '#8b9fd4', stim: '#c4b86a', coke: '#5ba8c9', benzo: '#6b8fd4', cut: '#7eb89a', other: '#94a3b8' },
+    signal: { alert: '#e85d7a', watch: '#c4b86a', ok: '#7eb89a', info: '#5ba8c9' },
+    colorscale: cs(['#0d1117', '#2a3850', '#5b8def', '#7eb8da', '#a8c4e0', '#e8eef5'])
+  },
+  paper: {
+    id: 'paper', name: 'Paper', group: 'recommended',
+    stops: ['#faf7f2', '#c97b84', '#d4a574', '#8b9fd4', '#a8c4a0', '#4a4540'],
+    chrome: {
+      dark: { bg: '#1a1814', panel: '#242018', panel2: '#2e2820', line: '#3d362c', ink: '#f5f0e8', muted: '#a89a88', faint: '#7a6e60' },
+      light: { bg: '#faf7f2', panel: '#ffffff', panel2: '#f3ede4', line: '#e0d8cc', ink: '#2a2520', muted: '#6b6258', faint: '#9a9088' }
+    },
+    substances: { fent: '#c45c6a', opioid: '#d4896a', xyl: '#9a7ab8', stim: '#c9a04a', coke: '#6a9ab8', benzo: '#7a8fc8', cut: '#8ab898', other: '#8a8580' },
+    signal: { alert: '#c45c6a', watch: '#c9a04a', ok: '#8ab898', info: '#6a9ab8' },
+    colorscale: cs(['#faf7f2', '#e8ddd0', '#d4a574', '#c97b84', '#8b9fd4', '#4a4540'])
+  },
+  contrast: {
+    id: 'contrast', name: 'High Contrast', group: 'recommended',
+    stops: ['#000000', '#ff3366', '#ffcc00', '#00ccff', '#00ff88', '#ffffff'],
+    chrome: {
+      dark: { bg: '#000000', panel: '#0a0a0a', panel2: '#141414', line: '#404040', ink: '#ffffff', muted: '#b0b0b0', faint: '#707070' },
+      light: { bg: '#ffffff', panel: '#f5f5f5', panel2: '#ebebeb', line: '#404040', ink: '#000000', muted: '#404040', faint: '#707070' }
+    },
+    substances: { fent: '#ff3366', opioid: '#ff6633', xyl: '#cc66ff', stim: '#ffcc00', coke: '#00ccff', benzo: '#6699ff', cut: '#00ff88', other: '#aaaaaa' },
+    signal: { alert: '#ff3366', watch: '#ffcc00', ok: '#00ff88', info: '#00ccff' },
+    colorscale: cs(['#000000', '#404040', '#ff3366', '#ffcc00', '#00ccff', '#ffffff'])
+  },
+  colorblind: {
+    id: 'colorblind', name: 'Colorblind Safe', group: 'recommended',
+    stops: ['#0b0e14', '#e69f00', '#56b4e9', '#009e73', '#f0e442', '#e8ecf4'],
+    chrome: { dark: { ...DEFAULT_CHROME_DARK }, light: { ...DEFAULT_CHROME_LIGHT } },
+    substances: { fent: '#d55e00', opioid: '#e69f00', xyl: '#cc79a7', stim: '#f0e442', coke: '#56b4e9', benzo: '#0072b2', cut: '#009e73', other: '#999999' },
+    signal: { alert: '#d55e00', watch: '#f0e442', ok: '#009e73', info: '#56b4e9' },
+    colorscale: cs(['#0b0e14', '#0072b2', '#56b4e9', '#009e73', '#e69f00', '#d55e00'])
+  },
+  amethyst: {
+    id: 'amethyst', name: 'Amethyst', group: 'custom',
+    stops: ['#23251E', '#81008F', '#9C51CE', '#E1B1EB', '#B7C1F1', '#D7FFF1'],
+    chrome: {
+      dark: { bg: '#23251E', panel: '#2a2c24', panel2: '#32342c', line: '#454840', ink: '#E1B1EB', muted: '#9C51CE', faint: '#6a5a7a' },
+      light: { bg: '#f5f0f8', panel: '#ffffff', panel2: '#ebe4f0', line: '#d4c8e0', ink: '#23251E', muted: '#6a5a7a', faint: '#9C51CE' }
+    },
+    substances: { fent: '#81008F', opioid: '#9C51CE', xyl: '#B7C1F1', stim: '#E1B1EB', coke: '#9C51CE', benzo: '#B7C1F1', cut: '#D7FFF1', other: '#6a5a7a' },
+    signal: { alert: '#81008F', watch: '#E1B1EB', ok: '#D7FFF1', info: '#B7C1F1' },
+    colorscale: cs(['#23251E', '#81008F', '#9C51CE', '#E1B1EB', '#B7C1F1', '#D7FFF1'])
+  },
+  lagoon: {
+    id: 'lagoon', name: 'Lagoon', group: 'custom',
+    stops: ['#0081a7', '#00afb9', '#fdfcdc', '#fed9b7', '#f07167', '#0081a7'],
+    chrome: {
+      dark: { bg: '#0a1a20', panel: '#0f242c', panel2: '#142e38', line: '#1e4550', ink: '#fdfcdc', muted: '#00afb9', faint: '#0081a7' },
+      light: { bg: '#fdfcdc', panel: '#ffffff', panel2: '#f5f5e8', line: '#d4d4c0', ink: '#0081a7', muted: '#00afb9', faint: '#f07167' }
+    },
+    substances: { fent: '#f07167', opioid: '#f07167', xyl: '#fed9b7', stim: '#f07167', coke: '#0081a7', benzo: '#00afb9', cut: '#fdfcdc', other: '#0081a7' },
+    signal: { alert: '#f07167', watch: '#fed9b7', ok: '#00afb9', info: '#0081a7' },
+    colorscale: cs(['#0081a7', '#00afb9', '#fdfcdc', '#fed9b7', '#f07167'])
+  },
+  spectral: {
+    id: 'spectral', name: 'Spectral', group: 'custom',
+    stops: ['#2b83ba', '#abdda4', '#ffffbf', '#fdae61', '#d7191c', '#2b83ba'],
+    chrome: {
+      dark: { bg: '#0f1418', panel: '#151c22', panel2: '#1c262e', line: '#2a3844', ink: '#ffffbf', muted: '#abdda4', faint: '#5a7a8a' },
+      light: { bg: '#fffff5', panel: '#ffffff', panel2: '#f5f5e8', line: '#d8d8c8', ink: '#1a2830', muted: '#5a7a8a', faint: '#8a9a8a' }
+    },
+    substances: { fent: '#d7191c', opioid: '#fdae61', xyl: '#f46d43', stim: '#fdae61', coke: '#2b83ba', benzo: '#4575b4', cut: '#abdda4', other: '#5a7a8a' },
+    signal: { alert: '#d7191c', watch: '#fdae61', ok: '#abdda4', info: '#2b83ba' },
+    colorscale: cs(['#2b83ba', '#abdda4', '#ffffbf', '#fdae61', '#d7191c'])
+  },
+  inferno: {
+    id: 'inferno', name: 'Inferno', group: 'custom',
+    stops: ['#000004', '#420a68', '#932667', '#dd513a', '#fca50a', '#fcffa4'],
+    chrome: {
+      dark: { bg: '#000004', panel: '#0a0610', panel2: '#140c18', line: '#2a1830', ink: '#fcffa4', muted: '#fca50a', faint: '#932667' },
+      light: { bg: '#fcffa4', panel: '#ffffff', panel2: '#fff8d0', line: '#e8d880', ink: '#000004', muted: '#932667', faint: '#420a68' }
+    },
+    substances: { fent: '#dd513a', opioid: '#fca50a', xyl: '#932667', stim: '#fca50a', coke: '#420a68', benzo: '#5c1a78', cut: '#fcffa4', other: '#932667' },
+    signal: { alert: '#dd513a', watch: '#fca50a', ok: '#fcffa4', info: '#420a68' },
+    colorscale: cs(['#000004', '#420a68', '#932667', '#dd513a', '#fca50a', '#fcffa4'])
+  },
+  sage: {
+    id: 'sage', name: 'Sage', group: 'custom',
+    stops: ['#EBB6BD', '#F9E5D9', '#E2E1D9', '#B8C6B7', '#4B5858', '#4B5858'],
+    chrome: {
+      dark: { bg: '#1a2020', panel: '#222828', panel2: '#2a3232', line: '#3a4444', ink: '#F9E5D9', muted: '#B8C6B7', faint: '#4B5858' },
+      light: { bg: '#F9E5D9', panel: '#ffffff', panel2: '#E2E1D9', line: '#B8C6B7', ink: '#4B5858', muted: '#6a7878', faint: '#8a9898' }
+    },
+    substances: { fent: '#EBB6BD', opioid: '#d4a0a8', xyl: '#c8b8c0', stim: '#d4c0a0', coke: '#B8C6B7', benzo: '#a0b8b0', cut: '#E2E1D9', other: '#4B5858' },
+    signal: { alert: '#EBB6BD', watch: '#d4c0a0', ok: '#B8C6B7', info: '#4B5858' },
+    colorscale: cs(['#EBB6BD', '#F9E5D9', '#E2E1D9', '#B8C6B7', '#4B5858'])
+  }
+};
+
+const LABEL_RULES = {
+  low: { peakMax: 2, mzPct: 0, hiddenTiers: ['peak', 'inline', 'annotation'] },
+  default: { peakMax: null, mzPct: 0, hiddenTiers: [] },
+  high: { peakMax: null, mzPct: 5, hiddenTiers: [] }
+};
+
+let _pageId = '';
+let _critique = null;
+let _labelTiers = {};
+let _state = { theme: 'dark', palette: 'default', labels: 'default' };
+
+function storageKey() { return `dcf-design:${_pageId}`; }
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(storageKey());
+    if (raw) Object.assign(_state, JSON.parse(raw));
+  } catch (e) { /* ignore */ }
+}
+
+function saveState() {
+  try { localStorage.setItem(storageKey(), JSON.stringify(_state)); } catch (e) { /* ignore */ }
+}
+
+function applyPalette(paletteId) {
+  const pal = PALETTES[paletteId] || PALETTES.default;
+  const chrome = pal.chrome[_state.theme] || pal.chrome.dark;
+  const root = document.documentElement;
+  CHROME_KEYS.forEach(k => {
+    const cssKey = k === 'panel2' ? '--panel-2' : `--${k}`;
+    root.style.setProperty(cssKey, chrome[k]);
+  });
+  SUBSTANCE_KEYS.forEach(k => root.style.setProperty(`--c-${k}`, pal.substances[k]));
+  SIGNAL_KEYS.forEach(k => root.style.setProperty(`--${k}`, pal.signal[k]));
+  root.setAttribute('data-palette', paletteId);
+  return pal;
+}
+
+function applyTheme(theme) {
+  _state.theme = theme;
+  document.documentElement.setAttribute('data-theme', theme);
+  applyPalette(_state.palette);
+}
+
+function applyLabels(mode) {
+  _state.labels = mode;
+  document.documentElement.setAttribute('data-labels', mode);
+}
+
+function getClassColor(cls) {
+  const key = cls === 'panel2' ? 'panel2' : cls;
+  if (SUBSTANCE_KEYS.includes(key)) {
+    const v = getComputedStyle(document.documentElement).getPropertyValue(`--c-${key}`).trim();
+    if (v) return v;
+  }
+  if (SIGNAL_KEYS.includes(key)) {
+    const v = getComputedStyle(document.documentElement).getPropertyValue(`--${key}`).trim();
+    if (v) return v;
+  }
+  const pal = PALETTES[_state.palette] || PALETTES.default;
+  if (pal.substances[key]) return pal.substances[key];
+  if (pal.signal[key]) return pal.signal[key];
+  if (pal.chrome[_state.theme]?.[key]) return pal.chrome[_state.theme][key];
+  return DCF?.TOKENS?.[key] || '#94a3b8';
+}
+
+function peakLabelCount(defaultCount) {
+  if (_state.labels === 'low') return Math.min(2, defaultCount);
+  if (_state.labels === 'high') return 999;
+  const rules = LABEL_RULES[_state.labels] || LABEL_RULES.default;
+  if (rules.peakMax != null) return Math.min(rules.peakMax, defaultCount);
+  return defaultCount;
+}
+
+function mzLabelThreshold() {
+  return (LABEL_RULES[_state.labels] || LABEL_RULES.default).mzPct;
+}
+
+function showTier(tier) {
+  const rules = LABEL_RULES[_state.labels] || LABEL_RULES.default;
+  if (rules.hiddenTiers.includes(tier)) return false;
+  const tierDef = _labelTiers[tier];
+  if (tierDef && tierDef.minLabels === 'low') return _state.labels !== 'low';
+  return true;
+}
+
+function getPlotlyLayout(base = {}) {
+  const chrome = (PALETTES[_state.palette] || PALETTES.default).chrome[_state.theme];
+  const showAxis = showTier('axis');
+  const showLegend = showTier('legend');
+  const layout = {
+    paper_bgcolor: chrome.bg,
+    plot_bgcolor: chrome.panel,
+    font: { color: chrome.ink, family: (typeof DCF !== 'undefined' && DCF.FONTS?.sans) || 'Inter, ui-sans-serif, system-ui, sans-serif' },
+    colorway: SUBSTANCE_KEYS.map(k => getClassColor(k)),
+    ...base
+  };
+  if (layout.xaxis) layout.xaxis = { ...layout.xaxis, showticklabels: showAxis, color: chrome.muted };
+  else layout.xaxis = { showticklabels: showAxis, color: chrome.muted };
+  if (layout.yaxis) layout.yaxis = { ...layout.yaxis, showticklabels: showAxis, color: chrome.muted };
+  else layout.yaxis = { showticklabels: showAxis, color: chrome.muted };
+  if (layout.scene) {
+    layout.scene = {
+      ...layout.scene,
+      bgcolor: chrome.bg,
+      xaxis: { ...(layout.scene.xaxis || {}), color: chrome.muted, showticklabels: showAxis },
+      yaxis: { ...(layout.scene.yaxis || {}), color: chrome.muted, showticklabels: showAxis },
+      zaxis: { ...(layout.scene.zaxis || {}), color: chrome.muted, showticklabels: showAxis }
+    };
+  }
+  if (layout.legend) layout.legend = { ...layout.legend, visible: showLegend };
+  return layout;
+}
+
+function getColorscale() {
+  return (PALETTES[_state.palette] || PALETTES.default).colorscale;
+}
+
+function updateLiveNote() {
+  const el = document.querySelector('.critique-live');
+  if (!el || !_critique?.liveNoteTemplates) return;
+  const tpl = _critique.liveNoteTemplates[_state.labels] ||
+    _critique.liveNoteTemplates[`${_state.theme}_${_state.palette}`] ||
+    _critique.liveNoteTemplates.default || '';
+  const pal = PALETTES[_state.palette]?.name || _state.palette;
+  const theme = _state.theme === 'light' ? 'Light' : 'Dark';
+  el.textContent = tpl.replace(/\{theme\}/g, theme).replace(/\{palette\}/g, pal).replace(/\{labels\}/g, _state.labels);
+}
+
+function onSettingChange() {
+  applyTheme(_state.theme);
+  applyLabels(_state.labels);
+  saveState();
+  updateLiveNote();
+  window.__vizRedraw?.();
+}
+
+function renderSwatches(paletteId) {
+  const pal = PALETTES[paletteId] || PALETTES.default;
+  const strip = document.getElementById('dcf-palette-swatches');
+  if (!strip) return;
+  strip.innerHTML = pal.stops.map(c => `<span style="background:${c}" title="${c}"></span>`).join('');
+}
+
+function buildToolbar() {
+  const bar = document.createElement('div');
+  bar.className = 'dcf-design-bar';
+  bar.setAttribute('role', 'toolbar');
+  bar.setAttribute('aria-label', 'Design Lab controls');
+
+  const themeGroup = document.createElement('div');
+  themeGroup.className = 'dcf-design-group';
+  themeGroup.innerHTML = '<span class="dcf-design-label">Theme</span>';
+  ['dark', 'light'].forEach(t => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'dcf-design-btn';
+    btn.textContent = t.charAt(0).toUpperCase() + t.slice(1);
+    btn.setAttribute('aria-pressed', String(_state.theme === t));
+    btn.dataset.theme = t;
+    btn.onclick = () => {
+      _state.theme = t;
+      themeGroup.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.theme === t)));
+      onSettingChange();
+    };
+    themeGroup.appendChild(btn);
+  });
+
+  const palGroup = document.createElement('div');
+  palGroup.className = 'dcf-design-group dcf-design-palette';
+  palGroup.innerHTML = '<span class="dcf-design-label">Palette</span>';
+  const sel = document.createElement('select');
+  sel.id = 'dcf-palette-select';
+  sel.className = 'dcf-design-select';
+  sel.setAttribute('aria-label', 'Color palette');
+  ['recommended', 'custom'].forEach(grp => {
+    const og = document.createElement('optgroup');
+    og.label = grp === 'recommended' ? 'Recommended' : 'Custom';
+    Object.values(PALETTES).filter(p => p.group === grp).forEach(p => {
+      const opt = document.createElement('option');
+      opt.value = p.id;
+      opt.textContent = p.name;
+      if (p.id === _state.palette) opt.selected = true;
+      og.appendChild(opt);
+    });
+    sel.appendChild(og);
+  });
+  sel.onchange = () => {
+    _state.palette = sel.value;
+    renderSwatches(sel.value);
+    onSettingChange();
+  };
+  const swatchStrip = document.createElement('div');
+  swatchStrip.id = 'dcf-palette-swatches';
+  swatchStrip.className = 'dcf-palette-swatches';
+  swatchStrip.setAttribute('aria-hidden', 'true');
+  palGroup.append(sel, swatchStrip);
+
+  const lblGroup = document.createElement('div');
+  lblGroup.className = 'dcf-design-group';
+  lblGroup.innerHTML = '<span class="dcf-design-label">Labels</span>';
+  ['low', 'default', 'high'].forEach(l => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'dcf-design-btn';
+    btn.textContent = l.charAt(0).toUpperCase() + l.slice(1);
+    btn.setAttribute('aria-pressed', String(_state.labels === l));
+    btn.dataset.labels = l;
+    btn.onclick = () => {
+      _state.labels = l;
+      lblGroup.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.labels === l)));
+      onSettingChange();
+    };
+    lblGroup.appendChild(btn);
+  });
+
+  bar.append(themeGroup, palGroup, lblGroup);
+  renderSwatches(_state.palette);
+  return bar;
+}
+
+function buildCritiquePanel(critique) {
+  const aside = document.createElement('aside');
+  aside.className = 'dcf-critique';
+  aside.setAttribute('aria-labelledby', 'critique-heading');
+  const strengths = (critique.strengths || []).map(s => `<li>${s}</li>`).join('');
+  const weaknesses = (critique.weaknesses || []).map(s => `<li>${s}</li>`).join('');
+  aside.innerHTML = `
+    <h2 id="critique-heading">Design assessment</h2>
+    <p class="critique-thesis">${critique.thesis || ''}</p>
+    <div class="critique-grid">
+      <section><h3>Strengths</h3><ul>${strengths}</ul></section>
+      <section><h3>Weaknesses</h3><ul>${weaknesses}</ul></section>
+      <section><h3>Visualization</h3><p>${critique.visualization || ''}</p></section>
+    </div>
+    <p class="critique-live muted" aria-live="polite"></p>`;
+  return aside;
+}
+
+function injectDesignCSS() {
+  if (document.getElementById('dcf-design-css')) return;
+  const s = document.createElement('style');
+  s.id = 'dcf-design-css';
+  s.textContent = `
+  .dcf-design-bar{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center;padding:12px 16px;margin:0 0 16px;background:var(--panel);border:1px solid var(--line);border-radius:12px;position:sticky;top:0;z-index:20}
+  .dcf-design-group{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .dcf-design-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-right:4px}
+  .dcf-design-btn,.dcf-design-select{min-height:40px;min-width:40px;padding:8px 14px;background:var(--panel-2);color:var(--muted);border:1px solid var(--line);border-radius:999px;font:500 13px var(--font-sans);cursor:pointer;transition:background .15s,color .15s}
+  .dcf-design-select{border-radius:10px;padding-right:28px}
+  .dcf-design-btn:hover,.dcf-design-select:hover{background:var(--panel);color:var(--ink)}
+  .dcf-design-btn[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+  .dcf-design-palette{gap:10px}
+  .dcf-palette-swatches{display:flex;gap:3px;border-radius:6px;overflow:hidden;border:1px solid var(--line)}
+  .dcf-palette-swatches span{display:block;width:18px;height:24px}
+  .dcf-critique{margin:22px 0;padding:18px 20px;background:var(--panel);border:1px solid var(--line);border-radius:14px}
+  .dcf-critique h2{font-size:15px;margin:0 0 10px;font-weight:700}
+  .critique-thesis{font-size:14px;line-height:1.55;color:var(--ink);margin:0 0 14px;max-width:72ch}
+  .critique-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:12px}
+  .dcf-critique h3{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:0 0 8px}
+  .dcf-critique ul{margin:0;padding-left:18px;font-size:13px;line-height:1.55;color:var(--muted)}
+  .dcf-critique section p{font-size:13px;line-height:1.55;color:var(--muted);margin:0}
+  .critique-live{font-size:12px;margin:8px 0 0;padding-top:10px;border-top:1px solid var(--line)}
+  [data-labels="low"] .dcf-lbl[data-tier="peak"],
+  [data-labels="low"] .dcf-lbl[data-tier="inline"],
+  [data-labels="low"] .dcf-lbl[data-tier="annotation"]{display:none}
+  [data-labels="low"] .dcf-lbl[data-tier="legend"]{opacity:.6}
+  @media (prefers-reduced-motion:reduce){.dcf-design-btn,.dcf-design-select{transition:none}}
+  `;
+  document.head.appendChild(s);
+}
+
+function designScaffold(opts) {
+  injectDesignCSS();
+  const stage = DCF.scaffold(opts);
+  injectDesignChrome();
+  document.documentElement.setAttribute('data-theme', _state.theme);
+  document.documentElement.setAttribute('data-labels', _state.labels);
+  applyPalette(_state.palette);
+  updateLiveNote();
+  return stage;
+}
+
+let _patched = false;
+
+function init(meta = {}) {
+  _pageId = meta.pageId || '';
+  _critique = meta.critique || null;
+  _labelTiers = meta.labelTiers || {};
+  loadState();
+  if (!_patched && DCF?.scaffold) {
+    _patched = true;
+    const orig = DCF.scaffold;
+    DCF.scaffold = function patchedScaffold(o) {
+      injectDesignCSS();
+      const st = orig(o);
+      injectDesignChrome();
+      document.documentElement.setAttribute('data-theme', _state.theme);
+      document.documentElement.setAttribute('data-labels', _state.labels);
+      applyPalette(_state.palette);
+      updateLiveNote();
+      return st;
+    };
+  }
+}
+
+function injectDesignChrome() {
+  const hdr = document.querySelector('.dcf-h');
+  const howEl = document.querySelector('.dcf-how');
+  if (hdr && !document.querySelector('.dcf-design-bar')) hdr.after(buildToolbar());
+  if (howEl && _critique && !document.querySelector('.dcf-critique')) {
+    howEl.before(buildCritiquePanel(_critique));
+    updateLiveNote();
+  }
+}
+
+window.DCFDesign={PALETTES,init,designScaffold,applyPalette,applyTheme,applyLabels,getClassColor,peakLabelCount,showTier,mzLabelThreshold,getPlotlyLayout,getColorscale,injectDesignCSS};
+
+})();
+</script>
+<script>
+window.DCF_DESIGN_META = {"pageId":"18-result-card","critique":{"thesis":"The result card productizes harm-reduction messaging well, but reads as a generic panel rather than a shareable document artifact.","strengths":["Plain-language summary leads before technical fingerprint","Component bars separate major vs trace without implying dose","Harm bullets generated from detected substances, not boilerplate","Sample switcher demonstrates expected-vs-found scenarios"],"weaknesses":["Card lacks document-style accent and visual identity","Chromatogram peak labels fixed threshold without density control","Class colors inline in HTML strings bypass CSS variables","No print/screenshot optimization for light palettes"],"visualization":"Document sheet layout with substance-class accent bar along the left edge signals shareability and primary finding.","liveNoteTemplates":{"default":"Result card on {theme} \u00b7 {palette} \u00b7 {labels} peak labels on fingerprint.","low":"Low labels hide fingerprint peak names \u2014 summary and bars remain.","light_paper":"Paper palette improves screenshot legibility on light backgrounds."}},"labelTiers":{"axis":{"desc":"Chromatogram implicit axes (minimal)","minLabels":"low"},"legend":{"desc":"Component bar major/trace badges","minLabels":"always"},"peak":{"desc":"Fingerprint peak substance names (>12% amp)","minLabels":"default"},"inline":{"desc":"Sample ID, location, date header fields","minLabels":"always"},"annotation":{"desc":"Harm reduction bullet list","minLabels":"always"}}};
+DCFDesign.init(window.DCF_DESIGN_META);
+</script>
+<script>
+/* Design Lab — document sheet with class accent bar */
+(function () {
+  const style = document.createElement('style');
+  style.id = 'dcf-design-18';
+  style.textContent = `
+    #card .panel { border-radius: 12px; box-shadow: 0 1px 0 var(--line); position: relative; }
+    #card .panel::before {
+      content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 5px;
+      background: var(--accent-bar, var(--c-fent)); border-radius: 12px 0 0 12px;
+    }
+    #card .dcf-doc-header { padding-left: 24px !important; }
+  `;
+  document.head.appendChild(style);
+
+  const origRedraw = window.__vizRedraw;
+  window.__vizAccentBar = function (color) {
+    const card = document.querySelector('#card .panel');
+    if (card) card.style.setProperty('--accent-bar', color);
+  };
+})();
+
+</script>
+
+<script>
+/* Nº 18 · Sample Result Card — the individual-facing deliverable. A shareable card
+   that pairs a plain-language summary, the chromatogram "fingerprint," a component
+   breakdown, and tailored harm-reduction messaging. The UNC model, productized. */
+const {chromatogram,classify,fmt,TOKENS,drawSmiles}=DCF;
+const scaffold=(o)=>DCF.scaffold(o);
+const CH=SPEC.chromatograms, MS=SPEC.ms, RT=Object.fromEntries(DATA.retention_times.map(d=>[d.substance,d.rt]));
+function subColor(name){const c=classify(name);return window.DCFDesign?DCFDesign.getClassColor(c.cls):c.color;}
+function sigColor(k){return window.DCFDesign?DCFDesign.getClassColor(k):TOKENS[k];}
+
+const SAMPLES={
+ 's1':{id:'WA-44821',expected:'Heroin / "down"',date:'2024-03-08',loc:'King County, WA',key:'fentanyl_street'},
+ 's2':{id:'NC-10293',expected:'M30 oxycodone pill',date:'2024-04-19',loc:'Buncombe County, NC',key:'pressed_pill'},
+ 's3':{id:'OR-55140',expected:'Cocaine',date:'2024-02-27',loc:'Multnomah County, OR',key:'cocaine'},
+ 's4':{id:'NY-30817',expected:'Methamphetamine',date:'2024-05-02',loc:'Suffolk County, NY',key:'meth'}
+};
+const HARM={
+ fentanyl:['Carry naloxone — multiple doses may be needed.','Never use alone; use with someone who can respond.','Go slow: potency varies bag to bag even when it looks the same.'],
+ xylazine:['Xylazine ("tranq") is a sedative — naloxone won\'t reverse it, so focus on rescue breathing and positioning.','Watch for and care for skin wounds early.'],
+ bromazolam:['A street benzodiazepine is present — it deepens and prolongs sedation and naloxone won\'t fix that part.','Avoid mixing with alcohol or other depressants.'],
+ 'p-fluorofentanyl':['A second fentanyl-type drug adds to total opioid load — treat as strong.'],
+ cocaine:['Stimulant supply can carry fentanyl traces — fentanyl test strips are worth using.'],
+ methamphetamine:['Stay hydrated and watch for overheating; the supply can contain unexpected stimulant analogues.']
+};
+
+const stage=scaffold({
+  tag:'Nº 18 · RESULT',
+  title:'Sample Result Card',
+  dek:'What a person actually receives. A single card: plain-language summary first, the chromatogram fingerprint, a component breakdown, and advice tied to exactly what was found — designed to be screenshotted and shared.',
+  how:`This is the <b>individual result</b> as a harm-reduction product, following the UNC Street Drug Analysis Lab model. The <b>plain-language summary</b> leads (most people stop here). The <b>fingerprint</b> chromatogram shows complexity at a glance. The <b>breakdown</b> separates major components from trace finds. The <b>advice</b> is generated from what was detected, not boilerplate. <b>Crucial limit, stated on the card:</b> bar lengths show relative <i>signal</i>, not purity or dose — two samples that look identical here can differ wildly in strength.`,
+  provenance:'Illustrative composite samples over real retention times; messaging mirrors published harm-reduction guidance.',
+  harm:'This card communicates a result; it is not medical advice. When in doubt, start with a tiny amount and have naloxone and another person present.'
+});
+
+stage.innerHTML=`
+<div class="controls"><label class="muted" style="font-size:13px">Sample</label><select id="sel"></select></div>
+<div id="card"></div>`;
+const sel=document.getElementById('sel');
+for(const k of Object.keys(SAMPLES)) sel.add(new Option(`${SAMPLES[k].id} — sold as ${SAMPLES[k].expected}`,k));
+sel.className='dcf-ctl-select';
+sel.onchange=draw;
+
+function draw(){
+  const s=SAMPLES[sel.value]; const arch=CH[s.key];
+  const peaks=arch.peaks.map(([n,rt,amp])=>({s:n,rt:RT[n]||rt,amp,sigma:0.05})).sort((a,b)=>b.amp-a.amp);
+  const major=peaks.filter(p=>p.amp>=30), minor=peaks.filter(p=>p.amp<30);
+  const primary=peaks[0];
+  const primaryCol=subColor(primary.s);
+  if(window.__vizAccentBar) window.__vizAccentBar(primaryCol);
+  // gather harm messages from detected
+  const msgs=[]; const seen=new Set();
+  peaks.forEach(p=>{const k=Object.keys(HARM).find(h=>p.s.includes(h));if(k&&!seen.has(k)){seen.add(k);HARM[k].forEach(m=>msgs.push(m));}});
+  const summary=`The main substance was <b>${primary.s}</b>. ${major.length>1?`We also found <b>${major.slice(1).map(p=>p.s).join('</b>, <b>')}</b> as major components. `:''}${minor.length?`Trace amounts of ${minor.map(p=>p.s).join(', ')} were detected. `:''}This sample contained <b>${peaks.length} substance${peaks.length>1?'s':''}</b> in total.`;
+  const c=document.getElementById('card');
+  c.innerHTML=`
+   <div class="panel" style="padding:0;overflow:hidden">
+     <div class="dcf-doc-header" style="padding:18px 20px;border-bottom:1px solid ${TOKENS.line};display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px">
+       <div><div class="mono" style="font-size:13px;color:${TOKENS.ink}">${s.id}</div>
+       <div class="muted" style="font-size:12px">sold as <b style="color:${TOKENS.ink}">${s.expected}</b> · ${s.loc} · ${s.date}</div></div>
+       <div style="text-align:right"><div class="muted" style="font-size:11px">TESTED BY GC–MS</div><div style="font-size:12px;color:${primaryCol};font-weight:600">${classify(primary.s).label}</div></div>
+     </div>
+     <div style="padding:18px 20px;background:${TOKENS.panel2}">
+       <div class="muted" style="font-size:11px;letter-spacing:.1em;margin-bottom:6px">PLAIN-LANGUAGE SUMMARY</div>
+       <p style="margin:0;font-size:15px;line-height:1.55">${summary}</p>
+     </div>
+     <div style="display:grid;grid-template-columns:1.1fr 1fr;gap:0">
+       <div style="padding:16px 20px;border-right:1px solid ${TOKENS.line}">
+         <div class="muted" style="font-size:11px;letter-spacing:.1em;margin-bottom:6px">FINGERPRINT (GC–MS)</div>
+         <svg id="chrom" width="100%" height="170"></svg>
+         <div class="faint" style="font-size:11px;margin-top:4px">More peaks = more substances. Peak height = signal, <b>not</b> purity or dose.</div>
+       </div>
+       <div style="padding:16px 20px">
+         <div class="muted" style="font-size:11px;letter-spacing:.1em;margin-bottom:8px">WHAT'S IN IT</div>
+         <div id="bars"></div>
+       </div>
+     </div>
+     <div style="padding:16px 20px;border-top:1px solid ${TOKENS.line};background:linear-gradient(${TOKENS.panel},${TOKENS.panel})">
+       <div style="font-size:11px;letter-spacing:.1em;margin-bottom:8px;color:${sigColor('ok')}">⚑ HARM REDUCTION — BASED ON WHAT WE FOUND</div>
+       <ul style="margin:0;padding-left:18px;font-size:13.5px;line-height:1.6;color:${TOKENS.ink}">${msgs.map(m=>`<li>${m}</li>`).join('')}</ul>
+     </div>
+   </div>`;
+  // chromatogram
+  const svg=d3.select('#chrom'); const w=svg.node().clientWidth||360,H=170,m={t:10,r:8,b:22,l:8};
+  const trace=chromatogram(peaks,{x0:3,x1:13,sigma:0.05});
+  const x=d3.scaleLinear([3,13],[m.l,w-m.r]),y=d3.scaleLinear([0,105],[H-m.b,m.t]);
+  const area=d3.area().x((d,i)=>x(trace.x[i])).y0(y(0)).y1(d=>y(d)).curve(d3.curveBasis);
+  svg.append('path').datum(trace.y).attr('d',area).attr('fill',primaryCol).attr('opacity',.18);
+  svg.append('path').datum(trace.y).attr('d',d3.line().x((d,i)=>x(trace.x[i])).y(d=>y(d)).curve(d3.curveBasis)).attr('fill','none').attr('stroke',primaryCol).attr('stroke-width',1.5);
+  peaks.forEach(p=>{if(p.amp>12&&(!window.DCFDesign||DCFDesign.showTier('peak')))svg.append('text').attr('class','dcf-lbl').attr('data-tier','peak').attr('x',x(p.rt)).attr('y',y(p.amp)-4).attr('text-anchor','middle').attr('font-size',8.5).attr('fill',TOKENS.muted).text(p.s.length>10?p.s.slice(0,9)+'…':p.s);});
+  // bars
+  const maxA=Math.max(...peaks.map(p=>p.amp));
+  document.getElementById('bars').innerHTML=peaks.map(p=>{
+    const col=subColor(p.s), pct=p.amp/maxA*100;
+    return `<div style="margin-bottom:7px">
+      <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:2px"><span style="text-transform:capitalize">${p.s}</span><span class="faint mono">${p.amp>=30?'major':'trace'}</span></div>
+      <div style="height:7px;background:${TOKENS.panel2};border-radius:4px;overflow:hidden"><div style="width:${pct}%;height:100%;background:${col}"></div></div></div>`;
+  }).join('');
+}
+draw();
+addEventListener('resize',draw);
+window.__vizRedraw=draw;
+
+</script>
+</body>
+</html>

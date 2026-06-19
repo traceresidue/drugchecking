@@ -2,6 +2,7 @@
    per time slice, so the supply's shifting infrared signature becomes a flowing
    3D ribbon. New bands rising at the front = a new component entering the market. */
 const {scaffold,ftirCurve,TOKENS}=DCF;
+function sigColor(k){return window.DCFDesign?DCFDesign.getClassColor(k):TOKENS[k];}
 const F=SPEC.ftir;
 
 const stage=scaffold({
@@ -15,7 +16,7 @@ const stage=scaffold({
 stage.innerHTML=`<div class="panel"><div id="plot" style="height:580px"></div></div>`;
 
 const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-function mix(t){ // t in 0..1 across the year: xylazine grows, lactose shrinks
+function mix(t){
   const bands=[];
   F.fentanyl.forEach(b=>bands.push([b[0],b[1]*1.0,b[2]]));
   F.caffeine.forEach(b=>bands.push([b[0],b[1]*0.5,b[2]]));
@@ -27,18 +28,36 @@ const sample=ftirCurve(mix(0),{x0:4000,x1:400,n:280});
 const wn=sample.x;
 const Z=months.map((mo,i)=>ftirCurve(mix(i/11),{x0:4000,x1:400,n:280}).y);
 
-Plotly.newPlot('plot',[{
-  type:'surface',x:wn,y:months,z:Z,
-  colorscale:[[0,'#0b0e14'],[0.2,'#3a2a5a'],[0.5,'#7a5cff'],[0.8,'#b388ff'],[1,'#ffd166']],
-  showscale:false,
-  contours:{x:{show:true,color:'#26304a',width:1}}
-}],{
-  paper_bgcolor:'rgba(0,0,0,0)',
-  scene:{
-    xaxis:{title:'wavenumber (cm⁻¹)',color:'#8b94a8',gridcolor:'#26304a',autorange:'reversed',backgroundcolor:'#0b0e14',showbackground:true},
-    yaxis:{title:'month',color:'#8b94a8',gridcolor:'#26304a',backgroundcolor:'#0b0e14',showbackground:true},
-    zaxis:{title:'absorbance',color:'#8b94a8',gridcolor:'#26304a',backgroundcolor:'#0b0e14',showbackground:true},
-    camera:{eye:{x:-1.7,y:-1.3,z:0.8}}
-  },
-  margin:{l:0,r:0,t:0,b:0}
-},{responsive:true,displayModeBar:false});
+function draw(){
+  const colorscale=window.DCFDesign?DCFDesign.getColorscale():[[0,'#0b0e14'],[0.2,'#3a2a5a'],[0.5,'#7a5cff'],[0.8,'#b388ff'],[1,'#ffd166']];
+  const bg=window.DCFDesign?getComputedStyle(document.documentElement).getPropertyValue('--bg').trim():'#0b0e14';
+  const line=window.DCFDesign?getComputedStyle(document.documentElement).getPropertyValue('--line').trim():'#26304a';
+  const muted=window.DCFDesign?getComputedStyle(document.documentElement).getPropertyValue('--muted').trim():'#8b94a8';
+  const showAxis=!window.DCFDesign||DCFDesign.showTier('axis');
+  const layout=window.DCFDesign?DCFDesign.getPlotlyLayout({
+    paper_bgcolor:'rgba(0,0,0,0)',
+    scene:{
+      xaxis:{title:showAxis?'wavenumber (cm⁻¹)':'',color:muted,gridcolor:line,autorange:'reversed',backgroundcolor:bg,showbackground:true},
+      yaxis:{title:showAxis?'month':'',color:muted,gridcolor:line,backgroundcolor:bg,showbackground:true},
+      zaxis:{title:showAxis?'absorbance':'',color:muted,gridcolor:line,backgroundcolor:bg,showbackground:true},
+      camera:{eye:{x:-1.7,y:-1.3,z:0.8}}
+    },
+    margin:{l:0,r:0,t:0,b:0}
+  }):{
+    paper_bgcolor:'rgba(0,0,0,0)',
+    scene:{
+      xaxis:{title:'wavenumber (cm⁻¹)',color:'#8b94a8',gridcolor:'#26304a',autorange:'reversed',backgroundcolor:'#0b0e14',showbackground:true},
+      yaxis:{title:'month',color:'#8b94a8',gridcolor:'#26304a',backgroundcolor:'#0b0e14',showbackground:true},
+      zaxis:{title:'absorbance',color:'#8b94a8',gridcolor:'#26304a',backgroundcolor:'#0b0e14',showbackground:true},
+      camera:{eye:{x:-1.7,y:-1.3,z:0.8}}
+    },
+    margin:{l:0,r:0,t:0,b:0}
+  };
+  Plotly.newPlot('plot',[{
+    type:'surface',x:wn,y:months,z:Z,
+    colorscale,showscale:false,
+    contours:{x:{show:true,color:line,width:1}}
+  }],layout,{responsive:true,displayModeBar:false});
+}
+window.__vizRedraw=draw;
+draw();
