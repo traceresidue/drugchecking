@@ -7,6 +7,21 @@
 <script src="lib/d3.min.js"></script>
 </head>
 <body>
+<style id="dcf-nav-css">
+#dcf-nav{position:fixed;top:0;left:0;right:0;z-index:9999;height:40px;
+  background:rgba(11,14,20,.92);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  border-bottom:1px solid #26304a;display:flex;align-items:center;
+  font-family:ui-monospace,monospace;font-size:12px;padding:0 4px}
+#dcf-nav a,#dcf-nav span.nav-btn{display:flex;align-items:center;height:40px;padding:0 12px;
+  text-decoration:none;white-space:nowrap;color:#8b94a8;transition:color .1s,background .1s;border-radius:4px}
+#dcf-nav a:hover{color:#e8ecf4;background:rgba(255,255,255,.05)}
+#dcf-nav .nav-home{color:#6ee7a8;border-right:1px solid #26304a;margin-right:4px;border-radius:0}
+#dcf-nav .nav-home:hover{color:#e8ecf4;background:rgba(110,231,168,.08)}
+#dcf-nav .nav-title{flex:1;text-align:center;color:#5b6478;font-size:11px;
+  overflow:hidden;text-overflow:ellipsis;padding:0 8px}
+#dcf-nav .nav-dim{color:#2d3648;cursor:default;pointer-events:none}
+body{padding-top:40px}
+</style><nav id="dcf-nav"><a href="../../index.html" class="nav-home">&#8962;&nbsp;All</a><a href="25-glyph-garden.html" class="nav-arrow" title="#25 Sample Glyph Garden">&#8592; 25</a><span class="nav-title">Nº 26 · Reagent Color Matrix</span><a href="27-supply-weather.html" class="nav-arrow" title="#27 Supply Weather Report">27 &#8594;</a></nav>
 <script>
 window.DATA = {};
 window.SPEC = {};
