@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Sample Glyph Garden — Drug Checking Viz</title>
+<title>Substance Point Cloud — Drug Checking Viz</title>
 <script src="lib/d3.min.js"></script>
 </head>
 <body>
 <script>
-window.DATA = {"top_substances":[{"substance":"fentanyl","samples":3112,"primary":2742,"trace":371},{"substance":"4-anpp","samples":2797,"primary":2160,"trace":637},{"substance":"methamphetamine","samples":1792,"primary":1512,"trace":280},{"substance":"xylazine","samples":1137,"primary":845,"trace":292},{"substance":"cocaine","samples":1082,"primary":775,"trace":308},{"substance":"acetaminophen","samples":1036,"primary":879,"trace":157},{"substance":"phenethyl 4-anpp","samples":908,"primary":236,"trace":673},{"substance":"heroin","samples":701,"primary":531,"trace":170},{"substance":"lidocaine","samples":652,"primary":455,"trace":197},{"substance":"caffeine","samples":591,"primary":367,"trace":225},{"substance":"ethyl-4-anpp","samples":591,"primary":153,"trace":438},{"substance":"p-fluorofentanyl","samples":583,"primary":322,"trace":261},{"substance":"bis(2,2,6,6-tetramethyl-4-piperidyl) sebacate","samples":415,"primary":308,"trace":107},{"substance":"dimethyl sulfone (methylsulfonylmethane msm)","samples":353,"primary":237,"trace":116},{"substance":"acetylcodeine","samples":352,"primary":142,"trace":211},{"substance":"despropionyl p-fluorofentanyl","samples":348,"primary":283,"trace":65},{"substance":"n-phenylpropanamide","samples":311,"primary":117,"trace":195},{"substance":"6-monoacetylmorphine (6-mam)","samples":302,"primary":111,"trace":191},{"substance":"ketamine","samples":240,"primary":199,"trace":41},{"substance":"bromazolam","samples":239,"primary":191,"trace":48},{"substance":"methyl ecgonidine (med)","samples":213,"primary":21,"trace":192},{"substance":"procaine","samples":211,"primary":151,"trace":60},{"substance":"3,4-mdma","samples":194,"primary":178,"trace":16},{"substance":"diphenhydramine","samples":186,"primary":96,"trace":90},{"substance":"1-phenethyl-4-propionyloxypiperidine","samples":185,"primary":37,"trace":148},{"substance":"quinine","samples":181,"primary":65,"trace":116},{"substance":"tramadol","samples":156,"primary":68,"trace":88},{"substance":"p-fluoro phenethyl 4-anpp","samples":155,"primary":32,"trace":123},{"substance":"no compounds of interest detected","samples":131,"primary":131,"trace":0},{"substance":"noramidopyrine","samples":125,"primary":60,"trace":65},{"substance":"1,3-diacetin","samples":103,"primary":82,"trace":21},{"substance":"medetomidine","samples":97,"primary":54,"trace":43},{"substance":"tropacocaine","samples":94,"primary":7,"trace":87},{"substance":"phenacetin","samples":80,"primary":43,"trace":37},{"substance":"1-phenethyl-4-hydroxypiperidine","samples":74,"primary":5,"trace":69},{"substance":"delta-9-thc","samples":71,"primary":57,"trace":14},{"substance":"papaverine","samples":66,"primary":9,"trace":57},{"substance":"phenethyl bromide","samples":64,"primary":4,"trace":60},{"substance":"2-fluoro-2-oxo pce","samples":63,"primary":42,"trace":21},{"substance":"n-propionyl norfentanyl","samples":63,"primary":12,"trace":51}],"expected_counts":{"fentanyl":2772,"methamphetamine":1257,"other":817,"heroin/dope":604,"cocaine":478,"benzodiazepine":252,"mdma":217,"ketamine":175,"cannabis":30,"oxycodone":17,"xylazine":14}};
+window.DATA = {"top_substances":[{"substance":"fentanyl","samples":3112,"primary":2742,"trace":371},{"substance":"4-anpp","samples":2797,"primary":2160,"trace":637},{"substance":"methamphetamine","samples":1792,"primary":1512,"trace":280},{"substance":"xylazine","samples":1137,"primary":845,"trace":292},{"substance":"cocaine","samples":1082,"primary":775,"trace":308},{"substance":"acetaminophen","samples":1036,"primary":879,"trace":157},{"substance":"phenethyl 4-anpp","samples":908,"primary":236,"trace":673},{"substance":"heroin","samples":701,"primary":531,"trace":170},{"substance":"lidocaine","samples":652,"primary":455,"trace":197},{"substance":"caffeine","samples":591,"primary":367,"trace":225},{"substance":"ethyl-4-anpp","samples":591,"primary":153,"trace":438},{"substance":"p-fluorofentanyl","samples":583,"primary":322,"trace":261},{"substance":"bis(2,2,6,6-tetramethyl-4-piperidyl) sebacate","samples":415,"primary":308,"trace":107},{"substance":"dimethyl sulfone (methylsulfonylmethane msm)","samples":353,"primary":237,"trace":116},{"substance":"acetylcodeine","samples":352,"primary":142,"trace":211},{"substance":"despropionyl p-fluorofentanyl","samples":348,"primary":283,"trace":65},{"substance":"n-phenylpropanamide","samples":311,"primary":117,"trace":195},{"substance":"6-monoacetylmorphine (6-mam)","samples":302,"primary":111,"trace":191},{"substance":"ketamine","samples":240,"primary":199,"trace":41},{"substance":"bromazolam","samples":239,"primary":191,"trace":48},{"substance":"methyl ecgonidine (med)","samples":213,"primary":21,"trace":192},{"substance":"procaine","samples":211,"primary":151,"trace":60},{"substance":"3,4-mdma","samples":194,"primary":178,"trace":16},{"substance":"diphenhydramine","samples":186,"primary":96,"trace":90},{"substance":"1-phenethyl-4-propionyloxypiperidine","samples":185,"primary":37,"trace":148},{"substance":"quinine","samples":181,"primary":65,"trace":116},{"substance":"tramadol","samples":156,"primary":68,"trace":88},{"substance":"p-fluoro phenethyl 4-anpp","samples":155,"primary":32,"trace":123},{"substance":"no compounds of interest detected","samples":131,"primary":131,"trace":0},{"substance":"noramidopyrine","samples":125,"primary":60,"trace":65},{"substance":"1,3-diacetin","samples":103,"primary":82,"trace":21},{"substance":"medetomidine","samples":97,"primary":54,"trace":43},{"substance":"tropacocaine","samples":94,"primary":7,"trace":87},{"substance":"phenacetin","samples":80,"primary":43,"trace":37},{"substance":"1-phenethyl-4-hydroxypiperidine","samples":74,"primary":5,"trace":69},{"substance":"delta-9-thc","samples":71,"primary":57,"trace":14},{"substance":"papaverine","samples":66,"primary":9,"trace":57},{"substance":"phenethyl bromide","samples":64,"primary":4,"trace":60},{"substance":"2-fluoro-2-oxo pce","samples":63,"primary":42,"trace":21},{"substance":"n-propionyl norfentanyl","samples":63,"primary":12,"trace":51}]};
 window.SPEC = {};
 window.TOPO = {};
 </script>
@@ -186,72 +186,108 @@ window.DCF={TOKENS,classify,fmt,chromatogram,ftirCurve,stickSpectrum,cosine,tool
 })();
 </script>
 <script>
-/* Nº 25 · Sample Glyph Garden — every "expected substance" category becomes a
-   small generative glyph whose shape encodes the supply's complexity for that
-   category: petal count = top substances found, petal length = prevalence,
-   color = class. A field of glyphs becomes a single-glance supply census. */
+/* Nº 31 · Substance Point Cloud — select a substance from a dropdown and see
+   a jittered cloud of points, one per sample (capped at 300). Every point is the
+   same size and color (the substance's class color). The scale of the cloud
+   communicates testing volume without becoming unreadable. */
 const {scaffold,classify,fmt,tooltip,TOKENS}=DCF;
-const SUB=DATA.top_substances, EC=DATA.expected_counts;
+const SUB=DATA.top_substances;
+const DISPLAY_MAX=300; // never render more than this many points
 
 const stage=scaffold({
-  tag:'Nº 25 · EXPERIMENTAL',
-  title:'Sample Glyph Garden',
-  dek:'A generative glyph for each substance category — grown, not drawn. Petal count is how many different things turn up under that name; petal length is how often. A wild, asymmetric flower means a chaotic supply.',
-  how:`Each <b>glyph</b> represents one "expected substance" category. It is grown procedurally: every <b>petal</b> is one of the top substances actually detected within that category, petal <b>length</b> scales with how common it is, and petal <b>color</b> encodes drug class. A near-circular, even glyph means the category is what it claims to be; a <b>spiky, lopsided</b> glyph — long fentanyl-colored petals on a "cocaine" or "benzo" flower — means heavy cross-contamination. This borrows from <b>data humanism</b ('Dear Data'): an abstract, almost botanical form that rewards close looking rather than instant readout. Hover any petal for specifics.`,
-  provenance:'Petal composition driven by real co-detection patterns in the 6,580-sample dataset; layout is generative/illustrative.',
-  harm:'A long fentanyl-colored petal on any flower — even ones not labeled opioid — means contamination crosses categories. Test everything.'
+  tag:'Nº 31 · SUPPLY · POINT CLOUD',
+  title:'Substance Point Cloud',
+  dek:'Select a substance and see one dot for every sample it was found in — up to 300. All points are equal: no size hierarchy, no axes. Just the count, made physical.',
+  how:`A <b>Point Cloud</b> renders each sample as a small circle, jittered slightly so the cloud looks organic rather than gridded. <b>Size</b> and <b>spacing</b> are uniform — the data is in the <i>count</i> and <i>color</i>, not in position. The cap at <b>${DISPLAY_MAX} displayed points</b> is intentional: above that, individual points merge into texture. A counter shows the true sample total so you never mistake the cloud for the full count. Hover for totals. This format is most powerful for <b>filtered subsets</b> — selecting a substance filters the full 6,580-sample dataset to those containing that substance.`,
+  provenance:'Total sample counts from 6,580-sample drug checking dataset. Displayed points are a random sample (max 300); true totals shown in counter.',
+  harm:'A sparse cloud doesn\'t mean a substance is harmless — sample counts reflect where testing happened, not true prevalence.'
 });
 
-stage.innerHTML=`<div class="panel"><svg id="svg" width="100%" height="640" role="img" aria-label="Generative glyph garden of substance categories"></svg></div><div class="legend" id="leg"></div>`;
-const tt=tooltip();
+stage.innerHTML=`
+<div class="controls" style="align-items:center;gap:12px">
+  <label class="muted" style="font-size:13px">Substance:</label>
+  <select id="subSel" style="background:#1a2234;color:#e8ecf4;border:1px solid #26304a;border-radius:8px;padding:7px 10px;font-size:13px;flex:1;max-width:320px"></select>
+  <div id="countBadge" style="font-size:13px;font-family:ui-monospace;color:${TOKENS.muted}"></div>
+</div>
+<div class="panel" style="margin-top:14px">
+  <canvas id="cloud" style="width:100%;display:block;border-radius:8px"></canvas>
+</div>
+<div id="cloudInfo" style="margin-top:10px;font-size:12px;color:${TOKENS.muted};line-height:1.6"></div>`;
 
-// Build a plausible "found within category" petal set per expected category using
-// real top_substances as the universe and simple co-association heuristics.
-const CATS=Object.entries(EC).filter(([k])=>k&&k!=='other').slice(0,8);
-const ASSOC={ // category -> [substance,...] order = likely petals, drawn from real top substances
- fentanyl:['fentanyl','4-anpp','xylazine','acetaminophen','p-fluorofentanyl','bromazolam'],
- 'heroin/dope':['fentanyl','heroin','4-anpp','xylazine','acetylcodeine','caffeine'],
- methamphetamine:['methamphetamine','dimethyl sulfone (methylsulfonylmethane msm)','caffeine','fentanyl'],
- cocaine:['cocaine','levamisole','caffeine','fentanyl','lidocaine'],
- ketamine:['ketamine','caffeine','methamphetamine'],
- benzodiazepine:['bromazolam','fentanyl','xylazine'],
- speedball:['cocaine','fentanyl','xylazine','4-anpp','levamisole'],
- cannabis:['caffeine']
-};
-const countMap=Object.fromEntries(SUB.map(d=>[d.substance,d.samples]));
+const subSel=document.getElementById('subSel');
+// Sort substances by count, add all to selector
+[...SUB].sort((a,b)=>b.samples-a.samples).forEach(d=>{
+  subSel.add(new Option(`${d.substance} (${fmt.int(d.samples)} samples)`,d.substance));
+});
+subSel.value='fentanyl';
 
-function draw(){
-  const svg=d3.select('#svg'); svg.selectAll('*').remove();
-  const W=svg.node().clientWidth,H=640;
-  const cols=4, rows=Math.ceil(CATS.length/cols);
-  const cw=W/cols, ch=H/rows;
-  CATS.forEach(([cat,n],i)=>{
-    const cx=cw*(i%cols)+cw/2, cy=ch*Math.floor(i/cols)+ch/2;
-    const petals=(ASSOC[cat]||[cat]).filter(s=>countMap[s]).slice(0,7);
-    const maxLen=Math.min(cw,ch)/2-26;
-    const maxCount=Math.max(...petals.map(s=>countMap[s]),1);
-    petals.forEach((s,pi)=>{
-      const ang=(pi/petals.length)*2*Math.PI - Math.PI/2;
-      const len=12+ (countMap[s]/maxCount)*maxLen;
-      const col=classify(s).color;
-      const x2=cx+Math.cos(ang)*len, y2=cy+Math.sin(ang)*len;
-      const wx=cx+Math.cos(ang+0.18)*len*0.55, wy=cy+Math.sin(ang+0.18)*len*0.55;
-      const wx2=cx+Math.cos(ang-0.18)*len*0.55, wy2=cy+Math.sin(ang-0.18)*len*0.55;
-      const path=`M${cx},${cy} Q${wx},${wy} ${x2},${y2} Q${wx2},${wy2} ${cx},${cy} Z`;
-      svg.append('path').attr('d',path).attr('fill',col).attr('opacity',.55).attr('stroke',col).attr('stroke-width',1)
-        .style('cursor','pointer')
-        .on('mousemove',e=>tt.show(`<b style="text-transform:capitalize">${s}</b><br><span class="muted">${fmt.int(countMap[s])} samples overall · ${classify(s).label}</span>`,e.clientX,e.clientY))
-        .on('mouseleave',tt.hide);
-    });
-    svg.append('circle').attr('cx',cx).attr('cy',cy).attr('r',8).attr('fill',TOKENS.panel2).attr('stroke',TOKENS.line);
-    svg.append('text').attr('x',cx).attr('y',cy+Math.min(cw,ch)/2-6).attr('text-anchor','middle').attr('fill',TOKENS.ink).attr('font-size',12).attr('font-weight',600).text('"'+cat+'"');
-    svg.append('text').attr('x',cx).attr('y',cy+Math.min(cw,ch)/2+10).attr('text-anchor','middle').attr('fill',TOKENS.faint).attr('font-size',10).attr('font-family','ui-monospace').text(fmt.int(n)+' samples');
-  });
-  const cls=[...new Set(Object.values(ASSOC).flat().filter(s=>countMap[s]).map(s=>classify(s).cls))];
-  document.getElementById('leg').innerHTML=cls.map(c=>{const o=Object.values(ASSOC).flat().find(s=>classify(s).cls===c);return `<span><i style="background:${classify(o).color}"></i>${classify(o).label}</span>`;}).join('');
+let animReq=null;
+function rng(seed){let s=seed%2147483647;return()=>{s=s*16807%2147483647;return(s-1)/2147483646;};}
+
+function drawCloud(){
+  if(animReq){cancelAnimationFrame(animReq);animReq=null;}
+  const sub=subSel.value;
+  const entry=SUB.find(d=>d.substance===sub);
+  if(!entry) return;
+  const c=classify(sub);
+  const total=entry.samples;
+  const displayed=Math.min(total,DISPLAY_MAX);
+
+  const canvas=document.getElementById('cloud');
+  const W=canvas.offsetWidth||800;
+  const H=Math.max(300,Math.min(520,Math.ceil(displayed/3.2)));
+  canvas.width=W*window.devicePixelRatio||W;
+  canvas.height=H*window.devicePixelRatio||H;
+  canvas.style.height=H+'px';
+  const ctx2=canvas.getContext('2d');
+  ctx2.scale(window.devicePixelRatio||1,window.devicePixelRatio||1);
+
+  // Update counter
+  document.getElementById('countBadge').innerHTML=`<span style="color:${c.color};font-weight:700">${fmt.int(displayed)}</span> <span class="muted">/ ${fmt.int(total)} samples displayed</span>`;
+  document.getElementById('cloudInfo').innerHTML=`<b style="text-transform:capitalize;color:${c.color}">${sub}</b> · ${c.label} · detected in ${fmt.pct(total/6580*100)} of all tested samples · ${total>DISPLAY_MAX?`showing ${DISPLAY_MAX} of ${fmt.int(total)}`:`all ${fmt.int(total)}`} · <span class="mono" style="color:${TOKENS.faint}">${entry.primary} primary, ${entry.trace} trace</span>`;
+
+  // Generate point positions with natural jitter using seeded random
+  const rand=rng(total);
+  const R=4.5, pad=18;
+  const cols=Math.floor((W-pad*2)/(R*2+3));
+  const rows2=Math.ceil(displayed/cols);
+  const usedH=rows2*(R*2+3)+pad*2;
+  const startX=pad+R;
+  const startY=(H-usedH)/2+pad+R;
+
+  // Draw background
+  ctx2.fillStyle='#121826';
+  ctx2.fillRect(0,0,W,H);
+
+  // Draw points with slight jitter
+  for(let i=0;i<displayed;i++){
+    const col=Math.floor(i%cols);
+    const row=Math.floor(i/cols);
+    const bx=startX+col*(R*2+3)+(rand()-.5)*2.2;
+    const by=startY+row*(R*2+3)+(rand()-.5)*2.2;
+    const alpha=0.7+rand()*0.3;
+    // Primary vs trace
+    const isPrimary=i<entry.primary;
+    ctx2.beginPath();
+    ctx2.arc(bx,by,isPrimary?R:R*0.7,0,Math.PI*2);
+    ctx2.fillStyle=c.color;
+    ctx2.globalAlpha=alpha*(isPrimary?0.85:0.5);
+    ctx2.fill();
+    if(isPrimary){ctx2.strokeStyle='rgba(255,255,255,0.25)';ctx2.lineWidth=0.8;ctx2.stroke();}
+    ctx2.globalAlpha=1;
+  }
+
+  // Label at top
+  ctx2.fillStyle=c.color;
+  ctx2.font=`700 14px ui-monospace`;
+  ctx2.globalAlpha=0.55;
+  ctx2.fillText(sub.toUpperCase(),pad,20);
+  ctx2.globalAlpha=1;
 }
-draw();
-addEventListener('resize',draw);
+
+subSel.onchange=drawCloud;
+drawCloud();
+addEventListener('resize',()=>{clearTimeout(window._rcl);window._rcl=setTimeout(drawCloud,80);});
 
 </script>
 </body>

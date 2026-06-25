@@ -19,9 +19,17 @@
  {"id":"18-result-card","n":18,"cat":"RESULT","title":"Sample Result Card","libs":["d3","smiles"],"spec":["ms","chromatograms"],"data":["retention_times"]},
  {"id":"19-expected-reality-gap","n":19,"cat":"RESULT","title":"Expected-Reality Gap","libs":["d3"],"spec":["chromatograms"],"data":["retention_times"]},
  {"id":"20-potency-uncertainty","n":20,"cat":"RESULT","title":"Potency Uncertainty Gauge","libs":["d3"],"spec":[],"data":["substances_per_sample"]},
- {"id":"21-geo-tilegrid","n":21,"cat":"GEO","title":"Supply Tile-Grid Cartogram","libs":["d3"],"spec":[],"data":["state_counts","geo"]},
- {"id":"22-xylazine-spread","n":22,"cat":"GEO","title":"Xylazine Spread Timeline","libs":["d3"],"spec":[],"data":["xylazine_status","geo"]},
+ {"id":"21-geo-choropleth","n":21,"cat":"GEO","title":"Supply Choropleth Map","libs":["d3","topojson"],"topo":["us_states"],"spec":[],"data":["state_counts","geo"]},
+ {"id":"22-xylazine-spread","n":22,"cat":"GEO","title":"Xylazine Spread Timeline","libs":["d3","topojson"],"topo":["us_states"],"spec":[],"data":["xylazine_status","geo"]},
  {"id":"23-structure-flipbook","n":23,"cat":"MS","title":"Structure Flipbook","libs":["d3","smiles"],"spec":["ms"],"data":["top_substances","roles"]},
  {"id":"24-anatomy-scrolly","n":24,"cat":"RESULT","title":"Anatomy of a Sample (Scrollytelling)","libs":["d3","smiles"],"spec":["ms","chromatograms"],"data":["retention_times"]},
- {"id":"25-glyph-garden","n":25,"cat":"EXPERIMENTAL","title":"Sample Glyph Garden","libs":["d3"],"spec":[],"data":["top_substances","expected_counts"]}
+ {"id":"25-glyph-garden","n":25,"cat":"EXPERIMENTAL","title":"Sample Glyph Garden","libs":["d3"],"spec":[],"data":["top_substances","expected_counts"]},
+ {"id":"26-reagent-matrix","n":26,"cat":"EXPERIMENTAL","title":"Reagent Color Matrix","libs":["d3"],"spec":[],"data":[]},
+ {"id":"27-supply-weather","n":27,"cat":"EXPERIMENTAL","title":"Supply Weather Report","libs":["d3"],"spec":[],"data":["monthly_class","monthly"]},
+ {"id":"28-temporal-crosssection","n":28,"cat":"EXPERIMENTAL","title":"Temporal Cross-Section","libs":["d3"],"spec":[],"data":["monthly_class","monthly"]},
+ {"id":"29-supply-rhythm","n":29,"cat":"SONIC","title":"Supply Rhythm Machine","libs":["d3"],"spec":[],"data":["monthly_class"]},
+ {"id":"30-spectral-theremin","n":30,"cat":"SONIC","title":"Spectral Theremin","libs":["d3"],"spec":[],"data":["retention_times"]},
+ {"id":"31-substance-cloud","n":31,"cat":"SUPPLY","title":"Substance Point Cloud","libs":["d3"],"spec":[],"data":["top_substances"]},
+ {"id":"32-monthly-cloud","n":32,"cat":"SUPPLY","title":"Monthly Substance Point Clouds","libs":["d3"],"spec":[],"data":["monthly","monthly_class"]},
+ {"id":"33-sample-clusters","n":33,"cat":"SUPPLY","title":"Sample Point Clusters","libs":["d3"],"spec":[],"data":["cooccurrence","top_substances"]}
 ]

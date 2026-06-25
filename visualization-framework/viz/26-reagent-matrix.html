@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Sample Glyph Garden — Drug Checking Viz</title>
+<title>Reagent Color Matrix — Drug Checking Viz</title>
 <script src="lib/d3.min.js"></script>
 </head>
 <body>
 <script>
-window.DATA = {"top_substances":[{"substance":"fentanyl","samples":3112,"primary":2742,"trace":371},{"substance":"4-anpp","samples":2797,"primary":2160,"trace":637},{"substance":"methamphetamine","samples":1792,"primary":1512,"trace":280},{"substance":"xylazine","samples":1137,"primary":845,"trace":292},{"substance":"cocaine","samples":1082,"primary":775,"trace":308},{"substance":"acetaminophen","samples":1036,"primary":879,"trace":157},{"substance":"phenethyl 4-anpp","samples":908,"primary":236,"trace":673},{"substance":"heroin","samples":701,"primary":531,"trace":170},{"substance":"lidocaine","samples":652,"primary":455,"trace":197},{"substance":"caffeine","samples":591,"primary":367,"trace":225},{"substance":"ethyl-4-anpp","samples":591,"primary":153,"trace":438},{"substance":"p-fluorofentanyl","samples":583,"primary":322,"trace":261},{"substance":"bis(2,2,6,6-tetramethyl-4-piperidyl) sebacate","samples":415,"primary":308,"trace":107},{"substance":"dimethyl sulfone (methylsulfonylmethane msm)","samples":353,"primary":237,"trace":116},{"substance":"acetylcodeine","samples":352,"primary":142,"trace":211},{"substance":"despropionyl p-fluorofentanyl","samples":348,"primary":283,"trace":65},{"substance":"n-phenylpropanamide","samples":311,"primary":117,"trace":195},{"substance":"6-monoacetylmorphine (6-mam)","samples":302,"primary":111,"trace":191},{"substance":"ketamine","samples":240,"primary":199,"trace":41},{"substance":"bromazolam","samples":239,"primary":191,"trace":48},{"substance":"methyl ecgonidine (med)","samples":213,"primary":21,"trace":192},{"substance":"procaine","samples":211,"primary":151,"trace":60},{"substance":"3,4-mdma","samples":194,"primary":178,"trace":16},{"substance":"diphenhydramine","samples":186,"primary":96,"trace":90},{"substance":"1-phenethyl-4-propionyloxypiperidine","samples":185,"primary":37,"trace":148},{"substance":"quinine","samples":181,"primary":65,"trace":116},{"substance":"tramadol","samples":156,"primary":68,"trace":88},{"substance":"p-fluoro phenethyl 4-anpp","samples":155,"primary":32,"trace":123},{"substance":"no compounds of interest detected","samples":131,"primary":131,"trace":0},{"substance":"noramidopyrine","samples":125,"primary":60,"trace":65},{"substance":"1,3-diacetin","samples":103,"primary":82,"trace":21},{"substance":"medetomidine","samples":97,"primary":54,"trace":43},{"substance":"tropacocaine","samples":94,"primary":7,"trace":87},{"substance":"phenacetin","samples":80,"primary":43,"trace":37},{"substance":"1-phenethyl-4-hydroxypiperidine","samples":74,"primary":5,"trace":69},{"substance":"delta-9-thc","samples":71,"primary":57,"trace":14},{"substance":"papaverine","samples":66,"primary":9,"trace":57},{"substance":"phenethyl bromide","samples":64,"primary":4,"trace":60},{"substance":"2-fluoro-2-oxo pce","samples":63,"primary":42,"trace":21},{"substance":"n-propionyl norfentanyl","samples":63,"primary":12,"trace":51}],"expected_counts":{"fentanyl":2772,"methamphetamine":1257,"other":817,"heroin/dope":604,"cocaine":478,"benzodiazepine":252,"mdma":217,"ketamine":175,"cannabis":30,"oxycodone":17,"xylazine":14}};
+window.DATA = {};
 window.SPEC = {};
 window.TOPO = {};
 </script>
@@ -186,69 +186,180 @@ window.DCF={TOKENS,classify,fmt,chromatogram,ftirCurve,stickSpectrum,cosine,tool
 })();
 </script>
 <script>
-/* Nº 25 · Sample Glyph Garden — every "expected substance" category becomes a
-   small generative glyph whose shape encodes the supply's complexity for that
-   category: petal count = top substances found, petal length = prevalence,
-   color = class. A field of glyphs becomes a single-glance supply census. */
-const {scaffold,classify,fmt,tooltip,TOKENS}=DCF;
-const SUB=DATA.top_substances, EC=DATA.expected_counts;
+/* Nº 26 · Reagent Color Matrix — colorimetric spot tests (Marquis, Mandelin,
+   Mecke, Froehde, Simon's, Robadope) applied to the most common street drugs.
+   Each cell shows the expected reaction color. A field-portable reality check
+   for what your eyes might see — with important limits. */
+const {scaffold,classify,tooltip,TOKENS}=DCF;
 
 const stage=scaffold({
-  tag:'Nº 25 · EXPERIMENTAL',
-  title:'Sample Glyph Garden',
-  dek:'A generative glyph for each substance category — grown, not drawn. Petal count is how many different things turn up under that name; petal length is how often. A wild, asymmetric flower means a chaotic supply.',
-  how:`Each <b>glyph</b> represents one "expected substance" category. It is grown procedurally: every <b>petal</b> is one of the top substances actually detected within that category, petal <b>length</b> scales with how common it is, and petal <b>color</b> encodes drug class. A near-circular, even glyph means the category is what it claims to be; a <b>spiky, lopsided</b> glyph — long fentanyl-colored petals on a "cocaine" or "benzo" flower — means heavy cross-contamination. This borrows from <b>data humanism</b ('Dear Data'): an abstract, almost botanical form that rewards close looking rather than instant readout. Hover any petal for specifics.`,
-  provenance:'Petal composition driven by real co-detection patterns in the 6,580-sample dataset; layout is generative/illustrative.',
-  harm:'A long fentanyl-colored petal on any flower — even ones not labeled opioid — means contamination crosses categories. Test everything.'
+  tag:'Nº 26 · EXPERIMENTAL',
+  title:'Reagent Color Matrix',
+  dek:'Colorimetric spot tests react with different drug families by turning distinct colors. This matrix maps expected results — what you\'d expect to see when you add a drop of reagent to a tiny sample.',
+  how:`Each <b>cell</b> shows the color a drop of reagent is expected to produce when mixed with a tiny amount of that substance. <b>Rows</b> = reagents; <b>columns</b> = substances. Color accuracy is approximate (display gamut ≠ chemistry). <b>Critical limits:</b> (1) mixtures produce overlapping reactions — a fentanyl-laced stimulant may still turn orange; (2) fentanyl/analogs are often undetectable by standard reagents; (3) xylazine does not produce a reliable reaction in most field tests; (4) reagents confirm <i>class presence</i>, not identity or quantity. Use these results alongside GC-MS, FTIR, or immunoassay strips.`,
+  provenance:'Expected reaction colors from published colorimetric chemistry literature and harm-reduction field guides.',
+  harm:'Reagents cannot rule out fentanyl or xylazine. A "cocaine" result may still contain fentanyl analogs that don\'t react. Always use fentanyl test strips alongside reagent tests.'
 });
 
-stage.innerHTML=`<div class="panel"><svg id="svg" width="100%" height="640" role="img" aria-label="Generative glyph garden of substance categories"></svg></div><div class="legend" id="leg"></div>`;
+// Reagents × substances matrix
+const REAGENTS = [
+  {name:'Marquis',desc:'H₂SO₄ + formaldehyde'},
+  {name:'Mandelin',desc:'H₂SO₄ + ammonium metavanadate'},
+  {name:'Mecke',desc:'H₂SO₄ + selenous acid'},
+  {name:'Froehde',desc:'H₂SO₄ + molybdate'},
+  {name:'Simon\'s',desc:'Na₂CO₃ + nitroprusside + acetic acid'},
+  {name:'Robadope',desc:'o-phthalaldehyde, primary amines'},
+  {name:'Ehrlich',desc:'DMAB, indoles & LSD'},
+];
+
+const SUBSTANCES = [
+  {s:'MDMA',cls:'stim'},
+  {s:'amphetamine',cls:'stim'},
+  {s:'methamphetamine',cls:'stim'},
+  {s:'cocaine',cls:'coke'},
+  {s:'fentanyl',cls:'fent'},
+  {s:'heroin',cls:'opioid'},
+  {s:'ketamine',cls:'other'},
+  {s:'xylazine',cls:'xyl'},
+  {s:'caffeine',cls:'cut'},
+  {s:'LSD',cls:'other'},
+];
+
+// [color, tooltip note] — hex colors approximating reaction colors
+const MATRIX = {
+  'Marquis': {
+    'MDMA':['#7c3aed','purple → black (typical)'],
+    'amphetamine':['#c2410c','orange → brown'],
+    'methamphetamine':['#b45309','orange-brown'],
+    'cocaine':['#3d3f3d','no reaction / slight yellow'],
+    'fentanyl':['#4a4a3d','no color reaction'],
+    'heroin':['#8b1a1a','purple → dark red'],
+    'ketamine':['#6b6650','no/slight reaction'],
+    'xylazine':['#3d3d3a','no reliable reaction'],
+    'caffeine':['#b59a2e','dull yellow-orange'],
+    'LSD':['#3d3d3a','none'],
+  },
+  'Mandelin': {
+    'MDMA':['#1a1a18','black'],
+    'amphetamine':['#b45309','orange'],
+    'methamphetamine':['#c2410c','orange → brown'],
+    'cocaine':['#6d5b1e','light yellow-brown'],
+    'fentanyl':['#3d4040','no reliable color'],
+    'heroin':['#064e3b','dark green'],
+    'ketamine':['#b45309','orange'],
+    'xylazine':['#3d3d3a','no reliable reaction'],
+    'caffeine':['#3a3a38','no reaction'],
+    'LSD':['#3d3d3a','none'],
+  },
+  'Mecke': {
+    'MDMA':['#1e3a5f','blue-black'],
+    'amphetamine':['#334155','blue-green → black'],
+    'methamphetamine':['#334155','dark blue-green'],
+    'cocaine':['#1a1a18','no reaction / very slight'],
+    'fentanyl':['#475569','no reaction'],
+    'heroin':['#166534','dark green'],
+    'ketamine':['#1d4ed8','blue → yellow'],
+    'xylazine':['#3d3d3a','no reliable reaction'],
+    'caffeine':['#3a3a38','no reaction'],
+    'LSD':['#1e3a5f','blue'],
+  },
+  'Froehde': {
+    'MDMA':['#94a3b8','grey'],
+    'amphetamine':['#b45309','faint orange'],
+    'methamphetamine':['#b45309','orange-brown'],
+    'cocaine':['#1d4ed8','blue (if pure)'],
+    'fentanyl':['#475569','no reaction'],
+    'heroin':['#166534','green → yellow'],
+    'ketamine':['#c2410c','orange-red'],
+    'xylazine':['#3d3d3a','no reliable reaction'],
+    'caffeine':['#3a3a38','no reaction'],
+    'LSD':['#94a3b8','yellow-grey'],
+  },
+  'Simon\'s': {
+    'MDMA':['#1d4ed8','blue (positive for secondary amines)'],
+    'amphetamine':['#3d3d3a','no reaction (primary amine)'],
+    'methamphetamine':['#1d4ed8','blue (secondary amine)'],
+    'cocaine':['#3d3d3a','no reaction'],
+    'fentanyl':['#3d3d3a','no reaction'],
+    'heroin':['#3d3d3a','no reaction'],
+    'ketamine':['#3d3d3a','no reliable color'],
+    'xylazine':['#3d3d3a','no reliable reaction'],
+    'caffeine':['#3d3d3a','no reaction'],
+    'LSD':['#3d3d3a','no reaction'],
+  },
+  'Robadope': {
+    'MDMA':['#3d3d3a','no reaction (secondary amine)'],
+    'amphetamine':['#c2410c','orange (primary amine)'],
+    'methamphetamine':['#3d3d3a','no reaction'],
+    'cocaine':['#3d3d3a','no reaction'],
+    'fentanyl':['#3d3d3a','no reaction'],
+    'heroin':['#3d3d3a','slight'],
+    'ketamine':['#3d3d3a','no reliable reaction'],
+    'xylazine':['#3d3d3a','no reliable reaction'],
+    'caffeine':['#3d3d3a','no reaction'],
+    'LSD':['#3d3d3a','no reaction'],
+  },
+  'Ehrlich': {
+    'MDMA':['#7c3aed','purple (contains indole analog)'],
+    'amphetamine':['#3d3d3a','no reaction'],
+    'methamphetamine':['#3d3d3a','no reaction'],
+    'cocaine':['#3d3d3a','no reaction'],
+    'fentanyl':['#3d3d3a','no reaction'],
+    'heroin':['#3d3d3a','no reaction'],
+    'ketamine':['#3d3d3a','no reaction'],
+    'xylazine':['#3d3d3a','no reaction'],
+    'caffeine':['#3d3d3a','no reaction'],
+    'LSD':['#7c3aed','strong purple'],
+  },
+};
+
+stage.innerHTML=`<div class="panel" style="overflow-x:auto"><svg id="svg" role="img" aria-label="Reagent color reaction matrix"></svg></div>
+<div style="margin-top:12px;font-size:12px;color:${TOKENS.muted};line-height:1.6">
+  <b>Limits:</b> Colors are approximate display representations. Field reactions vary with purity, matrix, and lighting.
+  Fentanyl and xylazine are not reliably detected by any of these reagents. Always combine with strip tests.
+</div>`;
 const tt=tooltip();
 
-// Build a plausible "found within category" petal set per expected category using
-// real top_substances as the universe and simple co-association heuristics.
-const CATS=Object.entries(EC).filter(([k])=>k&&k!=='other').slice(0,8);
-const ASSOC={ // category -> [substance,...] order = likely petals, drawn from real top substances
- fentanyl:['fentanyl','4-anpp','xylazine','acetaminophen','p-fluorofentanyl','bromazolam'],
- 'heroin/dope':['fentanyl','heroin','4-anpp','xylazine','acetylcodeine','caffeine'],
- methamphetamine:['methamphetamine','dimethyl sulfone (methylsulfonylmethane msm)','caffeine','fentanyl'],
- cocaine:['cocaine','levamisole','caffeine','fentanyl','lidocaine'],
- ketamine:['ketamine','caffeine','methamphetamine'],
- benzodiazepine:['bromazolam','fentanyl','xylazine'],
- speedball:['cocaine','fentanyl','xylazine','4-anpp','levamisole'],
- cannabis:['caffeine']
-};
-const countMap=Object.fromEntries(SUB.map(d=>[d.substance,d.samples]));
-
 function draw(){
-  const svg=d3.select('#svg'); svg.selectAll('*').remove();
-  const W=svg.node().clientWidth,H=640;
-  const cols=4, rows=Math.ceil(CATS.length/cols);
-  const cw=W/cols, ch=H/rows;
-  CATS.forEach(([cat,n],i)=>{
-    const cx=cw*(i%cols)+cw/2, cy=ch*Math.floor(i/cols)+ch/2;
-    const petals=(ASSOC[cat]||[cat]).filter(s=>countMap[s]).slice(0,7);
-    const maxLen=Math.min(cw,ch)/2-26;
-    const maxCount=Math.max(...petals.map(s=>countMap[s]),1);
-    petals.forEach((s,pi)=>{
-      const ang=(pi/petals.length)*2*Math.PI - Math.PI/2;
-      const len=12+ (countMap[s]/maxCount)*maxLen;
-      const col=classify(s).color;
-      const x2=cx+Math.cos(ang)*len, y2=cy+Math.sin(ang)*len;
-      const wx=cx+Math.cos(ang+0.18)*len*0.55, wy=cy+Math.sin(ang+0.18)*len*0.55;
-      const wx2=cx+Math.cos(ang-0.18)*len*0.55, wy2=cy+Math.sin(ang-0.18)*len*0.55;
-      const path=`M${cx},${cy} Q${wx},${wy} ${x2},${y2} Q${wx2},${wy2} ${cx},${cy} Z`;
-      svg.append('path').attr('d',path).attr('fill',col).attr('opacity',.55).attr('stroke',col).attr('stroke-width',1)
-        .style('cursor','pointer')
-        .on('mousemove',e=>tt.show(`<b style="text-transform:capitalize">${s}</b><br><span class="muted">${fmt.int(countMap[s])} samples overall · ${classify(s).label}</span>`,e.clientX,e.clientY))
-        .on('mouseleave',tt.hide);
-    });
-    svg.append('circle').attr('cx',cx).attr('cy',cy).attr('r',8).attr('fill',TOKENS.panel2).attr('stroke',TOKENS.line);
-    svg.append('text').attr('x',cx).attr('y',cy+Math.min(cw,ch)/2-6).attr('text-anchor','middle').attr('fill',TOKENS.ink).attr('font-size',12).attr('font-weight',600).text('"'+cat+'"');
-    svg.append('text').attr('x',cx).attr('y',cy+Math.min(cw,ch)/2+10).attr('text-anchor','middle').attr('fill',TOKENS.faint).attr('font-size',10).attr('font-family','ui-monospace').text(fmt.int(n)+' samples');
+  const cw=90,ch=44,rw=140,rh=26,pad=6;
+  const W=rw+SUBSTANCES.length*(cw+pad)+40;
+  const H=rh+REAGENTS.length*(ch+pad)+50;
+  const svg=d3.select('#svg').attr('width',W).attr('height',H);
+  svg.selectAll('*').remove();
+
+  // Column headers (substances)
+  SUBSTANCES.forEach((sub,ci)=>{
+    const x=rw+(ci*(cw+pad))+cw/2;
+    const col=classify(sub.s).color;
+    svg.append('rect').attr('x',rw+ci*(cw+pad)).attr('y',0).attr('width',cw).attr('height',rh-4).attr('rx',4).attr('fill',col).attr('opacity',.18);
+    svg.append('text').attr('x',x).attr('y',rh/2+2).attr('text-anchor','middle').attr('fill',col).attr('font-size',11).attr('font-weight',600).text(sub.s);
   });
-  const cls=[...new Set(Object.values(ASSOC).flat().filter(s=>countMap[s]).map(s=>classify(s).cls))];
-  document.getElementById('leg').innerHTML=cls.map(c=>{const o=Object.values(ASSOC).flat().find(s=>classify(s).cls===c);return `<span><i style="background:${classify(o).color}"></i>${classify(o).label}</span>`;}).join('');
+
+  // Row headers + cells
+  REAGENTS.forEach((rg,ri)=>{
+    const y=rh+ri*(ch+pad);
+    // Row label
+    svg.append('text').attr('x',rw-10).attr('y',y+ch/2+4).attr('text-anchor','end').attr('fill',TOKENS.ink).attr('font-size',12).attr('font-weight',600).text(rg.name);
+    svg.append('text').attr('x',rw-10).attr('y',y+ch/2+16).attr('text-anchor','end').attr('fill',TOKENS.faint).attr('font-size',9).text(rg.desc);
+    // Cells
+    SUBSTANCES.forEach((sub,ci)=>{
+      const cx=rw+ci*(cw+pad), cy=y;
+      const cell=(MATRIX[rg.name]||{})[sub.s]||['#2d2d2d','unknown'];
+      const [bg,note]=cell;
+      const isDark=['#3d3d3a','#3a3a38','#4a4a3d','#3d4040','#475569','#334155'].includes(bg);
+      svg.append('rect').attr('x',cx).attr('y',cy).attr('width',cw).attr('height',ch).attr('rx',5)
+        .attr('fill',bg).attr('stroke',TOKENS.line).attr('stroke-width',1)
+        .style('cursor','pointer')
+        .on('mousemove',e=>tt.show(`<b>${rg.name} + ${sub.s}</b><br><span class="muted">${note}</span>`,e.clientX,e.clientY))
+        .on('mouseleave',tt.hide);
+      // label the color name
+      const label=isDark?'—':note.split(' ')[0];
+      svg.append('text').attr('x',cx+cw/2).attr('y',cy+ch/2+4).attr('text-anchor','middle').attr('font-size',9).attr('fill',isDark?TOKENS.faint:'#fff').attr('font-weight',isDark?400:600).text(label);
+    });
+  });
+
+  // Legend note at bottom
+  svg.append('text').attr('x',rw).attr('y',H-10).attr('fill',TOKENS.muted).attr('font-size',10).text('Hover cells for expected color description · Colors are approximations only');
 }
 draw();
 addEventListener('resize',draw);

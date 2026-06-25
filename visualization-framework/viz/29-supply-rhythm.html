@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Supply Composition Streamgraph — Drug Checking Viz</title>
+<title>Supply Rhythm Machine — Drug Checking Viz</title>
 <script src="lib/d3.min.js"></script>
 </head>
 <body>
@@ -186,56 +186,154 @@ window.DCF={TOKENS,classify,fmt,chromatogram,ftirCurve,stickSpectrum,cosine,tool
 })();
 </script>
 <script>
-/* Nº 11 · Supply Composition Streamgraph — the unregulated supply as a flowing
-   river. Each colored band is a drug class; the river's changing shape shows how
-   the market's composition shifts month to month. */
-const {scaffold,classify,tooltip,fmt,TOKENS}=DCF;
+/* Nº 29 · Supply Rhythm Machine — the drug supply as a looping drum machine.
+   Each substance class is a track with a distinct tone; monthly detection data
+   drives which steps are "on." The rhythm of the supply, made audible via
+   Web Audio API. An experimental sonic epidemiology concept. */
+const {scaffold,classify,fmt,TOKENS}=DCF;
 const MC=DATA.monthly_class;
-const CLS=[['fent','Fentanyl & analogs'],['opioid','Opioid'],['xyl','Sedative / xylazine'],['stim','Stimulant'],['coke','Cocaine'],['benzo','Benzodiazepine'],['cut','Cut / diluent'],['other','Other']];
-const COL={fent:TOKENS.fent,opioid:TOKENS.opioid,xyl:TOKENS.xyl,stim:TOKENS.stim,coke:TOKENS.coke,benzo:TOKENS.benzo,cut:TOKENS.cut,other:TOKENS.other};
+
+const CLS=[
+  {k:'fent',l:'Fentanyl',freq:110,wave:'sawtooth',color:TOKENS.fent},
+  {k:'opioid',l:'Opioid',freq:165,wave:'sine',color:TOKENS.opioid},
+  {k:'xyl',l:'Xylazine',freq:82.4,wave:'square',color:TOKENS.xyl},
+  {k:'stim',l:'Stimulant',freq:220,wave:'triangle',color:TOKENS.stim},
+  {k:'coke',l:'Cocaine',freq:293.7,wave:'triangle',color:TOKENS.coke},
+  {k:'benzo',l:'Benzo',freq:246.9,wave:'sine',color:TOKENS.benzo},
+  {k:'cut',l:'Cut / Diluent',freq:329.6,wave:'sine',color:TOKENS.cut},
+  {k:'other',l:'Other / Novel',freq:440,wave:'square',color:TOKENS.other},
+];
+
+const STEPS=16;
+const months=[...new Set(MC.map(d=>d.month))].sort();
+
+// Build a step pattern per class from monthly data
+function buildPatterns(recentN=8){
+  const recentMonths=months.slice(-recentN);
+  const patterns={};
+  CLS.forEach(c=>{
+    const vals=recentMonths.map(m=>{
+      const row=MC.find(d=>d.month===m&&d.cls===c.k);
+      return row?row.n:0;
+    });
+    const mx=Math.max(...vals,1);
+    // map each of 16 steps to one of 8 months (doubled), then threshold
+    patterns[c.k]=Array.from({length:STEPS},(_,i)=>{
+      const mIdx=Math.floor(i/(STEPS/recentN));
+      const v=vals[mIdx]/mx;
+      // high months = dense steps; low months = sparse
+      return v>0.6||(v>0.3&&i%2===0)||(v>0.15&&i%4===0);
+    });
+  });
+  return patterns;
+}
 
 const stage=scaffold({
-  tag:'Nº 11 · SUPPLY',
-  title:'Supply Composition Streamgraph',
-  dek:'The unregulated drug supply as a flowing river. Each band is a class of substance; watch the channel widen and narrow as the market re-mixes itself over three years.',
-  how:`A <b>streamgraph</b> stacks each month's composition around a flowing center line, so you read <b>change of shape</b> rather than exact values. Band thickness = how many tested samples contained that class that month. The story to look for: the <b>sedative band</b> (xylazine) swelling inside the opioid supply, and stimulants holding their own channel. <b>Toggle to "stacked %"</b> for honest proportions. <b>Denominator note:</b> these are counts among <i>tested</i> samples, which over-represent what programs were watching — not a census of all drugs used.`,
-  provenance:'Real monthly class counts from 6,580 tested samples (2022–2024) across 11 US states.',
-  harm:'When the sedative band grows, expect deeper, longer overdoses that naloxone only partly reverses. Never use alone.'
+  tag:'Nº 29 · SONIC',
+  title:'Supply Rhythm Machine',
+  dek:'The drug supply, beatified. Each row is a substance class; each step lights up when that class was prominent in that time window. Press play and hear the supply\'s rhythm — fentanyl\'s relentless pulse, xylazine\'s low throb.',
+  how:`A <b>16-step sequencer</b> where each <b>row</b> is a drug class and each <b>column</b> is a time step. Steps are "on" (lit) when that class was detected heavily in the corresponding recent month. Press <b>▶ play</b> to hear the pattern loop: each class has a distinct tone (fentanyl = low sawtooth, xylazine = very low square wave, stimulants = high triangle). Toggle individual steps to edit the pattern. <b>This is experimental</b> — a sonification concept for teaching supply dynamics to non-data audiences.`,
+  provenance:'Step patterns derived from real monthly substance class counts (6,580 samples, most recent 8 months).',
+  harm:'Even in quieter months, the supply is dangerous. A slow rhythm is not a safe supply.'
 });
 
 stage.innerHTML=`
-<div class="controls">
-  <button class="tgl" id="stream" aria-pressed="true">streamgraph</button>
-  <button class="tgl" id="pct" aria-pressed="false">stacked %</button>
+<div class="controls" style="align-items:center">
+  <button class="tgl" id="playBtn" aria-pressed="false">▶ play</button>
+  <label class="muted" style="font-size:12px;margin-left:12px">tempo:</label>
+  <input type="range" id="tempo" min="60" max="200" value="120" style="width:100px;accent-color:${TOKENS.fent}">
+  <span class="mono muted" id="bpmLbl">120 bpm</span>
+  <label class="muted" style="font-size:12px;margin-left:12px">volume:</label>
+  <input type="range" id="vol" min="0" max="1" step=".05" value=".4" style="width:80px;accent-color:${TOKENS.xyl}">
 </div>
-<div class="panel"><svg id="svg" width="100%" height="480" role="img" aria-label="Streamgraph of supply composition"></svg></div>
-<div class="legend" id="leg"></div>`;
-const tt=tooltip();
-let offset='stream';
-document.getElementById('stream').onclick=()=>set('stream');
-document.getElementById('pct').onclick=()=>set('pct');
-function set(m){offset=m;document.getElementById('stream').setAttribute('aria-pressed',m==='stream');document.getElementById('pct').setAttribute('aria-pressed',m==='pct');draw();}
+<div id="sequencer" style="margin-top:14px;display:flex;flex-direction:column;gap:6px"></div>
+<div class="muted" style="font-size:11px;margin-top:12px">Click any step to toggle it on/off. Brighter = stronger signal from the data. Lit steps play that class's tone.</div>`;
 
-const months=[...new Set(MC.map(d=>d.month))].sort();
-const rows=months.map(m=>{const o={month:m};CLS.forEach(([k])=>o[k]=0);MC.filter(d=>d.month===m).forEach(d=>o[d.cls]=d.n);return o;});
+const patterns=buildPatterns(8);
+const stepEls={}; // k → array of 16 button elements
 
-function draw(){
-  const svg=d3.select('#svg'); svg.selectAll('*').remove();
-  const W=svg.node().clientWidth,H=480,m={t:18,r:16,b:34,l:40};
-  const keys=CLS.map(c=>c[0]);
-  const stack=d3.stack().keys(keys).offset(offset==='stream'?d3.stackOffsetWiggle:d3.stackOffsetExpand).order(d3.stackOrderInsideOut);
-  const series=stack(rows);
-  const x=d3.scalePoint(months,[m.l,W-m.r]);
-  const y=d3.scaleLinear([d3.min(series,s=>d3.min(s,d=>d[0])),d3.max(series,s=>d3.max(s,d=>d[1]))],[H-m.b,m.t]);
-  const area=d3.area().x((d,i)=>x(months[i])).y0(d=>y(d[0])).y1(d=>y(d[1])).curve(d3.curveBasis);
-  svg.selectAll('path').data(series).join('path').attr('d',area).attr('fill',s=>COL[s.key]).attr('opacity',.85).attr('stroke',TOKENS.bg).attr('stroke-width',.4)
-    .on('mousemove',(e,s)=>{const lbl=CLS.find(c=>c[0]===s.key)[1];tt.show(`<b style="color:${COL[s.key]}">${lbl}</b>`,e.clientX,e.clientY);}).on('mouseleave',tt.hide);
-  // x labels (quarterly)
-  months.forEach((mo,i)=>{ if(i%3===0) svg.append('text').attr('x',x(mo)).attr('y',H-14).attr('text-anchor','middle').attr('fill',TOKENS.faint).attr('font-size',10).attr('font-family','ui-monospace').text(fmt.month(mo)); });
-  document.getElementById('leg').innerHTML=CLS.map(([k,l])=>`<span><i style="background:${COL[k]}"></i>${l}</span>`).join('');
+// Build the sequencer grid
+const seqEl=document.getElementById('sequencer');
+CLS.forEach(c=>{
+  const row=document.createElement('div');
+  row.style.cssText='display:flex;align-items:center;gap:5px';
+  const label=document.createElement('div');
+  label.style.cssText=`width:96px;font-size:11px;font-weight:600;color:${c.color};flex-shrink:0;text-align:right;padding-right:8px`;
+  label.textContent=c.l;
+  row.appendChild(label);
+  stepEls[c.k]=[];
+  for(let i=0;i<STEPS;i++){
+    const btn=document.createElement('button');
+    const on=patterns[c.k][i];
+    btn.style.cssText=`width:34px;height:32px;border-radius:5px;border:1.5px solid ${on?c.color:TOKENS.line};background:${on?c.color+'33':'transparent'};cursor:pointer;transition:.1s;${i%4===0?'margin-left:4px':''}`;
+    btn.setAttribute('aria-label',`${c.l} step ${i+1} ${on?'on':'off'}`);
+    btn.dataset.on=on?'1':'0';
+    btn.onclick=()=>{
+      const nowOn=btn.dataset.on==='1';
+      btn.dataset.on=nowOn?'0':'1';
+      patterns[c.k][i]=!nowOn;
+      btn.style.background=!nowOn?c.color+'33':'transparent';
+      btn.style.borderColor=!nowOn?c.color:TOKENS.line;
+    };
+    stepEls[c.k].push(btn);
+    row.appendChild(btn);
+  }
+  seqEl.appendChild(row);
+});
+
+// Web Audio sequencer
+let ctx=null, playing=false, curStep=0, nextTime=0, interval=null;
+const gainNodes={};
+
+function getCtx(){if(!ctx) ctx=new(window.AudioContext||window.webkitAudioContext)();return ctx;}
+
+function playStep(step){
+  const ac=getCtx();
+  const vol=+document.getElementById('vol').value;
+  CLS.forEach(c=>{
+    // highlight current step
+    stepEls[c.k].forEach((b,i)=>{
+      const on=b.dataset.on==='1';
+      b.style.background=i===step?(on?c.color+'88':'rgba(255,255,255,0.07)'):(on?c.color+'33':'transparent');
+    });
+    if(!patterns[c.k][step]) return;
+    const osc=ac.createOscillator();
+    const g=ac.createGain();
+    osc.type=c.wave;
+    osc.frequency.value=c.freq;
+    g.gain.setValueAtTime(vol*0.22,nextTime);
+    g.gain.exponentialRampToValueAtTime(0.0001,nextTime+0.18);
+    osc.connect(g); g.connect(ac.destination);
+    osc.start(nextTime); osc.stop(nextTime+0.2);
+  });
 }
-draw();
-addEventListener('resize',draw);
+
+function schedule(){
+  const bpm=+document.getElementById('tempo').value;
+  const stepLen=60/bpm/4;
+  const ac=getCtx();
+  while(nextTime<ac.currentTime+0.1){
+    playStep(curStep%STEPS);
+    nextTime+=stepLen;
+    curStep++;
+  }
+}
+
+const playBtn=document.getElementById('playBtn');
+playBtn.onclick=()=>{
+  if(playing){
+    clearInterval(interval); playing=false; playBtn.textContent='▶ play'; playBtn.setAttribute('aria-pressed','false');
+    // reset highlights
+    CLS.forEach(c=>stepEls[c.k].forEach((b,i)=>{const on=b.dataset.on==='1';b.style.background=on?c.color+'33':'transparent';}));
+  } else {
+    const ac=getCtx();
+    if(ac.state==='suspended') ac.resume();
+    nextTime=ac.currentTime; curStep=0; playing=true;
+    playBtn.textContent='❚❚ stop'; playBtn.setAttribute('aria-pressed','true');
+    interval=setInterval(schedule,25);
+  }
+};
+document.getElementById('tempo').oninput=function(){document.getElementById('bpmLbl').textContent=this.value+' bpm';};
 
 </script>
 </body>

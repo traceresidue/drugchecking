@@ -12,6 +12,7 @@ import json, re, os, pathlib
 ROOT = pathlib.Path(__file__).parent
 AGG = json.load(open(ROOT/'data'/'aggregates.json'))
 SPEC = json.load(open(ROOT/'data'/'spectra.json'))
+TOPO_US = json.load(open(ROOT/'viz'/'lib'/'us-states.json'))  # TopoJSON for US states
 SHARED = (ROOT/'viz'/'_shared.js').read_text()
 
 # Turn the ES module into a global-exposing IIFE: strip `export ` and the loadData fetch helper.
@@ -50,6 +51,7 @@ TEMPLATE = """<!doctype html>
 <script>
 window.DATA = {data};
 window.SPEC = {spec};
+window.TOPO = {topo};
 </script>
 <script>
 {shared}
@@ -66,8 +68,11 @@ def build(spec):
     libtags = '\n'.join(LIBS[l] for l in spec.get('libs',[]))
     data = json.dumps({k:AGG[k] for k in spec.get('data',[])}, separators=(',',':'))
     specdata = json.dumps({k:SPEC[k] for k in spec.get('spec',[])}, separators=(',',':')) if spec.get('spec') else '{}'
+    # embed topojson if requested
+    topo_keys = spec.get('topo', [])
+    topo = json.dumps({'us_states': TOPO_US} if 'us_states' in topo_keys else {}, separators=(',',':'))
     html = TEMPLATE.format(title=spec['title'], libtags=libtags, data=data,
-                           spec=specdata, shared=SHARED_GLOBAL, body=body)
+                           spec=specdata, topo=topo, shared=SHARED_GLOBAL, body=body)
     out = ROOT/'viz'/(spec['id']+'.html')
     out.write_text(html)
     return out, len(html)
