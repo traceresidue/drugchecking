@@ -13,6 +13,8 @@ const fs = require('fs');
     page.on('pageerror', e => errors.push('PAGEERROR: ' + e.message));
     page.on('console', msg => { if (msg.type() === 'error') errors.push('CONSOLE: ' + msg.text()); });
     const url = 'file://' + path.join(dir, f);
+    // Seed auth token so the guard doesn't redirect before the viz loads
+    await page.addInitScript(() => localStorage.setItem('dcf_auth', Date.now()));
     try {
       await page.goto(url, { waitUntil: 'networkidle', timeout: 30000 });
       await page.waitForTimeout(1200);

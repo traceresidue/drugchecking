@@ -39,6 +39,16 @@ LIBS = {
  'topojson':'<script src="lib/topojson-client.min.js"></script>',
 }
 
+# Auth guard: redirect to login if no session. Path is relative to viz/ — 2 levels up to repo root.
+AUTH_GUARD = """<script>
+(function(){{
+  if(!localStorage.getItem('dcf_auth')){{
+    var loc=encodeURIComponent(location.href);
+    location.replace('../../index.html?r='+encodeURIComponent(location.pathname));
+  }}
+}})();
+</script>"""
+
 TEMPLATE = """<!doctype html>
 <html lang="en">
 <head>
@@ -48,6 +58,7 @@ TEMPLATE = """<!doctype html>
 {libtags}
 </head>
 <body>
+{auth}
 {nav}
 <script>
 window.DATA = {data};
@@ -111,7 +122,8 @@ def build(spec, reg):
     topo = json.dumps({'us_states': TOPO_US} if 'us_states' in topo_keys else {}, separators=(',',':'))
     nav = make_nav(spec, reg)
     html = TEMPLATE.format(title=spec['title'], libtags=libtags, data=data,
-                           spec=specdata, topo=topo, shared=SHARED_GLOBAL, body=body, nav=nav)
+                           spec=specdata, topo=topo, auth=AUTH_GUARD,
+                           shared=SHARED_GLOBAL, body=body, nav=nav)
     out = ROOT/'viz'/(spec['id']+'.html')
     out.write_text(html)
     return out, len(html)
@@ -119,6 +131,9 @@ def build(spec, reg):
 if __name__=='__main__':
     reg = json.load(open(ROOT/'src'/'registry.json'))
     os.makedirs(ROOT/'viz',exist_ok=True)
+    # Generate root index.html from MAIN_PASSWORD env var (file is gitignored)
+    import subprocess, sys
+    subprocess.run([sys.executable, str(ROOT.parent/'build_index.py')], check=False)
     total=0
     for s in reg:
         try:

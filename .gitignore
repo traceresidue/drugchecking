@@ -10,3 +10,5 @@ node_modules
 .env
 venv/
 *.tgz
+# Generated at build time from MAIN_PASSWORD env var — never commit
+/index.html
