@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Supply Rhythm Machine — Drug Checking Viz</title>
+<script src="lib/d3.min.js"></script>
+</head>
+<body>
+<script>
+(function(){{
+  if(!localStorage.getItem('dcf_auth')){{
+    var loc=encodeURIComponent(location.href);
+    location.replace('../../index.html?r='+encodeURIComponent(location.pathname));
+  }}
+}})();
+</script>
+<style id="dcf-nav-css">
+#dcf-nav{position:fixed;top:0;left:0;right:0;z-index:9999;height:40px;
+  background:rgba(11,14,20,.92);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  border-bottom:1px solid #26304a;display:flex;align-items:center;
+  font-family:ui-monospace,monospace;font-size:12px;padding:0 4px}
+#dcf-nav a,#dcf-nav span.nav-btn{display:flex;align-items:center;height:40px;padding:0 12px;
+  text-decoration:none;white-space:nowrap;color:#8b94a8;transition:color .1s,background .1s;border-radius:4px}
+#dcf-nav a:hover{color:#e8ecf4;background:rgba(255,255,255,.05)}
+#dcf-nav .nav-home{color:#6ee7a8;border-right:1px solid #26304a;margin-right:4px;border-radius:0}
+#dcf-nav .nav-home:hover{color:#e8ecf4;background:rgba(110,231,168,.08)}
+#dcf-nav .nav-title{flex:1;text-align:center;color:#5b6478;font-size:11px;
+  overflow:hidden;text-overflow:ellipsis;padding:0 8px}
+#dcf-nav .nav-dim{color:#2d3648;cursor:default;pointer-events:none}
+body{padding-top:40px}
+</style><nav id="dcf-nav"><a href="../../index.html" class="nav-home">&#8962;&nbsp;All</a><a href="28-temporal-crosssection.html" class="nav-arrow" title="#28 Temporal Cross-Section">&#8592; 28</a><span class="nav-title">Nº 29 · Supply Rhythm Machine</span><a href="30-spectral-theremin.html" class="nav-arrow" title="#30 Spectral Theremin">30 &#8594;</a></nav>
+<script>
+window.DATA = {"monthly_class":[{"month":"2022-01","cls":"coke","n":4},{"month":"2022-01","cls":"cut","n":5},{"month":"2022-01","cls":"fent","n":7},{"month":"2022-01","cls":"opioid","n":4},{"month":"2022-01","cls":"other","n":2},{"month":"2022-01","cls":"stim","n":1},{"month":"2022-01","cls":"xyl","n":2},{"month":"2022-02","cls":"benzo","n":1},{"month":"2022-02","cls":"coke","n":17},{"month":"2022-02","cls":"cut","n":17},{"month":"2022-02","cls":"fent","n":28},{"month":"2022-02","cls":"opioid","n":7},{"month":"2022-02","cls":"other","n":7},{"month":"2022-02","cls":"stim","n":5},{"month":"2022-02","cls":"xyl","n":11},{"month":"2022-03","cls":"coke","n":24},{"month":"2022-03","cls":"cut","n":21},{"month":"2022-03","cls":"fent","n":25},{"month":"2022-03","cls":"opioid","n":13},{"month":"2022-03","cls":"other","n":15},{"month":"2022-03","cls":"stim","n":6},{"month":"2022-03","cls":"xyl","n":9},{"month":"2022-04","cls":"coke","n":5},{"month":"2022-04","cls":"cut","n":3},{"month":"2022-04","cls":"fent","n":2},{"month":"2022-04","cls":"opioid","n":1},{"month":"2022-04","cls":"other","n":3},{"month":"2022-04","cls":"stim","n":2},{"month":"2022-05","cls":"fent","n":2},{"month":"2022-05","cls":"other","n":1},{"month":"2022-05","cls":"xyl","n":1},{"month":"2022-06","cls":"benzo","n":1},{"month":"2022-06","cls":"coke","n":6},{"month":"2022-06","cls":"cut","n":6},{"month":"2022-06","cls":"fent","n":14},{"month":"2022-06","cls":"opioid","n":5},{"month":"2022-06","cls":"other","n":13},{"month":"2022-06","cls":"stim","n":7},{"month":"2022-06","cls":"xyl","n":10},{"month":"2022-07","cls":"coke","n":3},{"month":"2022-07","cls":"cut","n":16},{"month":"2022-07","cls":"fent","n":31},{"month":"2022-07","cls":"opioid","n":9},{"month":"2022-07","cls":"other","n":28},{"month":"2022-07","cls":"stim","n":19},{"month":"2022-07","cls":"xyl","n":9},{"month":"2022-08","cls":"benzo","n":2},{"month":"2022-08","cls":"coke","n":12},{"month":"2022-08","cls":"cut","n":34},{"month":"2022-08","cls":"fent","n":53},{"month":"2022-08","cls":"opioid","n":17},{"month":"2022-08","cls":"other","n":30},{"month":"2022-08","cls":"stim","n":24},{"month":"2022-08","cls":"xyl","n":20},{"month":"2022-09","cls":"coke","n":3},{"month":"2022-09","cls":"cut","n":22},{"month":"2022-09","cls":"fent","n":36},{"month":"2022-09","cls":"opioid","n":16},{"month":"2022-09","cls":"other","n":9},{"month":"2022-09","cls":"stim","n":16},{"month":"2022-09","cls":"xyl","n":19},{"month":"2022-10","cls":"benzo","n":3},{"month":"2022-10","cls":"coke","n":13},{"month":"2022-10","cls":"cut","n":24},{"month":"2022-10","cls":"fent","n":31},{"month":"2022-10","cls":"opioid","n":9},{"month":"2022-10","cls":"other","n":16},{"month":"2022-10","cls":"stim","n":29},{"month":"2022-10","cls":"xyl","n":12},{"month":"2022-11","cls":"benzo","n":2},{"month":"2022-11","cls":"coke","n":21},{"month":"2022-11","cls":"cut","n":24},{"month":"2022-11","cls":"fent","n":43},{"month":"2022-11","cls":"opioid","n":12},{"month":"2022-11","cls":"other","n":17},{"month":"2022-11","cls":"stim","n":20},{"month":"2022-11","cls":"xyl","n":18},{"month":"2022-12","cls":"coke","n":8},{"month":"2022-12","cls":"cut","n":7},{"month":"2022-12","cls":"fent","n":14},{"month":"2022-12","cls":"opioid","n":3},{"month":"2022-12","cls":"other","n":8},{"month":"2022-12","cls":"stim","n":11},{"month":"2022-12","cls":"xyl","n":7},{"month":"2023-01","cls":"benzo","n":9},{"month":"2023-01","cls":"coke","n":41},{"month":"2023-01","cls":"cut","n":43},{"month":"2023-01","cls":"fent","n":75},{"month":"2023-01","cls":"opioid","n":21},{"month":"2023-01","cls":"other","n":58},{"month":"2023-01","cls":"stim","n":49},{"month":"2023-01","cls":"xyl","n":15},{"month":"2023-02","cls":"coke","n":4},{"month":"2023-02","cls":"cut","n":8},{"month":"2023-02","cls":"fent","n":13},{"month":"2023-02","cls":"opioid","n":3},{"month":"2023-02","cls":"other","n":9},{"month":"2023-02","cls":"stim","n":6},{"month":"2023-02","cls":"xyl","n":3},{"month":"2023-03","cls":"benzo","n":1},{"month":"2023-03","cls":"coke","n":31},{"month":"2023-03","cls":"cut","n":53},{"month":"2023-03","cls":"fent","n":76},{"month":"2023-03","cls":"opioid","n":22},{"month":"2023-03","cls":"other","n":36},{"month":"2023-03","cls":"stim","n":62},{"month":"2023-03","cls":"xyl","n":19},{"month":"2023-04","cls":"benzo","n":13},{"month":"2023-04","cls":"coke","n":31},{"month":"2023-04","cls":"cut","n":58},{"month":"2023-04","cls":"fent","n":84},{"month":"2023-04","cls":"opioid","n":28},{"month":"2023-04","cls":"other","n":57},{"month":"2023-04","cls":"stim","n":64},{"month":"2023-04","cls":"xyl","n":26},{"month":"2023-05","cls":"benzo","n":13},{"month":"2023-05","cls":"coke","n":20},{"month":"2023-05","cls":"cut","n":33},{"month":"2023-05","cls":"fent","n":65},{"month":"2023-05","cls":"opioid","n":23},{"month":"2023-05","cls":"other","n":38},{"month":"2023-05","cls":"stim","n":62},{"month":"2023-05","cls":"xyl","n":11},{"month":"2023-06","cls":"benzo","n":13},{"month":"2023-06","cls":"coke","n":48},{"month":"2023-06","cls":"cut","n":66},{"month":"2023-06","cls":"fent","n":92},{"month":"2023-06","cls":"opioid","n":26},{"month":"2023-06","cls":"other","n":53},{"month":"2023-06","cls":"stim","n":77},{"month":"2023-06","cls":"xyl","n":25},{"month":"2023-07","cls":"benzo","n":15},{"month":"2023-07","cls":"coke","n":59},{"month":"2023-07","cls":"cut","n":123},{"month":"2023-07","cls":"fent","n":163},{"month":"2023-07","cls":"opioid","n":50},{"month":"2023-07","cls":"other","n":101},{"month":"2023-07","cls":"stim","n":100},{"month":"2023-07","cls":"xyl","n":68},{"month":"2023-08","cls":"benzo","n":15},{"month":"2023-08","cls":"coke","n":30},{"month":"2023-08","cls":"cut","n":72},{"month":"2023-08","cls":"fent","n":73},{"month":"2023-08","cls":"opioid","n":17},{"month":"2023-08","cls":"other","n":40},{"month":"2023-08","cls":"stim","n":62},{"month":"2023-08","cls":"xyl","n":30},{"month":"2023-09","cls":"benzo","n":15},{"month":"2023-09","cls":"coke","n":56},{"month":"2023-09","cls":"cut","n":81},{"month":"2023-09","cls":"fent","n":105},{"month":"2023-09","cls":"opioid","n":17},{"month":"2023-09","cls":"other","n":50},{"month":"2023-09","cls":"stim","n":63},{"month":"2023-09","cls":"xyl","n":40},{"month":"2023-10","cls":"benzo","n":16},{"month":"2023-10","cls":"coke","n":40},{"month":"2023-10","cls":"cut","n":82},{"month":"2023-10","cls":"fent","n":127},{"month":"2023-10","cls":"opioid","n":25},{"month":"2023-10","cls":"other","n":76},{"month":"2023-10","cls":"stim","n":77},{"month":"2023-10","cls":"xyl","n":42},{"month":"2023-11","cls":"benzo","n":12},{"month":"2023-11","cls":"coke","n":42},{"month":"2023-11","cls":"cut","n":69},{"month":"2023-11","cls":"fent","n":109},{"month":"2023-11","cls":"opioid","n":24},{"month":"2023-11","cls":"other","n":77},{"month":"2023-11","cls":"stim","n":77},{"month":"2023-11","cls":"xyl","n":26},{"month":"2023-12","cls":"benzo","n":10},{"month":"2023-12","cls":"coke","n":11},{"month":"2023-12","cls":"cut","n":16},{"month":"2023-12","cls":"fent","n":24},{"month":"2023-12","cls":"opioid","n":10},{"month":"2023-12","cls":"other","n":15},{"month":"2023-12","cls":"stim","n":18},{"month":"2023-12","cls":"xyl","n":8},{"month":"2024-01","cls":"benzo","n":16},{"month":"2024-01","cls":"coke","n":44},{"month":"2024-01","cls":"cut","n":87},{"month":"2024-01","cls":"fent","n":153},{"month":"2024-01","cls":"opioid","n":24},{"month":"2024-01","cls":"other","n":89},{"month":"2024-01","cls":"stim","n":84},{"month":"2024-01","cls":"xyl","n":50},{"month":"2024-02","cls":"benzo","n":6},{"month":"2024-02","cls":"coke","n":34},{"month":"2024-02","cls":"cut","n":48},{"month":"2024-02","cls":"fent","n":84},{"month":"2024-02","cls":"opioid","n":31},{"month":"2024-02","cls":"other","n":44},{"month":"2024-02","cls":"stim","n":71},{"month":"2024-02","cls":"xyl","n":25},{"month":"2024-03","cls":"benzo","n":8},{"month":"2024-03","cls":"coke","n":30},{"month":"2024-03","cls":"cut","n":33},{"month":"2024-03","cls":"fent","n":81},{"month":"2024-03","cls":"opioid","n":18},{"month":"2024-03","cls":"other","n":42},{"month":"2024-03","cls":"stim","n":49},{"month":"2024-03","cls":"xyl","n":32},{"month":"2024-04","cls":"benzo","n":8},{"month":"2024-04","cls":"coke","n":29},{"month":"2024-04","cls":"cut","n":56},{"month":"2024-04","cls":"fent","n":95},{"month":"2024-04","cls":"opioid","n":21},{"month":"2024-04","cls":"other","n":54},{"month":"2024-04","cls":"stim","n":67},{"month":"2024-04","cls":"xyl","n":33},{"month":"2024-05","cls":"benzo","n":28},{"month":"2024-05","cls":"coke","n":47},{"month":"2024-05","cls":"cut","n":111},{"month":"2024-05","cls":"fent","n":168},{"month":"2024-05","cls":"opioid","n":51},{"month":"2024-05","cls":"other","n":92},{"month":"2024-05","cls":"stim","n":98},{"month":"2024-05","cls":"xyl","n":66},{"month":"2024-06","cls":"benzo","n":15},{"month":"2024-06","cls":"coke","n":25},{"month":"2024-06","cls":"cut","n":93},{"month":"2024-06","cls":"fent","n":136},{"month":"2024-06","cls":"opioid","n":17},{"month":"2024-06","cls":"other","n":52},{"month":"2024-06","cls":"stim","n":81},{"month":"2024-06","cls":"xyl","n":51},{"month":"2024-07","cls":"benzo","n":16},{"month":"2024-07","cls":"coke","n":40},{"month":"2024-07","cls":"cut","n":170},{"month":"2024-07","cls":"fent","n":204},{"month":"2024-07","cls":"opioid","n":37},{"month":"2024-07","cls":"other","n":70},{"month":"2024-07","cls":"stim","n":126},{"month":"2024-07","cls":"xyl","n":78},{"month":"2024-08","cls":"benzo","n":19},{"month":"2024-08","cls":"coke","n":66},{"month":"2024-08","cls":"cut","n":250},{"month":"2024-08","cls":"fent","n":272},{"month":"2024-08","cls":"opioid","n":56},{"month":"2024-08","cls":"other","n":159},{"month":"2024-08","cls":"stim","n":155},{"month":"2024-08","cls":"xyl","n":88},{"month":"2024-09","cls":"benzo","n":11},{"month":"2024-09","cls":"coke","n":68},{"month":"2024-09","cls":"cut","n":242},{"month":"2024-09","cls":"fent","n":256},{"month":"2024-09","cls":"opioid","n":74},{"month":"2024-09","cls":"other","n":131},{"month":"2024-09","cls":"stim","n":143},{"month":"2024-09","cls":"xyl","n":101},{"month":"2024-10","cls":"benzo","n":18},{"month":"2024-10","cls":"coke","n":75},{"month":"2024-10","cls":"cut","n":239},{"month":"2024-10","cls":"fent","n":241},{"month":"2024-10","cls":"opioid","n":78},{"month":"2024-10","cls":"other","n":141},{"month":"2024-10","cls":"stim","n":135},{"month":"2024-10","cls":"xyl","n":97},{"month":"2024-11","cls":"benzo","n":20},{"month":"2024-11","cls":"coke","n":75},{"month":"2024-11","cls":"cut","n":172},{"month":"2024-11","cls":"fent","n":188},{"month":"2024-11","cls":"opioid","n":49},{"month":"2024-11","cls":"other","n":102},{"month":"2024-11","cls":"stim","n":122},{"month":"2024-11","cls":"xyl","n":80},{"month":"2024-12","cls":"benzo","n":4},{"month":"2024-12","cls":"coke","n":17},{"month":"2024-12","cls":"cut","n":54},{"month":"2024-12","cls":"fent","n":56},{"month":"2024-12","cls":"opioid","n":15},{"month":"2024-12","cls":"other","n":25},{"month":"2024-12","cls":"stim","n":36},{"month":"2024-12","cls":"xyl","n":26}]};
+window.SPEC = {};
+window.TOPO = {};
+</script>
+<script>
+(function(){
+/* Drug Checking Visualization Framework — shared helpers
+   Loaded by every standalone visualization. Pure ES module, no dependencies.
+   Provides: design tokens (CSS injection), substance classification + palette,
+   spectral synthesis (Gaussian chromatograms, stick spectra, FTIR curves),
+   formatting, tooltip, and a small DOM scaffold builder. */
+
+const TOKENS = {
+  bg:'#0b0e14', panel:'#121826', panel2:'#1a2234', line:'#26304a',
+  ink:'#e8ecf4', muted:'#8b94a8', faint:'#5b6478',
+  opioid:'#ff8a5c', fent:'#ff5c7a', xyl:'#b388ff', stim:'#ffd166',
+  coke:'#4cc9f0', benzo:'#7aa2ff', cut:'#6ee7a8', other:'#94a3b8',
+  alert:'#ff5c7a', watch:'#ffd166', ok:'#6ee7a8', info:'#4cc9f0'
+};
+
+/* Map a substance name -> {class, color, label, action} */
+const CLASS = {
+  fent:{color:TOKENS.fent,label:'Fentanyl & analogs'},
+  opioid:{color:TOKENS.opioid,label:'Opioid'},
+  xyl:{color:TOKENS.xyl,label:'Sedative / xylazine'},
+  stim:{color:TOKENS.stim,label:'Stimulant'},
+  coke:{color:TOKENS.coke,label:'Cocaine'},
+  benzo:{color:TOKENS.benzo,label:'Benzodiazepine'},
+  cut:{color:TOKENS.cut,label:'Cut / diluent'},
+  other:{color:TOKENS.other,label:'Other'}
+};
+const RULES = [
+  [/fentanyl|anpp|despropionyl|norfentanyl|acetylfentanyl|n-phenylpropanamide|phenethyl/i,'fent'],
+  [/nitazene|etonitazene|metonitazene|protonitazene|isotonitazene/i,'fent'],
+  [/heroin|morphine|codeine|6-mam|monoacetylmorphine|oxycodone|hydromorphone|tramadol|mitragynine|opioid/i,'opioid'],
+  [/xylazine|medetomidine|detomidine|clonidine/i,'xyl'],
+  [/bromazolam|flualprazolam|alprazolam|etizolam|diazepam|clonazolam|benzodiazep|flubromazolam|diclazepam/i,'benzo'],
+  [/methamphetamine|amphetamine|mdma|cathinone|methylenedioxy|n,n-dimethylamphetamine/i,'stim'],
+  [/cocaine|benzoylecgonine|ecgonine/i,'coke'],
+  [/caffeine|acetaminophen|paracetamol|lidocaine|levamisole|quinine|mannitol|lactose|sucrose|cellulose|diphenhydramine|sulfone|msm|sugar|inositol|procaine|benzocaine|phenacetin|gabapentin|dimethyl|sebacate|btmps|piperidyl|boric|sorbitol|maltose|glucose|creatine|diacetin|tetramethyl/i,'cut'],
+];
+function classify(name=''){
+  const n = String(name).toLowerCase();
+  for(const [re,c] of RULES) if(re.test(n)) return {cls:c,...CLASS[c]};
+  return {cls:'other',...CLASS.other};
+}
+
+/* ---- formatting ---- */
+const fmt = {
+  mz:v=>`${(+v).toFixed(0)}`,
+  rt:v=>`${(+v).toFixed(2)}`,
+  pct:v=>`${(+v).toFixed(0)}%`,
+  int:v=>(+v).toLocaleString('en-US'),
+  month:m=>{const [y,mo]=m.split('-');return new Date(y,mo-1).toLocaleDateString('en-US',{month:'short',year:'2-digit'});}
+};
+
+/* ---- spectral synthesis ---- */
+// Sum-of-Gaussians chromatogram trace. peaks:[{rt,amp}], returns {x:[],y:[]}
+function chromatogram(peaks,{x0=2,x1=13,n=900,sigma=0.045}={}){
+  const x=[],y=[];
+  for(let i=0;i<n;i++){
+    const t=x0+(x1-x0)*i/(n-1); x.push(t);
+    let v=0; for(const p of peaks){const d=(t-p.rt)/(p.sigma||sigma); v+=p.amp*Math.exp(-0.5*d*d);}
+    y.push(v);
+  }
+  const mx=Math.max(...y,1e-9);
+  return {x,y:y.map(v=>v/mx*100)};
+}
+// FTIR absorbance curve from bands [[center,intensity,width],...]; reversed x handled by caller
+function ftirCurve(bands,{x0=4000,x1=400,n=1100}={}){
+  const x=[],y=[];
+  for(let i=0;i<n;i++){
+    const w=x0+(x1-x0)*i/(n-1); x.push(w);
+    let v=0; for(const [c,I,wd] of bands){const d=(w-c)/(wd||20); v+=I*Math.exp(-0.5*d*d);}
+    y.push(v);
+  }
+  return {x,y}; // y in absorbance-ish 0..~1
+}
+// Mass spectrum sticks: returns sorted peaks with base-peak normalization
+function stickSpectrum(peaks){
+  const mx=Math.max(...peaks.map(p=>p[1]),1);
+  return peaks.map(([mz,i])=>({mz,i:i/mx*100})).sort((a,b)=>a.mz-b.mz);
+}
+// cosine similarity between two stick spectra (binned at 1 m/z)
+function cosine(a,b,tol=0.5){
+  let dot=0,na=0,nb=0; const used=new Set();
+  for(const pa of a){na+=pa.i*pa.i;}
+  for(const pb of b){nb+=pb.i*pb.i;}
+  for(const pa of a){let best=null,bd=tol; for(let k=0;k<b.length;k++){if(used.has(k))continue;const d=Math.abs(pa.mz-b[k].mz); if(d<=bd){bd=d;best=k;}} if(best!=null){dot+=pa.i*b[best].i;used.add(best);}}
+  return dot/(Math.sqrt(na)*Math.sqrt(nb)||1);
+}
+
+/* ---- tooltip ---- */
+let _tt;
+function tooltip(){
+  if(_tt) return _tt;
+  _tt=document.createElement('div');
+  _tt.style.cssText=`position:fixed;pointer-events:none;z-index:99;background:${TOKENS.panel2};border:1px solid ${TOKENS.line};border-radius:8px;padding:8px 10px;font:12px/1.4 Inter,system-ui;color:${TOKENS.ink};box-shadow:0 6px 24px rgba(0,0,0,.5);opacity:0;transition:opacity .12s;max-width:260px`;
+  document.body.appendChild(_tt);
+  return {
+    show(html,x,y){_tt.innerHTML=html;_tt.style.opacity=1;const r=_tt.getBoundingClientRect();let nx=x+14,ny=y+14;if(nx+r.width>innerWidth)nx=x-r.width-14;if(ny+r.height>innerHeight)ny=y-r.height-14;_tt.style.left=nx+'px';_tt.style.top=ny+'px';},
+    hide(){_tt.style.opacity=0;}
+  };
+}
+
+/* ---- page scaffold + global CSS ---- */
+function scaffold({tag,title,dek,how,provenance,harm}={}){
+  injectCSS();
+  document.body.innerHTML=`
+    <header class="dcf-h">
+      <div class="dcf-tag">${tag||''}</div>
+      <h1>${title||''}</h1>
+      <p class="dek">${dek||''}</p>
+    </header>
+    <main id="stage"></main>
+    <details class="dcf-how"><summary>How to read this</summary><div>${how||''}</div></details>
+    <footer class="dcf-f">
+      <p class="prov">${provenance||''}</p>
+      ${harm?`<p class="harm">${harm}</p>`:''}
+    </footer>`;
+  return document.getElementById('stage');
+}
+function injectCSS(){
+  if(document.getElementById('dcf-css')) return;
+  const s=document.createElement('style'); s.id='dcf-css';
+  s.textContent=`
+  :root{--bg:${TOKENS.bg};--panel:${TOKENS.panel};--panel2:${TOKENS.panel2};--line:${TOKENS.line};--ink:${TOKENS.ink};--muted:${TOKENS.muted};--faint:${TOKENS.faint}}
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
+  body{max-width:1180px;margin:0 auto;padding:28px 22px 64px}
+  .mono{font-family:ui-monospace,"SF Mono","Cascadia Mono",monospace}
+  .muted{color:var(--muted)} .faint{color:var(--faint)}
+  .dcf-h{margin-bottom:18px;border-bottom:1px solid var(--line);padding-bottom:16px}
+  .dcf-tag{font:600 11px/1 ui-monospace,monospace;letter-spacing:.14em;color:var(--muted);text-transform:uppercase;margin-bottom:10px}
+  .dcf-h h1{font-size:27px;line-height:1.15;margin:0 0 8px;font-weight:700;letter-spacing:-.01em}
+  .dek{font-size:15px;line-height:1.5;color:var(--muted);margin:0;max-width:74ch}
+  #stage{margin:18px 0}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px}
+  .dcf-how{margin:22px 0 8px;border:1px solid var(--line);border-radius:10px;background:var(--panel);overflow:hidden}
+  .dcf-how summary{cursor:pointer;padding:12px 16px;font-weight:600;font-size:13px;color:var(--ink);list-style:none}
+  .dcf-how summary::before{content:"ⓘ ";color:var(--muted)}
+  .dcf-how[open] summary{border-bottom:1px solid var(--line)}
+  .dcf-how>div{padding:14px 16px;font-size:13.5px;line-height:1.6;color:var(--muted)}
+  .dcf-how b{color:var(--ink)}
+  .dcf-f{margin-top:26px;padding-top:14px;border-top:1px solid var(--line);font-size:12px;line-height:1.5}
+  .dcf-f .prov{color:var(--faint);margin:0 0 6px}
+  .dcf-f .harm{color:var(--muted);margin:0;padding-left:11px;border-left:3px solid ${TOKENS.ok}}
+  button.tgl{background:var(--panel);color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:7px 13px;font:500 13px Inter;cursor:pointer;transition:.15s}
+  button.tgl:hover{background:var(--panel2);color:var(--ink)}
+  button.tgl[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+  .controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+  input[type=range]{accent-color:${TOKENS.info}}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:10px}
+  .legend i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+  @media (prefers-reduced-motion:reduce){*{animation-duration:.001ms!important;transition-duration:.001ms!important}}
+  `;
+  document.head.appendChild(s);
+}
+
+/* draw a 2D structure from SMILES into a <canvas id=...>; needs SmilesDrawer loaded.
+   Uses the dark theme tuned to the framework background. No-ops gracefully if absent. */
+function drawSmiles(smiles,canvasId,w=160,h=120){
+  const el=document.getElementById(canvasId);
+  if(!el||typeof SmilesDrawer==='undefined'||!smiles){ if(el){const c=el.getContext&&el.getContext('2d');if(c){c.fillStyle='#5b6478';c.font='11px Inter';c.fillText('structure n/a',8,h/2);}} return; }
+  try{
+    const drawer=new SmilesDrawer.Drawer({width:w,height:h,padding:14,bondThickness:1.1,
+      themes:{dcf:{C:'#cfd6e4',N:'#7aa2ff',O:'#ff8a5c',F:'#6ee7a8',S:'#ffd166',Cl:'#6ee7a8',Br:'#ff8a5c',
+        BACKGROUND:'#0e1320',bond:'#9aa6bd',default:'#cfd6e4'}}});
+    SmilesDrawer.parse(smiles,t=>drawer.draw(t,canvasId,'dcf',false),()=>{});
+  }catch(e){}
+}
+
+
+window.DCF={TOKENS,classify,fmt,chromatogram,ftirCurve,stickSpectrum,cosine,tooltip,scaffold,injectCSS,drawSmiles};
+
+})();
+</script>
+<script>
+/* Nº 29 · Supply Rhythm Machine — the drug supply as a looping drum machine.
+   Each substance class is a track with a distinct tone; monthly detection data
+   drives which steps are "on." The rhythm of the supply, made audible via
+   Web Audio API. An experimental sonic epidemiology concept. */
+const {scaffold,classify,fmt,TOKENS}=DCF;
+const MC=DATA.monthly_class;
+
+const CLS=[
+  {k:'fent',l:'Fentanyl',freq:110,wave:'sawtooth',color:TOKENS.fent},
+  {k:'opioid',l:'Opioid',freq:165,wave:'sine',color:TOKENS.opioid},
+  {k:'xyl',l:'Xylazine',freq:82.4,wave:'square',color:TOKENS.xyl},
+  {k:'stim',l:'Stimulant',freq:220,wave:'triangle',color:TOKENS.stim},
+  {k:'coke',l:'Cocaine',freq:293.7,wave:'triangle',color:TOKENS.coke},
+  {k:'benzo',l:'Benzo',freq:246.9,wave:'sine',color:TOKENS.benzo},
+  {k:'cut',l:'Cut / Diluent',freq:329.6,wave:'sine',color:TOKENS.cut},
+  {k:'other',l:'Other / Novel',freq:440,wave:'square',color:TOKENS.other},
+];
+
+const STEPS=16;
+const months=[...new Set(MC.map(d=>d.month))].sort();
+
+// Build a step pattern per class from monthly data
+function buildPatterns(recentN=8){
+  const recentMonths=months.slice(-recentN);
+  const patterns={};
+  CLS.forEach(c=>{
+    const vals=recentMonths.map(m=>{
+      const row=MC.find(d=>d.month===m&&d.cls===c.k);
+      return row?row.n:0;
+    });
+    const mx=Math.max(...vals,1);
+    // map each of 16 steps to one of 8 months (doubled), then threshold
+    patterns[c.k]=Array.from({length:STEPS},(_,i)=>{
+      const mIdx=Math.floor(i/(STEPS/recentN));
+      const v=vals[mIdx]/mx;
+      // high months = dense steps; low months = sparse
+      return v>0.6||(v>0.3&&i%2===0)||(v>0.15&&i%4===0);
+    });
+  });
+  return patterns;
+}
+
+const stage=scaffold({
+  tag:'Nº 29 · SONIC',
+  title:'Supply Rhythm Machine',
+  dek:'The drug supply, beatified. Each row is a substance class; each step lights up when that class was prominent in that time window. Press play and hear the supply\'s rhythm — fentanyl\'s relentless pulse, xylazine\'s low throb.',
+  how:`A <b>16-step sequencer</b> where each <b>row</b> is a drug class and each <b>column</b> is a time step. Steps are "on" (lit) when that class was detected heavily in the corresponding recent month. Press <b>▶ play</b> to hear the pattern loop: each class has a distinct tone (fentanyl = low sawtooth, xylazine = very low square wave, stimulants = high triangle). Toggle individual steps to edit the pattern. <b>This is experimental</b> — a sonification concept for teaching supply dynamics to non-data audiences.`,
+  provenance:'Step patterns derived from real monthly substance class counts (6,580 samples, most recent 8 months).',
+  harm:'Even in quieter months, the supply is dangerous. A slow rhythm is not a safe supply.'
+});
+
+stage.innerHTML=`
+<div class="controls" style="align-items:center">
+  <button class="tgl" id="playBtn" aria-pressed="false">▶ play</button>
+  <label class="muted" style="font-size:12px;margin-left:12px">tempo:</label>
+  <input type="range" id="tempo" min="60" max="200" value="120" style="width:100px;accent-color:${TOKENS.fent}">
+  <span class="mono muted" id="bpmLbl">120 bpm</span>
+  <label class="muted" style="font-size:12px;margin-left:12px">volume:</label>
+  <input type="range" id="vol" min="0" max="1" step=".05" value=".4" style="width:80px;accent-color:${TOKENS.xyl}">
+</div>
+<div id="sequencer" style="margin-top:14px;display:flex;flex-direction:column;gap:6px"></div>
+<div class="muted" style="font-size:11px;margin-top:12px">Click any step to toggle it on/off. Brighter = stronger signal from the data. Lit steps play that class's tone.</div>`;
+
+const patterns=buildPatterns(8);
+const stepEls={}; // k → array of 16 button elements
+
+// Build the sequencer grid
+const seqEl=document.getElementById('sequencer');
+CLS.forEach(c=>{
+  const row=document.createElement('div');
+  row.style.cssText='display:flex;align-items:center;gap:5px';
+  const label=document.createElement('div');
+  label.style.cssText=`width:96px;font-size:11px;font-weight:600;color:${c.color};flex-shrink:0;text-align:right;padding-right:8px`;
+  label.textContent=c.l;
+  row.appendChild(label);
+  stepEls[c.k]=[];
+  for(let i=0;i<STEPS;i++){
+    const btn=document.createElement('button');
+    const on=patterns[c.k][i];
+    btn.style.cssText=`width:34px;height:32px;border-radius:5px;border:1.5px solid ${on?c.color:TOKENS.line};background:${on?c.color+'33':'transparent'};cursor:pointer;transition:.1s;${i%4===0?'margin-left:4px':''}`;
+    btn.setAttribute('aria-label',`${c.l} step ${i+1} ${on?'on':'off'}`);
+    btn.dataset.on=on?'1':'0';
+    btn.onclick=()=>{
+      const nowOn=btn.dataset.on==='1';
+      btn.dataset.on=nowOn?'0':'1';
+      patterns[c.k][i]=!nowOn;
+      btn.style.background=!nowOn?c.color+'33':'transparent';
+      btn.style.borderColor=!nowOn?c.color:TOKENS.line;
+    };
+    stepEls[c.k].push(btn);
+    row.appendChild(btn);
+  }
+  seqEl.appendChild(row);
+});
+
+// Web Audio sequencer
+let ctx=null, playing=false, curStep=0, nextTime=0, interval=null;
+const gainNodes={};
+
+function getCtx(){if(!ctx) ctx=new(window.AudioContext||window.webkitAudioContext)();return ctx;}
+
+function playStep(step){
+  const ac=getCtx();
+  const vol=+document.getElementById('vol').value;
+  CLS.forEach(c=>{
+    // highlight current step
+    stepEls[c.k].forEach((b,i)=>{
+      const on=b.dataset.on==='1';
+      b.style.background=i===step?(on?c.color+'88':'rgba(255,255,255,0.07)'):(on?c.color+'33':'transparent');
+    });
+    if(!patterns[c.k][step]) return;
+    const osc=ac.createOscillator();
+    const g=ac.createGain();
+    osc.type=c.wave;
+    osc.frequency.value=c.freq;
+    g.gain.setValueAtTime(vol*0.22,nextTime);
+    g.gain.exponentialRampToValueAtTime(0.0001,nextTime+0.18);
+    osc.connect(g); g.connect(ac.destination);
+    osc.start(nextTime); osc.stop(nextTime+0.2);
+  });
+}
+
+function schedule(){
+  const bpm=+document.getElementById('tempo').value;
+  const stepLen=60/bpm/4;
+  const ac=getCtx();
+  while(nextTime<ac.currentTime+0.1){
+    playStep(curStep%STEPS);
+    nextTime+=stepLen;
+    curStep++;
+  }
+}
+
+const playBtn=document.getElementById('playBtn');
+playBtn.onclick=()=>{
+  if(playing){
+    clearInterval(interval); playing=false; playBtn.textContent='▶ play'; playBtn.setAttribute('aria-pressed','false');
+    // reset highlights
+    CLS.forEach(c=>stepEls[c.k].forEach((b,i)=>{const on=b.dataset.on==='1';b.style.background=on?c.color+'33':'transparent';}));
+  } else {
+    const ac=getCtx();
+    if(ac.state==='suspended') ac.resume();
+    nextTime=ac.currentTime; curStep=0; playing=true;
+    playBtn.textContent='❚❚ stop'; playBtn.setAttribute('aria-pressed','true');
+    interval=setInterval(schedule,25);
+  }
+};
+document.getElementById('tempo').oninput=function(){document.getElementById('bpmLbl').textContent=this.value+' bpm';};
+
+</script>
+</body>
+</html>

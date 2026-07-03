@@ -8,8 +8,32 @@
 </head>
 <body>
 <script>
+(function(){{
+  if(!localStorage.getItem('dcf_auth')){{
+    var loc=encodeURIComponent(location.href);
+    location.replace('../../index.html?r='+encodeURIComponent(location.pathname));
+  }}
+}})();
+</script>
+<style id="dcf-nav-css">
+#dcf-nav{position:fixed;top:0;left:0;right:0;z-index:9999;height:40px;
+  background:rgba(11,14,20,.92);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  border-bottom:1px solid #26304a;display:flex;align-items:center;
+  font-family:ui-monospace,monospace;font-size:12px;padding:0 4px}
+#dcf-nav a,#dcf-nav span.nav-btn{display:flex;align-items:center;height:40px;padding:0 12px;
+  text-decoration:none;white-space:nowrap;color:#8b94a8;transition:color .1s,background .1s;border-radius:4px}
+#dcf-nav a:hover{color:#e8ecf4;background:rgba(255,255,255,.05)}
+#dcf-nav .nav-home{color:#6ee7a8;border-right:1px solid #26304a;margin-right:4px;border-radius:0}
+#dcf-nav .nav-home:hover{color:#e8ecf4;background:rgba(110,231,168,.08)}
+#dcf-nav .nav-title{flex:1;text-align:center;color:#5b6478;font-size:11px;
+  overflow:hidden;text-overflow:ellipsis;padding:0 8px}
+#dcf-nav .nav-dim{color:#2d3648;cursor:default;pointer-events:none}
+body{padding-top:40px}
+</style><nav id="dcf-nav"><a href="../../index.html" class="nav-home">&#8962;&nbsp;All</a><a href="06-spectral-ridgeline.html" class="nav-arrow" title="#06 Batch Ridgeline Fingerprints">&#8592; 06</a><span class="nav-title">Nº 07 · FTIR Waterfall (3D)</span><a href="08-mass-defect-map.html" class="nav-arrow" title="#08 Mass-Defect Constellation">08 &#8594;</a></nav>
+<script>
 window.DATA = {};
 window.SPEC = {"ftir":{"fentanyl":[[3030,0.18,30],[2935,0.32,45],[2810,0.18,40],[1645,0.95,28],[1495,0.45,18],[1450,0.42,20],[1412,0.35,16],[1305,0.28,18],[1242,0.4,20],[1135,0.25,18],[1032,0.22,15],[745,0.65,14],[700,0.7,12]],"xylazine":[[3170,0.22,50],[2920,0.3,45],[1602,0.88,24],[1558,0.8,22],[1470,0.46,20],[1378,0.3,16],[1320,0.4,18],[1232,0.28,16],[1090,0.22,15],[765,0.62,14]],"lactose":[[3330,0.75,180],[2900,0.22,60],[1650,0.12,40],[1420,0.18,30],[1340,0.2,25],[1140,0.45,20],[1070,0.78,22],[1030,0.85,20],[990,0.5,16],[916,0.3,14],[875,0.25,14]],"caffeine":[[3110,0.15,30],[2950,0.14,40],[1700,0.9,22],[1655,0.95,24],[1600,0.42,18],[1548,0.5,18],[1483,0.46,18],[1360,0.4,16],[1238,0.36,16],[1024,0.22,14],[745,0.4,12]],"methamphetamine":[[2960,0.8,90],[2700,0.45,70],[2450,0.25,60],[1605,0.18,16],[1495,0.3,14],[1455,0.4,18],[1380,0.22,14],[1060,0.18,14],[745,0.55,12],[700,0.6,12]],"cocaine":[[2950,0.3,50],[2550,0.2,60],[1730,0.92,20],[1712,0.85,18],[1450,0.3,18],[1265,0.8,22],[1230,0.55,18],[1105,0.5,16],[1070,0.35,14],[728,0.6,12],[712,0.5,10]],"heroin":[[2940,0.28,50],[1762,0.85,20],[1738,0.8,20],[1600,0.2,16],[1450,0.3,16],[1368,0.4,16],[1245,0.75,22],[1175,0.5,16],[1115,0.3,14],[905,0.3,12]],"fentanyl_street_mix":"computed","mannitol":[[3280,0.8,160],[2940,0.3,55],[1420,0.25,24],[1280,0.3,20],[1080,0.75,20],[1018,0.85,18],[930,0.4,14],[875,0.3,12]]}};
+window.TOPO = {};
 </script>
 <script>
 const NAV_REGISTRY = [{"id":"01-mirror-match","n":1,"cat":"MS","title":"Spectral Mirror Match"},{"id":"02-chromatogram-explorer","n":2,"cat":"GC\u2013MS","title":"Annotated Chromatogram Explorer"},{"id":"03-ftir-overlay","n":3,"cat":"FTIR","title":"FTIR Overlay & Subtraction Bench"},{"id":"04-fragment-tree","n":4,"cat":"MS","title":"Fragmentation Radial"},{"id":"05-chromatogram-3d","n":5,"cat":"GC\u2013MS","title":"GC\u2013MS Data Cube (3D)"},{"id":"06-spectral-ridgeline","n":6,"cat":"GC\u2013MS","title":"Batch Ridgeline Fingerprints"},{"id":"06a-ridgeline-filled","n":6,"cat":"GC\u2013MS","title":"Batch Ridgeline \u2014 Class Fills"},{"id":"06b-ridgeline-3d","n":6,"cat":"GC\u2013MS","title":"Batch Ridgeline \u2014 3D Terrain"},{"id":"06c-ridgeline-filter","n":6,"cat":"GC\u2013MS","title":"Batch Ridgeline \u2014 Class Focus"},{"id":"07-ftir-waterfall","n":7,"cat":"FTIR","title":"FTIR Waterfall (3D)"},{"id":"08-mass-defect-map","n":8,"cat":"MS","title":"Mass-Defect Constellation"},{"id":"09-sonification","n":9,"cat":"EXPERIMENTAL","title":"Hear the Spectrum (Sonification)"},{"id":"10-chemical-space","n":10,"cat":"EXPERIMENTAL","title":"Chemical-Space Drift"},{"id":"11-supply-streamgraph","n":11,"cat":"SUPPLY","title":"Supply Composition Streamgraph"},{"id":"12-cooccurrence-chord","n":12,"cat":"SUPPLY","title":"Adulterant Co-occurrence Chord"},{"id":"12a-co-nested","n":12,"cat":"SUPPLY","title":"Nested Co-occurrence Chord"},{"id":"12b-chord-sankey","n":12,"cat":"SUPPLY","title":"Chord \u2192 Sankey Co-occurrence"},{"id":"12c-co-undirected","n":12,"cat":"SUPPLY","title":"Undirected Co-occurrence Chord"},{"id":"13-expected-detected-sankey","n":13,"cat":"SUPPLY","title":"Expected vs. Detected Sankey"},{"id":"14-horizon-wall","n":14,"cat":"SUPPLY","title":"Substance Horizon Wall"},{"id":"15-emergence-beeswarm","n":15,"cat":"SUPPLY","title":"Novel-Substance Emergence Swarm"},{"id":"16-supply-terrain-3d","n":16,"cat":"SUPPLY","title":"Supply Terrain (3D)"},{"id":"17-adulterant-network","n":17,"cat":"SUPPLY","title":"Adulterant Force Network"},{"id":"17a-adulterant-pull","n":17,"cat":"SUPPLY","title":"Adulterant Pull Network"},{"id":"17b-adulterant-3d","n":17,"cat":"SUPPLY","title":"Adulterant Network (3D)"},{"id":"17c-adulterant-orbit","n":17,"cat":"SUPPLY","title":"Adulterant Orbit Graph"},{"id":"18-result-card","n":18,"cat":"RESULT","title":"Sample Result Card"},{"id":"19-expected-reality-gap","n":19,"cat":"RESULT","title":"Expected-Reality Gap"},{"id":"20-potency-uncertainty","n":20,"cat":"RESULT","title":"Potency Uncertainty Gauge"},{"id":"21-geo-tilegrid","n":21,"cat":"GEO","title":"Supply Tile-Grid Cartogram"},{"id":"22-xylazine-spread","n":22,"cat":"GEO","title":"Xylazine Spread Timeline"},{"id":"23-structure-flipbook","n":23,"cat":"MS","title":"Structure Flipbook"},{"id":"24-anatomy-scrolly","n":24,"cat":"RESULT","title":"Anatomy of a Sample (Scrollytelling)"},{"id":"25-glyph-garden","n":25,"cat":"EXPERIMENTAL","title":"Sample Glyph Garden"}];

@@ -12,6 +12,7 @@ import json, re, os, pathlib
 ROOT = pathlib.Path(__file__).parent
 AGG = json.load(open(ROOT/'data'/'aggregates.json'))
 SPEC = json.load(open(ROOT/'data'/'spectra.json'))
+TOPO_US = json.load(open(ROOT/'viz'/'lib'/'us-states.json'))  # TopoJSON for US states
 SHARED = (ROOT/'viz'/'_shared.js').read_text(encoding='utf-8')
 NAV = (ROOT/'viz'/'_nav.js').read_text(encoding='utf-8')
 
@@ -41,6 +42,16 @@ LIBS = {
  'topojson':'<script src="lib/topojson-client.min.js"></script>',
 }
 
+# Auth guard: redirect to login if no session. Path is relative to viz/ — 2 levels up to repo root.
+AUTH_GUARD = """<script>
+(function(){{
+  if(!localStorage.getItem('dcf_auth')){{
+    var loc=encodeURIComponent(location.href);
+    location.replace('../../index.html?r='+encodeURIComponent(location.pathname));
+  }}
+}})();
+</script>"""
+
 TEMPLATE = """<!doctype html>
 <html lang="en">
 <head>
@@ -50,9 +61,11 @@ TEMPLATE = """<!doctype html>
 {libtags}
 </head>
 <body>
+{auth}
 <script>
 window.DATA = {data};
 window.SPEC = {spec};
+window.TOPO = {topo};
 </script>
 <script>
 const NAV_REGISTRY = {nav_registry};
@@ -78,6 +91,7 @@ INDEX_TEMPLATE = """<!doctype html>
 <title>Drug Checking Visualizations</title>
 </head>
 <body>
+{auth}
 <script>
 const NAV_REGISTRY = {nav_registry};
 const NAV_MODE = "viz";
@@ -118,8 +132,11 @@ def build(spec, reg):
     libtags = '\n'.join(LIBS[l] for l in spec.get('libs',[]))
     data = json.dumps({k:AGG[k] for k in spec.get('data',[])}, separators=(',',':'))
     specdata = json.dumps({k:SPEC[k] for k in spec.get('spec',[])}, separators=(',',':')) if spec.get('spec') else '{}'
+    topo_keys = spec.get('topo', [])
+    topo = json.dumps({'us_states': TOPO_US} if 'us_states' in topo_keys else {}, separators=(',',':'))
     html = TEMPLATE.format(
         title=spec['title'], libtags=libtags, data=data, spec=specdata,
+        topo=topo, auth=AUTH_GUARD,
         shared=SHARED_GLOBAL, body=body, nav=NAV_GLOBAL,
         nav_registry=nav_registry_json(reg),
         nav_page_id=json.dumps(spec['id']),
@@ -132,6 +149,7 @@ def build_index(reg):
     html = INDEX_TEMPLATE.format(
         nav=NAV_GLOBAL,
         shared=SHARED_GLOBAL,
+        auth=AUTH_GUARD,
         nav_registry=nav_registry_json(reg),
         count=len(reg),
     )
@@ -142,6 +160,9 @@ def build_index(reg):
 if __name__=='__main__':
     reg = json.load(open(ROOT/'src'/'registry.json', encoding='utf-8'))
     os.makedirs(ROOT/'viz',exist_ok=True)
+    # Generate root index.html from MAIN_PASSWORD env var (file is gitignored)
+    import subprocess, sys
+    subprocess.run([sys.executable, str(ROOT.parent/'build_index.py')], check=False)
     total=0
     for s in reg:
         try:
