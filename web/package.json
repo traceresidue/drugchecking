@@ -1,0 +1,20 @@
+{
+  "name": "dcf-web",
+  "private": true,
+  "version": "0.1.0",
+  "description": "npm-workspaces monorepo for the drug-checking visualization framework (ROADMAP Track A)",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.0",
+    "typescript": "^5.6.0",
+    "vitest": "^3.0.0"
+  }
+}

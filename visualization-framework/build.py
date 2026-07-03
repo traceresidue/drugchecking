@@ -10,10 +10,15 @@ src/<id>.js. Data slices are inlined from data/*.json.
 """
 import json, re, os, pathlib
 ROOT = pathlib.Path(__file__).parent
-AGG = json.load(open(ROOT/'data'/'aggregates.json'))
-SPEC = json.load(open(ROOT/'data'/'spectra.json'))
-TOPO_US = json.load(open(ROOT/'viz'/'lib'/'us-states.json'))  # TopoJSON for US states
-SHARED = (ROOT/'viz'/'_shared.js').read_text(encoding='utf-8')
+AGG = json.load(open(ROOT/'data'/'aggregates.json', encoding='utf-8'))
+SPEC = json.load(open(ROOT/'data'/'spectra.json', encoding='utf-8'))
+TOPO_US = json.load(open(ROOT/'viz'/'lib'/'us-states.json', encoding='utf-8'))  # TopoJSON for US states
+
+# Prefer the typed dcf-core build (web/packages/dcf-core, ROADMAP Track A1) once
+# it's been built; fall back to the hand-rolled ES module so builds still work
+# before `npm run build` has been run in web/.
+_DCF_CORE_DIST = ROOT.parent/'web'/'packages'/'dcf-core'/'dist'/'shared.js'
+SHARED = (_DCF_CORE_DIST if _DCF_CORE_DIST.exists() else ROOT/'viz'/'_shared.js').read_text(encoding='utf-8')
 NAV = (ROOT/'viz'/'_nav.js').read_text(encoding='utf-8')
 
 # Turn the ES module into a global-exposing IIFE: strip `export ` and the loadData fetch helper.
@@ -159,6 +164,7 @@ def build_index(reg):
 
 if __name__=='__main__':
     reg = json.load(open(ROOT/'src'/'registry.json', encoding='utf-8'))
+    print(f"shared bundle: {'dcf-core (built)' if _DCF_CORE_DIST.exists() else 'viz/_shared.js (legacy)'}")
     os.makedirs(ROOT/'viz',exist_ok=True)
     # Generate root index.html from MAIN_PASSWORD env var (file is gitignored)
     import subprocess, sys
