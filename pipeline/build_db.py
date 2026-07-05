@@ -26,6 +26,7 @@ from pathlib import Path
 
 from adapters.base import BaseAdapter, ParsedBatch
 from adapters.jcamp_ftir import JCAMPFTIRAdapter
+from adapters.mona_json import MoNAJSONAdapter
 from adapters.msp_library import MSPLibraryAdapter
 from adapters.unc_demo import UNCDemoAdapter
 
@@ -39,6 +40,7 @@ ADAPTERS: list[BaseAdapter] = [
     UNCDemoAdapter(),      # B0: chemdictionary + demo analysis_dataset/lab_detail
     MSPLibraryAdapter(),   # B1: synthetic MSP reference-spectra fixture
     JCAMPFTIRAdapter(),    # B1: synthetic JCAMP-DX FTIR reference fixture
+    MoNAJSONAdapter(),     # B1: real, CC-licensed MoNA GC-MS reference-spectra sample
 ]
 
 

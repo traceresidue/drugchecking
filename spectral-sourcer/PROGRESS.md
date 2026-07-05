@@ -87,4 +87,50 @@ Librarian). Updated as work lands, not just at the end.
   doc), Track C (wiring `dcf-library@1` into the 33 existing
   visualizations).
 
+## 2026-07-05 (session 2)
+
+- Surveyed a set of manually-unpacked reference libraries at
+  `/spectra_library` (SWGDRUG 3.14, Cayman Spectral Library, NPS Discovery,
+  NIST 2017/DART-MS, ENFSI, MoNA GC-MS export) against the pipeline's
+  documented capacity gap (`pipeline/README.md`'s "documented, not yet
+  wired to a live network fetch" row).
+- Most of the library is proprietary Agilent ChemStation/NIST MS Search
+  binary format (`.L` directories: `NAME.INU`, `PEAK.DBU`, etc.) or a Windows
+  installer (`NIST17Demo.exe`) -- not parseable without vendor tooling or
+  reverse-engineering a closed binary format, and licensing would block
+  redistribution even if parsed.
+- `MoNA-export-GC-MS_Spectra-json/MoNA-export-GC-MS_Spectra.json` (141MB,
+  19,171 GC-MS records) stood out as the one source that is (a) plain JSON,
+  no vendor format to reverse-engineer, (b) explicitly, individually
+  Creative-Commons-licensed per record (CC BY / CC BY-SA / CC BY-NC-SA --
+  confirmed by sampling), so genuinely redistributable unlike SWGDRUG/NIST,
+  and (c) has real overlap with drug-checking-relevant substances: 38 of its
+  ~20k unique compound names exactly match `chemdictionary.csv` rows,
+  including cocaine, methamphetamine, morphine, codeine, and common cuts
+  (caffeine, lactose, mannitol).
+- Wrote `pipeline/adapters/mona_json.py` (stdlib-only, matches the existing
+  adapter contract) and a real 7-record fixture
+  (`pipeline/fixtures/reference/mona_sample.json`, ~62KB) covering caffeine,
+  mannitol, diazepam, codeine, morphine, cocaine, acetaminophen -- each
+  entry keeping its original per-record CC license in `meta.license` for
+  attribution. Unlike the MSP/JCAMP fixtures, this one is real MoNA data,
+  not synthetic parser-validation data.
+- Added `pipeline/test/test_mona_adapter.py` (13 tests: spectrum-string
+  parsing, fetch/parse shape, per-record license carried through,
+  `only_names`/`limit` filtering, and an end-to-end test confirming all 7
+  substances link to their existing `chemdictionary`-seeded rows with no
+  duplicate substances created). Registered `MoNAJSONAdapter()` in
+  `build_db.py`'s `ADAPTERS` list.
+- Ran `python3 -m unittest discover -s pipeline/test` (56/56 passing,
+  up from 43) and `python3 pipeline/build_db.py` end-to-end: 158
+  substances, 20 samples, 115 detections, **12 reference spectra** (up
+  from 5) -- confirmed by querying the built `.sqlite` directly that all 7
+  MoNA rows have correct `technique='MS'`, `role='reference'`,
+  `format_origin='MoNA-JSON'`, real peak lists (3-255 points depending on
+  the compound), and their genuine per-record license in `meta.license`.
+- Adapter accepts `mona_path=`/`only_names=`/`limit=` so a future session
+  can point it at the full 19k-record export (kept out of the repo/fixture
+  for size, not committed) to widen coverage past this 7-substance sample --
+  `fetch()`/`parse()` don't change, same extension pattern as MSP/JCAMP.
+
 <!-- Append further dated entries below as work lands. -->

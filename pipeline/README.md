@@ -86,8 +86,9 @@ returned dicts, no database required.
 | `unc_demo.py` | **Real, tested.** Loads the checked-in `chemdictionary.csv` and demo `datasets/analysis_dataset.csv` / `datasets/lab_detail.csv`. No network access -- these files are already in the repo. |
 | `msp_library.py` | **Real parser, tested against a fixture.** Hand-written parser for the NIST/SWGDRUG "Key: value" MSP text format. Ships only `fixtures/reference/example.msp`, a synthetic 3-compound fixture authored for parser validation. **Does not fetch real SWGDRUG/NIST MSP libraries over the network** -- that's B1's documented-but-not-implemented remainder. |
 | `jcamp_ftir.py` | **Real parser, tested against a fixture.** Hand-written JCAMP-DX parser (LDR key/value + value/point tables + ASDF-compressed `##XYDATA`). Ships only `fixtures/reference/example.jdx`, a synthetic 2-compound fixture. **Does not fetch real NIST WebBook JCAMP-DX exports over the network.** |
+| `mona_json.py` | **Real parser, tested against a real, licensed 7-record excerpt of MoNA's actual GC-MS export** (`fixtures/reference/mona_sample.json`) -- unlike the MSP/JCAMP fixtures, this one is not synthetic: each record carries its own genuine CC BY / CC BY-SA / CC BY-NC-SA license in `meta.license`, so it's real reference-spectrum data, just a small subset. Point `mona_path=` at the full ~19k-record export (available at https://mona.fiehnlab.ucdavis.edu/downloads, not bundled here for size) to ingest more. |
 | DrugsData.org, Toronto DCS, WEDINOS (B2) | Documented in `docs/ROADMAP.md` only. No adapter module exists yet. |
-| Live SWGDRUG/Cayman/MassBank/NIST WebBook network fetch (B1/B3 "real" fetch path) | Documented only. `fetch()` in `msp_library.py`/`jcamp_ftir.py` currently returns the bundled fixture path, not a downloaded file -- there is no scraping or network I/O anywhere in this pipeline today. |
+| Live SWGDRUG/Cayman/MassBank/NIST WebBook network fetch (B1/B3 "real" fetch path) | Documented only. `fetch()` in `msp_library.py`/`jcamp_ftir.py` currently returns the bundled fixture path, not a downloaded file -- there is no scraping or network I/O anywhere in this pipeline today. `mona_json.py` is the one exception: its fixture is real (see above), just not the full export. |
 | Real mzML sample-spectrum ingestion (B3) | Documented only; no adapter module exists yet. |
 
 **Nobody should read `spectra` rows with `format_origin IN ('MSP', 'JCAMP-DX')`
@@ -95,7 +96,10 @@ in the current build as real SWGDRUG/NIST reference data** -- check the
 `sources.license`/`sources.terms` columns (both literally say "synthetic
 fixture for parser validation; not redistributed licensed data") or the
 `meta.comment` / fixture file header comments before treating any of this
-as authoritative.
+as authoritative. `format_origin = 'MoNA-JSON'` rows are the exception --
+these are real MoNA data; check `meta.license` per-row before reuse since it
+varies record to record (CC BY vs CC BY-SA vs CC BY-NC-SA each impose
+different reuse terms).
 
 ## How the MSP parser works
 
