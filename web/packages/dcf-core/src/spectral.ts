@@ -35,6 +35,61 @@ export function stickSpectrum(peaks: Array<[number, number]>): StickPeak[] {
   return peaks.map(([mz,i])=>({mz,i:i/mx*100})).sort((a,b)=>a.mz-b.mz);
 }
 
+export function normalizePeaks(peaks: Array<[number, number]> = []): Array<[number, number]> {
+  const mx=Math.max(...peaks.map(p=>p[1]),1);
+  return peaks.map(([x,y])=>[x,y/mx*100]);
+}
+
+export type SampleChromatogramPeak = [string, number, number];
+
+export function chromatogramPeaksFromSample(
+  samplePeaks: SampleChromatogramPeak[] = [],
+  rtLookup: Record<string, number> = {},
+): ChromatogramPeak[] {
+  return samplePeaks.map(([sub, rt, amp])=>({
+    rt: +(rt ?? rtLookup[sub] ?? 0),
+    amp: +amp,
+  })).filter(p=>p.rt>0 && p.amp>0);
+}
+
+export interface SampleSpec {
+  peaks?: SampleChromatogramPeak[];
+}
+
+export function chromatogramFromSample(
+  sampleSpec: SampleSpec | null | undefined,
+  opts: { rtLookup?: Record<string, number>; x0?: number; x1?: number; n?: number; sigma?: number } = {},
+): Trace {
+  const peaks=chromatogramPeaksFromSample(sampleSpec?.peaks ?? [], opts.rtLookup ?? {});
+  return chromatogram(peaks, opts);
+}
+
+export interface ReferenceSpecEntry {
+  substance?: string;
+  technique?: string;
+  peaks?: Array<[number, number]>;
+}
+
+export function getReferenceSpec(
+  specLib: Record<string, ReferenceSpecEntry> = {},
+  substance = '',
+  technique = 'MS',
+): ReferenceSpecEntry | null {
+  const needle=String(substance).toLowerCase();
+  const tech=String(technique).toUpperCase();
+  for (const entry of Object.values(specLib)) {
+    if (String(entry?.substance ?? '').toLowerCase() === needle && String(entry?.technique ?? '').toUpperCase() === tech) {
+      return entry;
+    }
+  }
+  return null;
+}
+
+export function stickSpectrumFromReference(ref: ReferenceSpecEntry | null | undefined): StickPeak[] {
+  if (!ref?.peaks?.length) return [];
+  return stickSpectrum(ref.peaks);
+}
+
 // cosine similarity between two stick spectra (binned at 1 m/z)
 export function cosine(a: StickPeak[],b: StickPeak[],tol=0.5): number {
   let dot=0,na=0,nb=0; const used=new Set<number>();

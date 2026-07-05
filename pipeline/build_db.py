@@ -29,6 +29,7 @@ from adapters.jcamp_ftir import JCAMPFTIRAdapter
 from adapters.mona_json import MoNAJSONAdapter
 from adapters.msp_library import MSPLibraryAdapter
 from adapters.unc_demo import UNCDemoAdapter
+from adapters.unc_viz_cohort import UncVizCohortAdapter
 
 ROOT = Path(__file__).resolve().parent.parent
 DB_PATH = ROOT / 'pipeline' / 'drugchecking.sqlite'
@@ -38,6 +39,7 @@ CACHE_DIR = ROOT / 'pipeline' / 'cache'
 # Registered adapters, run in order. Each is its own `sources` row.
 ADAPTERS: list[BaseAdapter] = [
     UNCDemoAdapter(),      # B0: chemdictionary + demo analysis_dataset/lab_detail
+    UncVizCohortAdapter(), # viz export cohort: 40 real samples for spectra.json
     MSPLibraryAdapter(),   # B1: synthetic MSP reference-spectra fixture
     JCAMPFTIRAdapter(),    # B1: synthetic JCAMP-DX FTIR reference fixture
     MoNAJSONAdapter(),     # B1: real, CC-licensed MoNA GC-MS reference-spectra sample

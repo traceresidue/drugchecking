@@ -1,5 +1,9 @@
 /* Shared batch-ridgeline synthesis + per-drug variability columns (06a/b/c). */
 const SAMPLE_COUNT=50;
+const TIC_X0=2.5;
+const TIC_X1=13.0;
+const RIDGE_HEIGHT=920;
+const RIDGE_OVERLAP=4.2;
 const RT=Object.fromEntries(DATA.retention_times.map(d=>[d.substance,d.rt]));
 
 const DRUGS_BY_CLASS={
@@ -58,10 +62,62 @@ function initKeySubstanceControls(defaultId,redraw){
   });
   return ()=>keySubstanceMeta(active);
 }
-function domainForSubstance(rows,substance){
+function fullTicDomain(rows){
+  let lo=TIC_X0, hi=TIC_X1;
+  rows.forEach(peaks=>{
+    peaks.forEach(p=>{
+      if(p.rt>0){
+        lo=Math.min(lo,p.rt-0.45);
+        hi=Math.max(hi,p.rt+0.45);
+      }
+    });
+  });
+  return [Math.max(2,Math.floor(lo*2)/2-0.25), Math.min(14,Math.ceil(hi*2)/2+0.25)];
+}
+function domainForSubstance(rows,substance,{zoom=false}={}){
+  if(!zoom) return fullTicDomain(rows);
   const st=computeDrugStats(rows,substance);
   const half=Math.max(0.28,st.stdRt*3.5,0.22);
   return [Math.max(2,st.meanRt-half),Math.min(14,st.meanRt+half)];
+}
+function peaksFromChromEntry(entry){
+  return (entry.peaks||[]).map(([s,rt,amp])=>({
+    s, rt:RT[s]||+rt||baseRt(s), amp:+amp, sigma:0.05
+  })).filter(p=>p.rt>0&&p.amp>0);
+}
+function sampleRowsFromReal(chromatograms){
+  const rows=Object.entries(chromatograms||{})
+    .filter(([k,v])=>v?.real||String(k).startsWith('sample_'))
+    .sort(([a],[b])=>a.localeCompare(b,undefined,{numeric:true}))
+    .map(([,v])=>peaksFromChromEntry(v))
+    .filter(peaks=>peaks.length);
+  return rows.length>=12?rows:null;
+}
+function batchRows(mode,opts={}){
+  if(!opts.syntheticOnly){
+    const real=sampleRowsFromReal(typeof SPEC!=='undefined'?SPEC.chromatograms:{});
+    if(real) return real;
+  }
+  return sampleRows(mode,opts);
+}
+function drawFullTicRow(svg,peaks,{x,yScale,domain,stroke,fill,fillOpacity=0.2,strokeWidth=1.15,strokeOpacity=0.92,baseY}){
+  if(!peaks.length){
+    if(baseY!=null){
+      svg.append('line').attr('x1',x(domain[0])).attr('x2',x(domain[1]))
+        .attr('y1',baseY).attr('y2',baseY)
+        .attr('stroke',TOKENS.faint).attr('stroke-width',0.5).attr('opacity',0.35);
+    }
+    return null;
+  }
+  const trace=chromatogram(peaks,{x0:domain[0],x1:domain[1],sigma:0.05,n:180});
+  const area=d3.area().x((d,k)=>x(trace.x[k])).y0(d=>baseY!=null?baseY:yScale(0)).y1(d=>yScale(d)).curve(d3.curveBasis);
+  const line=d3.line().x((d,k)=>x(trace.x[k])).y(d=>yScale(d)).curve(d3.curveBasis);
+  if(fill){
+    svg.append('path').datum(trace.y).attr('d',area).attr('fill',fill).attr('opacity',fillOpacity);
+  }
+  svg.append('path').datum(trace.y).attr('d',line)
+    .attr('fill','none').attr('stroke',stroke).attr('stroke-width',strokeWidth).attr('opacity',strokeOpacity);
+  return trace;
 }
 function peaksForKeySubstance(peaks,substance){
   return peaks.filter(p=>p.s===substance);
@@ -78,28 +134,35 @@ function drawFocusChromatogram(container,rows,sampleNum,keyId,domain){
   svg.selectAll('*').remove();
   const node=svg.node();
   if(!node)return;
-  const W=node.clientWidth||640,H=+svg.attr('height')||112;
+  const W=node.clientWidth||640,H=+svg.attr('height')||128;
   const m={t:12,r:16,b:22,l:54};
   const rowIdx=rowIndexForSampleNum(rows,sampleNum);
   const peaks=rows[rowIdx]||[];
   const meta=keySubstanceMeta(keyId);
   const sub=meta.substance;
-  const x0=domain?domain[0]:3,x1=domain?domain[1]:13;
+  const x0=domain?domain[0]:TIC_X0,x1=domain?domain[1]:TIC_X1;
   const x=d3.scaleLinear([x0,x1],[m.l,W-m.r]);
   const y=d3.scaleLinear([0,100],[H-m.b,m.t]);
-  const trace=chromatogram(peaks,{x0,x1,sigma:0.05,n:180});
+  const trace=chromatogram(peaks,{x0,x1,sigma:0.05,n:220});
   const hue=drugHue(sub);
   const kp=peaks.find(p=>p.s===sub);
   const st=computeDrugStats(rows,sub);
+  const others=peaks.filter(p=>p.s!==sub);
 
   svg.append('rect').attr('x',m.l).attr('y',m.t).attr('width',W-m.l-m.r).attr('height',H-m.t-m.b)
     .attr('fill',TOKENS.panel2).attr('stroke',TOKENS.line).attr('rx',4);
+  if(others.length){
+    const oTrace=chromatogram(others,{x0,x1,sigma:0.05,n:220});
+    svg.append('path').datum(oTrace.y)
+      .attr('d',d3.line().x((d,k)=>x(oTrace.x[k])).y(d=>y(d)).curve(d3.curveBasis))
+      .attr('fill','none').attr('stroke',TOKENS.muted).attr('stroke-width',0.9).attr('opacity',0.45);
+  }
   if(trace.y.length){
     const area=d3.area().x((d,k)=>x(trace.x[k])).y0(H-m.b).y1(d=>y(d)).curve(d3.curveBasis);
-    svg.append('path').datum(trace.y).attr('d',area).attr('fill',hue).attr('opacity',kp?0.14:0.04);
+    svg.append('path').datum(trace.y).attr('d',area).attr('fill',hue).attr('opacity',kp?0.12:0.04);
     svg.append('path').datum(trace.y)
       .attr('d',d3.line().x((d,k)=>x(trace.x[k])).y(d=>y(d)).curve(d3.curveBasis))
-      .attr('fill','none').attr('stroke',TOKENS.ink).attr('stroke-width',1.2).attr('opacity',0.75);
+      .attr('fill','none').attr('stroke',TOKENS.ink).attr('stroke-width',1.35).attr('opacity',0.82);
   }
   svg.append('line').attr('x1',x(st.meanRt)).attr('x2',x(st.meanRt)).attr('y1',m.t).attr('y2',H-m.b)
     .attr('stroke',hue).attr('stroke-width',1.5).attr('opacity',0.55).attr('stroke-dasharray','4,3');

@@ -1,7 +1,7 @@
 /* Nº 05 · GC–MS Data Cube (3D) — the full GC–MS measurement is three-dimensional:
    retention time × m/z × intensity. Here it's a navigable 3D surface, with each
    chromatographic peak rising into its own mass-spectral ridge. */
-const {scaffold,stickSpectrum,classify,TOKENS}=DCF;
+const {scaffold,stickSpectrum,classify,TOKENS,fillChromatogramSelect}=DCF;
 function subColor(name){const c=classify(name);return window.DCFDesign?DCFDesign.getClassColor(c.cls):c.color;}
 function sigColor(k){return window.DCFDesign?DCFDesign.getClassColor(k):TOKENS[k];}
 const CH=SPEC.chromatograms, MS=SPEC.ms, RT=Object.fromEntries(DATA.retention_times.map(d=>[d.substance,d.rt]));
@@ -19,7 +19,7 @@ stage.innerHTML=`
 <div class="controls"><label class="muted" style="font-size:13px">Sample</label><select id="sel"></select></div>
 <div class="panel"><div id="plot" style="height:560px"></div></div>`;
 const sel=document.getElementById('sel');
-for(const k of Object.keys(CH)) sel.add(new Option(CH[k].label,k));
+fillChromatogramSelect(sel,CH);
 sel.className='dcf-ctl-select';
 sel.onchange=draw;
 

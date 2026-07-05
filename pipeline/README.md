@@ -14,6 +14,32 @@ no dependency on the `web/` npm workspace.
 
 Rebuilds `pipeline/drugchecking.sqlite` (gitignored) from scratch every run.
 
+## Refresh visualization data
+
+After `build_db.py`, export refreshed aggregates and real sample/reference spectra
+into the visualization framework:
+
+```
+cd pipeline
+python build_db.py
+python export_viz_data.py
+cd ../visualization-framework
+python build.py
+```
+
+`export_viz_data.py`:
+
+- rebuilds `visualization-framework/data/aggregates.json` from merged
+  `analysis_dataset` + `lab_detail` CSVs (demo + selfservice + `datasets/nc/`,
+  6,580 samples)
+- adds **40 real sample chromatograms** (`spectra.json → samples`) from the
+  `unc-viz-cohort` rows in `pipeline/drugchecking.sqlite`, and **merges them into
+  `spectra.json → chromatograms`** so viz/viz2 dropdowns pick them up automatically
+- adds **10 reference spectra** (`spectra.json → references`) from
+  `web/apps/librarian/public/drugchecking.sqlite` (copied from pipeline on export)
+- updates `viz/_shared.js` helpers: `chromatogramFromSample`, `getReferenceSpec`,
+  etc. (rebuilt into every `viz/*.html` via `build.py`)
+
 ## Architecture: adapters
 
 `build_db.py` is a thin orchestrator, not where the parsing logic lives:
@@ -84,6 +110,7 @@ returned dicts, no database required.
 | Adapter | Status |
 |---|---|
 | `unc_demo.py` | **Real, tested.** Loads the checked-in `chemdictionary.csv` and demo `datasets/analysis_dataset.csv` / `datasets/lab_detail.csv`. No network access -- these files are already in the repo. |
+| `unc_viz_cohort.py` | **Real, tested.** Loads 40 diverse samples (+ detections) from merged CSV cuts for viz exports (`spectra.json → samples`). |
 | `msp_library.py` | **Real parser, tested against a fixture.** Hand-written parser for the NIST/SWGDRUG "Key: value" MSP text format. Ships only `fixtures/reference/example.msp`, a synthetic 3-compound fixture authored for parser validation. **Does not fetch real SWGDRUG/NIST MSP libraries over the network** -- that's B1's documented-but-not-implemented remainder. |
 | `jcamp_ftir.py` | **Real parser, tested against a fixture.** Hand-written JCAMP-DX parser (LDR key/value + value/point tables + ASDF-compressed `##XYDATA`). Ships only `fixtures/reference/example.jdx`, a synthetic 2-compound fixture. **Does not fetch real NIST WebBook JCAMP-DX exports over the network.** |
 | `mona_json.py` | **Real parser, tested against a real, licensed 7-record excerpt of MoNA's actual GC-MS export** (`fixtures/reference/mona_sample.json`) -- unlike the MSP/JCAMP fixtures, this one is not synthetic: each record carries its own genuine CC BY / CC BY-SA / CC BY-NC-SA license in `meta.license`, so it's real reference-spectrum data, just a small subset. Point `mona_path=` at the full ~19k-record export (available at https://mona.fiehnlab.ucdavis.edu/downloads, not bundled here for size) to ingest more. |

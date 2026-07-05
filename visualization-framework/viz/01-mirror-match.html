@@ -21,7 +21,7 @@ window.SPEC = {"ms":{"fentanyl":{"mw":336,"smiles":"CCC(=O)N(c1ccccc1)C1CCN(CCc2
 window.TOPO = {};
 </script>
 <script>
-const NAV_REGISTRY = [{"id":"01-mirror-match","n":1,"cat":"MS","title":"Spectral Mirror Match"},{"id":"02-chromatogram-explorer","n":2,"cat":"GC\u2013MS","title":"Annotated Chromatogram Explorer"},{"id":"03-ftir-overlay","n":3,"cat":"FTIR","title":"FTIR Overlay & Subtraction Bench"},{"id":"04-fragment-tree","n":4,"cat":"MS","title":"Fragmentation Radial"},{"id":"05-chromatogram-3d","n":5,"cat":"GC\u2013MS","title":"GC\u2013MS Data Cube (3D)"},{"id":"06-spectral-ridgeline","n":6,"cat":"GC\u2013MS","title":"Batch Ridgeline Fingerprints"},{"id":"06a-ridgeline-filled","n":6,"cat":"GC\u2013MS","title":"Batch Ridgeline \u2014 Class Fills"},{"id":"06b-ridgeline-3d","n":6,"cat":"GC\u2013MS","title":"Batch Ridgeline \u2014 3D Terrain"},{"id":"06c-ridgeline-filter","n":6,"cat":"GC\u2013MS","title":"Batch Ridgeline \u2014 Class Focus"},{"id":"07-ftir-waterfall","n":7,"cat":"FTIR","title":"FTIR Waterfall (3D)"},{"id":"08-mass-defect-map","n":8,"cat":"MS","title":"Mass-Defect Constellation"},{"id":"09-sonification","n":9,"cat":"EXPERIMENTAL","title":"Hear the Spectrum (Sonification)"},{"id":"10-chemical-space","n":10,"cat":"EXPERIMENTAL","title":"Chemical-Space Drift"},{"id":"11-supply-streamgraph","n":11,"cat":"SUPPLY","title":"Supply Composition Streamgraph"},{"id":"12-cooccurrence-chord","n":12,"cat":"SUPPLY","title":"Adulterant Co-occurrence Chord"},{"id":"12a-co-nested","n":12,"cat":"SUPPLY","title":"Nested Co-occurrence Chord"},{"id":"12b-chord-sankey","n":12,"cat":"SUPPLY","title":"Chord \u2192 Sankey Co-occurrence"},{"id":"12c-co-undirected","n":12,"cat":"SUPPLY","title":"Undirected Co-occurrence Chord"},{"id":"13-expected-detected-sankey","n":13,"cat":"SUPPLY","title":"Expected vs. Detected Sankey"},{"id":"14-horizon-wall","n":14,"cat":"SUPPLY","title":"Substance Horizon Wall"},{"id":"15-emergence-beeswarm","n":15,"cat":"SUPPLY","title":"Novel-Substance Emergence Swarm"},{"id":"16-supply-terrain-3d","n":16,"cat":"SUPPLY","title":"Supply Terrain (3D)"},{"id":"17-adulterant-network","n":17,"cat":"SUPPLY","title":"Adulterant Force Network"},{"id":"17a-adulterant-pull","n":17,"cat":"SUPPLY","title":"Adulterant Pull Network"},{"id":"17b-adulterant-3d","n":17,"cat":"SUPPLY","title":"Adulterant Network (3D)"},{"id":"17c-adulterant-orbit","n":17,"cat":"SUPPLY","title":"Adulterant Orbit Graph"},{"id":"18-result-card","n":18,"cat":"RESULT","title":"Sample Result Card"},{"id":"19-expected-reality-gap","n":19,"cat":"RESULT","title":"Expected-Reality Gap"},{"id":"20-potency-uncertainty","n":20,"cat":"RESULT","title":"Potency Uncertainty Gauge"},{"id":"21-geo-choropleth","n":21,"cat":"GEO","title":"Supply Choropleth Map"},{"id":"22-xylazine-spread","n":22,"cat":"GEO","title":"Xylazine Spread Timeline"},{"id":"23-structure-flipbook","n":23,"cat":"MS","title":"Structure Flipbook"},{"id":"24-anatomy-scrolly","n":24,"cat":"RESULT","title":"Anatomy of a Sample (Scrollytelling)"},{"id":"25-glyph-garden","n":25,"cat":"EXPERIMENTAL","title":"Sample Glyph Garden"},{"id":"26-reagent-matrix","n":26,"cat":"EXPERIMENTAL","title":"Reagent Color Matrix"},{"id":"27-supply-weather","n":27,"cat":"EXPERIMENTAL","title":"Supply Weather Report"},{"id":"28-temporal-crosssection","n":28,"cat":"EXPERIMENTAL","title":"Temporal Cross-Section"},{"id":"29-supply-rhythm","n":29,"cat":"SONIC","title":"Supply Rhythm Machine"},{"id":"30-spectral-theremin","n":30,"cat":"SONIC","title":"Spectral Theremin"},{"id":"31-substance-cloud","n":31,"cat":"SUPPLY","title":"Substance Point Cloud"},{"id":"32-monthly-cloud","n":32,"cat":"SUPPLY","title":"Monthly Substance Point Clouds"},{"id":"33-sample-clusters","n":33,"cat":"SUPPLY","title":"Sample Point Clusters"}];
+const NAV_REGISTRY = [{"id":"01-mirror-match","n":1,"cat":"MS","title":"Spectral Mirror Match"},{"id":"02-chromatogram-explorer","n":2,"cat":"GC\u2013MS","title":"Annotated Chromatogram Explorer"},{"id":"03-ftir-overlay","n":3,"cat":"FTIR","title":"FTIR Overlay & Subtraction Bench"},{"id":"04-fragment-tree","n":4,"cat":"MS","title":"Fragmentation Radial"},{"id":"05-chromatogram-3d","n":5,"cat":"GC\u2013MS","title":"GC\u2013MS Data Cube (3D)"},{"id":"06-spectral-ridgeline","n":6,"cat":"GC\u2013MS","title":"Batch Ridgeline Fingerprints"},{"id":"06a-ridgeline-filled","n":6,"cat":"GC\u2013MS","title":"Batch Ridgeline \u2014 Class Fills"},{"id":"06b-ridgeline-3d","n":6,"cat":"GC\u2013MS","title":"Batch Ridgeline \u2014 3D Terrain"},{"id":"06c-ridgeline-filter","n":6,"cat":"GC\u2013MS","title":"Batch Ridgeline \u2014 Class Focus"},{"id":"07-ftir-waterfall","n":7,"cat":"FTIR","title":"FTIR Waterfall (3D)"},{"id":"08-mass-defect-map","n":8,"cat":"MS","title":"Mass-Defect Constellation"},{"id":"09-sonification","n":9,"cat":"EXPERIMENTAL","title":"Hear the Spectrum (Sonification)"},{"id":"10-chemical-space","n":10,"cat":"EXPERIMENTAL","title":"Chemical-Space Drift"},{"id":"11-supply-streamgraph","n":11,"cat":"SUPPLY","title":"Supply Composition Streamgraph"},{"id":"12-cooccurrence-chord","n":12,"cat":"SUPPLY","title":"Adulterant Co-occurrence Chord"},{"id":"12a-co-nested","n":12,"cat":"SUPPLY","title":"Nested Co-occurrence Chord"},{"id":"12b-chord-sankey","n":12,"cat":"SUPPLY","title":"Chord \u2192 Sankey Co-occurrence"},{"id":"12c-co-undirected","n":12,"cat":"SUPPLY","title":"Undirected Co-occurrence Chord"},{"id":"13-expected-detected-sankey","n":13,"cat":"SUPPLY","title":"Expected vs. Detected Sankey"},{"id":"14-horizon-wall","n":14,"cat":"SUPPLY","title":"Substance Horizon Wall"},{"id":"15-emergence-beeswarm","n":15,"cat":"SUPPLY","title":"Novel-Substance Emergence Swarm"},{"id":"16-supply-terrain-3d","n":16,"cat":"SUPPLY","title":"Supply Terrain (3D)"},{"id":"17-adulterant-network","n":17,"cat":"SUPPLY","title":"Adulterant Force Network"},{"id":"17a-adulterant-pull","n":17,"cat":"SUPPLY","title":"Adulterant Pull Network"},{"id":"17b-adulterant-3d","n":17,"cat":"SUPPLY","title":"Adulterant Network (3D)"},{"id":"17c-adulterant-orbit","n":17,"cat":"SUPPLY","title":"Adulterant Orbit Graph"},{"id":"18-result-card","n":18,"cat":"RESULT","title":"Sample Result Card"},{"id":"19-expected-reality-gap","n":19,"cat":"RESULT","title":"Expected-Reality Gap"},{"id":"20-potency-uncertainty","n":20,"cat":"RESULT","title":"Potency Uncertainty Gauge"},{"id":"21-geo-choropleth","n":21,"cat":"GEO","title":"Supply Choropleth Map"},{"id":"22-xylazine-spread","n":22,"cat":"GEO","title":"Xylazine Spread Timeline"},{"id":"23-structure-flipbook","n":23,"cat":"MS","title":"Structure Flipbook"},{"id":"24-anatomy-scrolly","n":24,"cat":"RESULT","title":"Anatomy of a Sample (Scrollytelling)"},{"id":"25-glyph-garden","n":25,"cat":"EXPERIMENTAL","title":"Sample Glyph Garden"},{"id":"26-reagent-matrix","n":26,"cat":"EXPERIMENTAL","title":"Reagent Color Matrix"},{"id":"27-supply-weather","n":27,"cat":"EXPERIMENTAL","title":"Supply Weather Report"},{"id":"28-temporal-crosssection","n":28,"cat":"EXPERIMENTAL","title":"Temporal Cross-Section"},{"id":"29-supply-rhythm","n":29,"cat":"SONIC","title":"Supply Rhythm Machine"},{"id":"30-spectral-theremin","n":30,"cat":"SONIC","title":"Spectral Theremin"},{"id":"31-substance-cloud","n":31,"cat":"SUPPLY","title":"Substance Point Cloud"},{"id":"32-monthly-cloud","n":32,"cat":"SUPPLY","title":"Monthly Substance Point Clouds"},{"id":"33-sample-clusters","n":33,"cat":"SUPPLY","title":"Sample Point Clusters"},{"id":"chromatogram-sample-3d","n":34,"cat":"GC\u2013MS","title":"Sample TIC Time Stack"}];
 const NAV_PAGE_ID = "01-mirror-match";
 const NAV_MODE = "viz";
 (function(){
@@ -338,6 +338,34 @@ function stickSpectrum(peaks) {
   const mx = Math.max(...peaks.map((p) => p[1]), 1);
   return peaks.map(([mz, i]) => ({ mz, i: i / mx * 100 })).sort((a, b) => a.mz - b.mz);
 }
+function normalizePeaks(peaks = []) {
+  const mx = Math.max(...peaks.map((p) => p[1]), 1);
+  return peaks.map(([x, y]) => [x, y / mx * 100]);
+}
+function chromatogramPeaksFromSample(samplePeaks = [], rtLookup = {}) {
+  return samplePeaks.map(([sub, rt, amp]) => ({
+    rt: +(rt ?? rtLookup[sub] ?? 0),
+    amp: +amp
+  })).filter((p) => p.rt > 0 && p.amp > 0);
+}
+function chromatogramFromSample(sampleSpec, opts = {}) {
+  const peaks = chromatogramPeaksFromSample(sampleSpec?.peaks ?? [], opts.rtLookup ?? {});
+  return chromatogram(peaks, opts);
+}
+function getReferenceSpec(specLib = {}, substance = "", technique = "MS") {
+  const needle = String(substance).toLowerCase();
+  const tech = String(technique).toUpperCase();
+  for (const entry of Object.values(specLib)) {
+    if (String(entry?.substance ?? "").toLowerCase() === needle && String(entry?.technique ?? "").toUpperCase() === tech) {
+      return entry;
+    }
+  }
+  return null;
+}
+function stickSpectrumFromReference(ref) {
+  if (!ref?.peaks?.length) return [];
+  return stickSpectrum(ref.peaks);
+}
 function cosine(a, b, tol = 0.5) {
   let dot = 0, na = 0, nb = 0;
   const used = /* @__PURE__ */ new Set();
@@ -522,8 +550,34 @@ function drawSmiles(smiles, canvasId, w = 160, h = 120) {
     smilesStructureNA(el, h);
   }
 }
+function isRealChromatogram(key = "", entry = { label: "" }) {
+  return Boolean(entry?.real || String(key).startsWith("sample_"));
+}
+function fillChromatogramSelect(selectEl, chromatograms = {}, {
+  archetypeLabel = "Sample archetypes (illustrative)",
+  realLabel = "Real samples (lab cohort)"
+} = {}) {
+  if (!selectEl) return;
+  selectEl.innerHTML = "";
+  const entries = Object.entries(chromatograms || {});
+  const archetypes = entries.filter(([k, v]) => !isRealChromatogram(k, v));
+  const real = entries.filter(([k, v]) => isRealChromatogram(k, v));
+  const addGroup = (label, items) => {
+    if (!items.length) return;
+    const og = document.createElement("optgroup");
+    og.label = label;
+    for (const [k, v] of items) og.append(new Option(v.label, k));
+    selectEl.append(og);
+  };
+  if (archetypes.length && real.length) {
+    addGroup(archetypeLabel, archetypes);
+    addGroup(realLabel, real);
+  } else {
+    for (const [k, v] of entries) selectEl.add(new Option(v.label, k));
+  }
+}
 
-window.DCF={TOKENS,FONTS,classify,fmt,chromatogram,ftirCurve,stickSpectrum,cosine,tooltip,scaffold,injectCSS,drawSmiles};
+window.DCF={TOKENS,FONTS,classify,fmt,chromatogram,ftirCurve,stickSpectrum,normalizePeaks,chromatogramPeaksFromSample,chromatogramFromSample,getReferenceSpec,stickSpectrumFromReference,isRealChromatogram,fillChromatogramSelect,cosine,tooltip,scaffold,injectCSS,drawSmiles};
 
 })();
 </script>

@@ -1,7 +1,7 @@
 /* Nº 02 · Annotated Chromatogram Explorer — UNC's "visual fingerprint" made
    touchable. A synthesized GC–MS trace; tap any peak to reveal its mass spectrum,
    2D structure, plain-language drug card, and harm-reduction note. */
-const {scaffold,chromatogram,stickSpectrum,classify,tooltip,fmt,TOKENS,drawSmiles}=DCF;
+const {scaffold,chromatogram,stickSpectrum,classify,tooltip,fmt,TOKENS,drawSmiles,fillChromatogramSelect,isRealChromatogram}=DCF;
 const CH=SPEC.chromatograms, MS=SPEC.ms, RT=Object.fromEntries(DATA.retention_times.map(d=>[d.substance,d.rt]));
 function subColor(name){const c=classify(name);return window.DCFDesign?DCFDesign.getClassColor(c.cls):c.color;}
 function accentInfo(){return window.DCFDesign?DCFDesign.getClassColor('info'):TOKENS.info;}
@@ -30,7 +30,7 @@ const stage=scaffold({
   title:'Annotated Chromatogram Explorer',
   dek:'A GC–MS chromatogram is a sample\'s visual fingerprint. Each peak is one substance, separated by how fast it travels through the instrument. Tap a peak to learn what it is.',
   how:`<b>Reading the trace.</b> The x-axis is <b>retention time</b> — how long a compound takes to pass through the column (a fixed property, like a fingerprint). The y-axis is <b>relative abundance</b>. <b>More peaks = more substances. Taller peaks = more signal, NOT higher purity or dose.</b> Different compounds ionise with wildly different efficiency, so a tall peak and a short peak can be present in similar amounts. <b>Tap any peak</b> to see its mass spectrum, structure, and a plain-language card.`,
-  provenance:'Trace synthesized from real median GC–MS retention times in this dataset; mass spectra illustrative.',
+  provenance:'Archetype traces use real median GC–MS retention times; real-sample entries use lab detections + unc_gcms RTs. Mass spectra illustrative.',
   harm:'Carry naloxone and test strips. A clean-looking fingerprint can still hide a fatal dose — height shows signal, not strength.'
 });
 
@@ -43,7 +43,7 @@ stage.innerHTML=`
 <div id="detail" class="panel" style="margin-top:14px;min-height:170px"></div>`;
 
 const archSel=document.getElementById('arch');
-for(const k of Object.keys(CH)) archSel.add(new Option(CH[k].label,k));
+fillChromatogramSelect(archSel,CH);
 archSel.className='dcf-ctl-select';
 const tt=tooltip();
 let selected=null;

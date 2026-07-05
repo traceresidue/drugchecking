@@ -5,5 +5,5 @@
 export { TOKENS, FONTS } from './tokens.js';
 export { classify } from './classify.js';
 export { fmt } from './format.js';
-export { chromatogram, ftirCurve, stickSpectrum, cosine } from './spectral.js';
-export { tooltip, scaffold, injectCSS, drawSmiles } from './dom.js';
+export { chromatogram, ftirCurve, stickSpectrum, cosine, normalizePeaks, chromatogramPeaksFromSample, chromatogramFromSample, getReferenceSpec, stickSpectrumFromReference } from './spectral.js';
+export { tooltip, scaffold, injectCSS, drawSmiles, isRealChromatogram, fillChromatogramSelect } from './dom.js';

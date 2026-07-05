@@ -40,5 +40,6 @@
  {"id":"30-spectral-theremin","n":30,"cat":"SONIC","title":"Spectral Theremin","libs":["d3"],"spec":[],"data":["retention_times"]},
  {"id":"31-substance-cloud","n":31,"cat":"SUPPLY","title":"Substance Point Cloud","libs":["d3"],"spec":[],"data":["top_substances"]},
  {"id":"32-monthly-cloud","n":32,"cat":"SUPPLY","title":"Monthly Substance Point Clouds","libs":["d3"],"spec":[],"data":["monthly","monthly_class"]},
- {"id":"33-sample-clusters","n":33,"cat":"SUPPLY","title":"Sample Point Clusters","libs":["d3"],"spec":[],"data":["cooccurrence","top_substances"]}
+ {"id":"33-sample-clusters","n":33,"cat":"SUPPLY","title":"Sample Point Clusters","libs":["d3"],"spec":[],"data":["cooccurrence","top_substances"]},
+ {"id":"chromatogram-sample-3d","n":34,"cat":"GC–MS","title":"Sample TIC Time Stack","libs":["d3"],"spec":["chromatograms"],"data":["retention_times"]}
 ]

@@ -100,6 +100,68 @@ export function stickSpectrum(peaks){
   const mx=Math.max(...peaks.map(p=>p[1]),1);
   return peaks.map(([mz,i])=>({mz,i:i/mx*100})).sort((a,b)=>a.mz-b.mz);
 }
+// Normalize [[x,y],...] peak lists to 0–100 intensity
+export function normalizePeaks(peaks=[]){
+  const mx=Math.max(...peaks.map(p=>p[1]),1);
+  return peaks.map(([x,y])=>[x,y/mx*100]);
+}
+// Convert sample chromatogram rows [[substance, rt, amp], ...] to chromatogram() input
+export function chromatogramPeaksFromSample(samplePeaks=[],rtLookup={}){
+  return samplePeaks.map(([sub,rt,amp])=>({
+    rt:+(rt ?? rtLookup[sub] ?? 0),
+    amp:+amp,
+  })).filter(p=>p.rt>0&&p.amp>0);
+}
+// Build a trace from a spectra.json sample entry (real cohort export)
+export function chromatogramFromSample(sampleSpec,{rtLookup={},x0=2,x1=13,n=900,sigma=0.045}={}){
+  const peaks=chromatogramPeaksFromSample(sampleSpec?.peaks||[],rtLookup);
+  return chromatogram(peaks,{x0,x1,n,sigma});
+}
+// Lookup a reference spectrum exported from SQLite (role=reference)
+export function getReferenceSpec(specLib={},substance='',technique='MS'){
+  const needle=String(substance).toLowerCase();
+  const tech=String(technique).toUpperCase();
+  for(const entry of Object.values(specLib||{})){
+    if(String(entry?.substance||'').toLowerCase()===needle && String(entry?.technique||'').toUpperCase()===tech){
+      return entry;
+    }
+  }
+  return null;
+}
+// Stick spectrum from a reference export entry
+export function stickSpectrumFromReference(ref){
+  if(!ref?.peaks?.length) return [];
+  return stickSpectrum(ref.peaks);
+}
+
+/* ---- chromatogram library (archetypes + real SQLite cohort) ---- */
+export function isRealChromatogram(key='', entry={}){
+  return Boolean(entry?.real || String(key).startsWith('sample_'));
+}
+
+export function fillChromatogramSelect(selectEl, chromatograms={}, {
+  archetypeLabel='Sample archetypes (illustrative)',
+  realLabel='Real samples (lab cohort)',
+}={}){
+  if(!selectEl) return;
+  selectEl.innerHTML='';
+  const entries=Object.entries(chromatograms||{});
+  const archetypes=entries.filter(([k,v])=>!isRealChromatogram(k,v));
+  const real=entries.filter(([k,v])=>isRealChromatogram(k,v));
+  const addGroup=(label,items)=>{
+    if(!items.length) return;
+    const og=document.createElement('optgroup');
+    og.label=label;
+    for(const [k,v] of items) og.append(new Option(v.label,k));
+    selectEl.append(og);
+  };
+  if(archetypes.length && real.length){
+    addGroup(archetypeLabel,archetypes);
+    addGroup(realLabel,real);
+  } else {
+    for(const [k,v] of entries) selectEl.add(new Option(v.label,k));
+  }
+}
 // cosine similarity between two stick spectra (binned at 1 m/z)
 export function cosine(a,b,tol=0.5){
   let dot=0,na=0,nb=0; const used=new Set();

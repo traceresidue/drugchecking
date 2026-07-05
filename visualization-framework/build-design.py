@@ -40,6 +40,9 @@ def globalize(js, window_name, export_names):
 
 SHARED_GLOBAL = globalize(SHARED, 'DCF', [
     'TOKENS', 'FONTS', 'classify', 'fmt', 'chromatogram', 'ftirCurve', 'stickSpectrum',
+    'normalizePeaks', 'chromatogramPeaksFromSample', 'chromatogramFromSample',
+    'getReferenceSpec', 'stickSpectrumFromReference',
+    'isRealChromatogram', 'fillChromatogramSelect',
     'cosine', 'tooltip', 'scaffold', 'injectCSS', 'drawSmiles',
 ])
 

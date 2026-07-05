@@ -648,5 +648,26 @@
       "low": "Low label mode hides peak and inline annotations — rely on hover and tooltips.",
       "high": "High label mode surfaces more annotations — may crowd on mobile viewports."
     }
+  },
+  "chromatogram-sample-3d": {
+    "thesis": "Stacking real TICs back in time with overlap wash makes batch recurrence visible — sliders need clear hierarchy beside the depth illusion.",
+    "strengths": [
+      "Uses real lab cohort chromatograms from SQLite export",
+      "Overlap canvas highlights shared retention-time structure",
+      "Similarity filter surfaces chemically alike histories",
+      "Pseudo-depth offset separates layers without losing 2D readability"
+    ],
+    "weaknesses": [
+      "Sample order is cohort ID, not collection timestamp",
+      "Overlap wash can obscure thin trace labels on dense stacks",
+      "No per-peak substance legend on back layers",
+      "Canvas blend may shift under light theme"
+    ],
+    "visualization": "Depth slider and similarity threshold grouped in a compact control rail; foreground trace uses ink stroke for focal clarity.",
+    "liveNoteTemplates": {
+      "default": "Current settings: {theme} chrome · {palette} palette · {labels} label density.",
+      "low": "Low label mode hides back-layer sample IDs — rely on time slider readout.",
+      "high": "High label mode could add peak RT callouts on the foreground trace only."
+    }
   }
 }

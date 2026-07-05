@@ -8,9 +8,9 @@ function sigColor(k){return window.DCFDesign?DCFDesign.getClassColor(k):TOKENS[k
 const stage=scaffold({
   tag:'Nº 06c · GC–MS',
   title:'Batch Ridgeline — Key Substance Focus',
-  dek:'Pick fentanyl, heroin, meth, or cocaine — fifty sample traces zoom to that substance so batch drift reads without unrelated peak clutter.',
-  how:`Select a <b>key substance</b> to filter and zoom. The view shows <b>50 newest samples</b> as thin traces in that substance's retention window, plus a single <b>variability column</b> for the chosen drug. The <b>snaking line</b> passes through that substance's peak apex on every sample row. Dots on the mean-RT vertical mark the ideal landing point. Below the stack, the <b>ideal reference</b> shows the mean curve for that substance. <b>Limits:</b> other substances in the same sample may be hidden outside the zoom window.`,
-  provenance:'Each row synthesized from a plausible component mix over real retention times; illustrative of batch-consistency analysis.',
+  dek:'Full TIC per row with the key substance highlighted — read batch drift on fentanyl, heroin, meth, or cocaine without losing run context.',
+  how:`Select a <b>key substance</b> to highlight. Each row shows the <b>full TIC</b> (2.5–13 min) with that drug's peak emphasized; co-eluting peaks stay visible but muted. A <b>variability column</b> tracks the key substance apex across samples. Below, the <b>ideal reference</b> shows the mean curve. <b>Limits:</b> peak height is relative signal within each sample.`,
+  provenance:'Rows use real lab cohort chromatograms when exported; otherwise synthesized mixes over real retention times.',
   harm:'Even a "consistent" supply shifts without warning. Test every time; potency can change while the fingerprint looks the same.'
 });
 
@@ -27,7 +27,7 @@ stage.innerHTML=`
   <button class="tgl" id="m2" aria-pressed="false">Volatile period</button>
 </div>
 <div id="stats" aria-live="polite"></div>
-<div class="panel"><svg id="svg" width="100%" height="760" role="img" aria-label="Key-substance fifty-sample ridgelines with variability column"></svg></div>`;
+<div class="panel"><svg id="svg" width="100%" height="${RIDGE_HEIGHT}" role="img" aria-label="Key-substance ridgelines with full TIC and variability column"></svg></div>`;
 
 let mode='stable';
 document.getElementById('m1').onclick=()=>setMode('stable');
@@ -59,36 +59,45 @@ function updateStats(rows,keyMeta,domain){
 
 function draw(animate){
   const svg=d3.select('#svg');
-  const W=svg.node().clientWidth,H=760;
+  const W=svg.node().clientWidth,H=RIDGE_HEIGHT;
   const m=layout(H);
   const keyMeta=getKeySub();
   const sub=keyMeta.substance;
-  const rows=sampleRows(mode,{classFilter:keyMeta.classFilter});
+  const rows=batchRows(mode,{classFilter:keyMeta.classFilter});
   const drugs=[sub];
-  const domain=domainForSubstance(rows,sub);
+  const domain=fullTicDomain(rows);
   const band=sampleBand(H,m);
 
   svg.selectAll('*').remove();
 
   const x=d3.scaleLinear(domain,[m.l,W-m.r]);
-  const overlap=2.1;
+  const overlap=RIDGE_OVERLAP;
   const peakFilter=peaks=>filterPeaks(peaks,sub);
+  const hue=drugHue(sub);
 
   svg.append('rect').attr('x',m.l).attr('y',m.t).attr('width',W-m.l-m.r).attr('height',band)
-    .attr('fill','none').attr('stroke',drugHue(sub)).attr('stroke-width',1).attr('opacity',0.25);
+    .attr('fill','none').attr('stroke',hue).attr('stroke-width',1).attr('opacity',0.2);
 
   const plot=svg.append('g').attr('class','plot');
   rows.forEach((peaks,i)=>{
     const fPeaks=filterPeaks(peaks,sub);
+    const others=peaks.filter(p=>p.s!==sub);
     const y=rowYScale(i,m,H,rows,overlap);
-    const trace=fPeaks.length?chromatogram(fPeaks,{x0:domain[0],x1:domain[1],sigma:0.05,n:140}):{x:[],y:[]};
-    if(trace.y.length){
+    const baseY=ySample(i,m,H,rows);
+    if(others.length){
+      const oTrace=chromatogram(others,{x0:domain[0],x1:domain[1],sigma:0.05,n:180});
+      plot.append('path').datum(oTrace.y)
+        .attr('d',d3.line().x((d,k)=>x(oTrace.x[k])).y(d=>y(d)).curve(d3.curveBasis))
+        .attr('fill','none').attr('stroke',TOKENS.muted).attr('stroke-width',0.55).attr('opacity',0.28);
+    }
+    if(fPeaks.length){
+      const trace=chromatogram(fPeaks,{x0:domain[0],x1:domain[1],sigma:0.05,n:180});
       plot.append('path').datum(trace.y)
         .attr('d',d3.line().x((d,k)=>x(trace.x[k])).y(d=>y(d)).curve(d3.curveBasis))
-        .attr('fill','none').attr('stroke',drugHue(sub)).attr('stroke-width',0.65).attr('opacity',0.42);
+        .attr('fill','none').attr('stroke',hue).attr('stroke-width',1.05).attr('opacity',0.88);
     }else{
       plot.append('line').attr('x1',x(domain[0])).attr('x2',x(domain[1]))
-        .attr('y1',ySample(i,m,H,rows)).attr('y2',ySample(i,m,H,rows))
+        .attr('y1',baseY).attr('y2',baseY)
         .attr('stroke',TOKENS.faint).attr('stroke-width',0.4).attr('opacity',0.35);
     }
   });

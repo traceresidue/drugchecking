@@ -28,8 +28,10 @@ Global skills installed via CLI live under [`.agents/skills/`](.agents/skills/).
 
 ## Data & provenance
 
-- Aggregate views: real data from `visualization-framework/data/aggregates.json` (6,580 samples, 11 US states).
-- Spectra: illustrative — label clearly in footer and "How to read this".
+- Aggregate views: real data from `visualization-framework/data/aggregates.json` (refresh via `python pipeline/export_viz_data.py` from merged CSVs, 6,580 samples).
+- Real sample chromatograms: `spectra.json → samples` (40 cohort exports from SQLite).
+- Reference spectra: `spectra.json → references` (10 from librarian/pipeline SQLite).
+- Illustrative archetypes: remaining `spectra.json` MS/FTIR/chromatogram entries — label clearly in footer and "How to read this".
 - Never commit secrets (`.env`, credentials, API keys).
 
 ## Post-change verification

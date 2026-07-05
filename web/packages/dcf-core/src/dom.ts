@@ -129,3 +129,47 @@ export function drawSmiles(smiles: string,canvasId: string,w=160,h=120){
     },()=>{ smilesStructureNA(el,h); });
   }catch(e){ smilesStructureNA(el,h); }
 }
+
+export interface ChromatogramEntry {
+  label: string;
+  peaks?: Array<[string, number, number]>;
+  real?: boolean;
+  sample_id?: string;
+}
+
+export function isRealChromatogram(key = '', entry: ChromatogramEntry = { label: '' }): boolean {
+  return Boolean(entry?.real || String(key).startsWith('sample_'));
+}
+
+export interface FillChromatogramSelectOpts {
+  archetypeLabel?: string;
+  realLabel?: string;
+}
+
+export function fillChromatogramSelect(
+  selectEl: HTMLSelectElement | null,
+  chromatograms: Record<string, ChromatogramEntry> = {},
+  {
+    archetypeLabel = 'Sample archetypes (illustrative)',
+    realLabel = 'Real samples (lab cohort)',
+  }: FillChromatogramSelectOpts = {},
+): void {
+  if (!selectEl) return;
+  selectEl.innerHTML = '';
+  const entries = Object.entries(chromatograms || {});
+  const archetypes = entries.filter(([k, v]) => !isRealChromatogram(k, v));
+  const real = entries.filter(([k, v]) => isRealChromatogram(k, v));
+  const addGroup = (label: string, items: Array<[string, ChromatogramEntry]>) => {
+    if (!items.length) return;
+    const og = document.createElement('optgroup');
+    og.label = label;
+    for (const [k, v] of items) og.append(new Option(v.label, k));
+    selectEl.append(og);
+  };
+  if (archetypes.length && real.length) {
+    addGroup(archetypeLabel, archetypes);
+    addGroup(realLabel, real);
+  } else {
+    for (const [k, v] of entries) selectEl.add(new Option(v.label, k));
+  }
+}
