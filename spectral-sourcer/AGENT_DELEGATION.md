@@ -91,5 +91,38 @@ Orchestrator (this session)
 
 ## This run's outcomes
 
-See [`PROGRESS.md`](PROGRESS.md) for what the two agents actually produced,
-what the review pass found, and what integration testing verified.
+Both agents delivered working, tested code with no file-tree collisions
+(confirmed via `git status`/`git diff --stat` before committing either
+side). Full detail in [`PROGRESS.md`](PROGRESS.md); summary:
+
+- The pipeline agent self-reported 4 deviations from its brief (all
+  reasonable format-spec corrections, e.g. it correctly identified that
+  `##NAME`-style tags belong to JCAMP-DX's LDR syntax, not MSP's
+  `Key: value` syntax as the prompt had assumed) — a case where giving an
+  agent latitude to correct the orchestrator's own spec mistake, with a
+  documented reason, was the right call.
+- The librarian agent surfaced one real, non-obvious finding neither the
+  orchestrator nor the pipeline agent could have predicted: the published
+  `sql.js` wasm build has no FTS5 module, despite the schema's FTS5 tables
+  being real and populated. It caught this empirically (tried the MATCH
+  query, got `no such module: fts5`), didn't paper over it, and shipped a
+  substring-search fallback plus a clear README note — exactly the kind of
+  thing that would otherwise surface as a silent, confusing feature gap in
+  production.
+- Orchestrator-side integration testing (Playwright against the built
+  librarian, pointed at a freshly-built `pipeline/drugchecking.sqlite`)
+  caught nothing broken at the seam — the two agents' shared contract
+  (`schema.sql`) held exactly as written. That's the payoff of freezing
+  the contract in both prompts verbatim rather than letting each agent
+  infer it independently.
+- One thing worth doing differently next time: the librarian agent's
+  brief said "assume `pipeline/drugchecking.sqlite` may not exist yet, you
+  can generate it yourself" — since the pipeline agent was running
+  concurrently and rebuilding that same file, the librarian agent's
+  session saw the row counts (specifically `spectra`) change mid-build.
+  It handled this gracefully (documented as a known gap, wrote
+  spectra-table code defensively), but a cleaner sequencing (pipeline
+  agent fully done before the librarian agent starts, or an explicit
+  "don't rely on live pipeline output, only on `schema.sql`" instruction)
+  would have avoided the ambiguity entirely rather than relying on the
+  agent to notice and handle it well.
