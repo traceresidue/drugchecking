@@ -1,0 +1,36 @@
+##TITLE=Methamphetamine
+##JCAMP-DX=4.24
+##DATA TYPE=INFRARED SPECTRUM
+##ORIGIN=UNC Street Drug Analysis Lab -- SYNTHETIC TEST FIXTURE for
+$$ pipeline/adapters/jcamp_ftir.py parser validation only. This is NOT a
+$$ real NIST WebBook export; the XY data below is fabricated to exercise
+$$ the ASDF (X++(Y..Y)) decoder deterministically.
+##OWNER=synthetic fixture; not redistributed licensed data
+##CAS REGISTRY NO=537-46-2
+##XUNITS=1/CM
+##YUNITS=ABSORBANCE
+##XFACTOR=1
+##YFACTOR=0.001
+##FIRSTX=400
+##LASTX=404
+##NPOINTS=5
+##DELTAX=1
+##XYDATA=(X++(Y..Y))
+400A000N0m0k0K10
+##END=
+
+##TITLE=Caffeine
+##JCAMP-DX=4.24
+##DATA TYPE=INFRARED SPECTRUM
+##ORIGIN=UNC Street Drug Analysis Lab -- SYNTHETIC TEST FIXTURE for
+$$ pipeline/adapters/jcamp_ftir.py parser validation only. This is NOT a
+$$ real NIST WebBook export; the peak table below is fabricated.
+##OWNER=synthetic fixture; not redistributed licensed data
+##CAS REGISTRY NO=58-08-2
+##XUNITS=1/CM
+##YUNITS=TRANSMITTANCE
+##XFACTOR=1
+##YFACTOR=1
+##PEAK TABLE=(XY..XY)
+1650,45.2 1700,60.1 1750,30.0
+##END=
