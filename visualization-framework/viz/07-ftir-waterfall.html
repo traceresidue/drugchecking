@@ -409,17 +409,8 @@ function scaffold({ tag, title, dek, how, provenance, harm, pageId } = {}) {
   if (pid && window.DCF_NAV) window.DCF_NAV.injectNav({ pageId: pid, mode });
   return document.getElementById("stage");
 }
-function injectFontLink() {
-  if (document.getElementById("dcf-fonts")) return;
-  const link = document.createElement("link");
-  link.id = "dcf-fonts";
-  link.rel = "stylesheet";
-  link.href = "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap";
-  document.head.appendChild(link);
-}
 function injectCSS() {
   if (document.getElementById("dcf-css")) return;
-  injectFontLink();
   const s = document.createElement("style");
   s.id = "dcf-css";
   s.textContent = `
