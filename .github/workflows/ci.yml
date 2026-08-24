@@ -1,0 +1,88 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  web:
+    name: web (dcf-core + librarian)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        working-directory: web
+        run: npm install
+
+      - name: Build
+        working-directory: web
+        run: npm run build
+
+      - name: Test
+        working-directory: web
+        run: npm test
+
+      - name: Typecheck
+        working-directory: web
+        run: npm run typecheck
+
+  pipeline:
+    name: pipeline
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install pytest
+        run: pip install pytest
+
+      - name: Run pipeline tests
+        run: python3 -m pytest pipeline/test -q
+
+      - name: Smoke test the DB build script
+        run: python3 pipeline/build_db.py
+
+  visualization-framework:
+    name: visualization-framework
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Build visualizations
+        working-directory: visualization-framework
+        run: python3 build.py
+
+      - name: Install test dependencies
+        working-directory: visualization-framework/test
+        run: npm install
+
+      - name: Install Playwright browsers
+        working-directory: visualization-framework/test
+        run: npx playwright install --with-deps chromium
+
+      - name: Run Playwright smoke check
+        working-directory: visualization-framework/test
+        # check.js always exits 0 and just prints "N of M failed" -- fail the
+        # job here if N > 0 so CI actually reflects per-viz pass/fail state.
+        run: |
+          set -o pipefail
+          node check.js | tee check-output.txt
+          summary=$(grep -E '^[0-9]+ of [0-9]+ failed$' check-output.txt | tail -1)
+          echo "Summary: $summary"
+          failed_count=$(echo "$summary" | grep -oE '^[0-9]+')
+          if [ -n "$failed_count" ] && [ "$failed_count" -gt 0 ]; then
+            echo "::error::$failed_count visualization(s) failed the smoke check"
+            exit 1
+          fi
