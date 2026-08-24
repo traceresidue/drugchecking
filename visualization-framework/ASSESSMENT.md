@@ -81,7 +81,7 @@ The visualization framework represents a **complete proof-of-concept** addressin
 - **Spectra presentation**: MS spectra and FTIR bands don't cross-link (you can't jump from a peak name to its structure)
 
 #### 5. **Deployment & Integration**
-- **No authentication/privacy**: All visualizations assume public data; no way to show private/embargo results
+- **No authentication/privacy**: All visualizations assume public data; no way to show private/embargo results. (`build_index.py`'s password gate does not close this gap — it's a client-side visibility deterrent, trivially bypassed via devtools, not real access control; see `docs/ARCHITECTURE.md`.)
 - **No versioning**: No way to compare "results from this date" vs. "results from that date" for historical analysis
 - **No alert integration**: No connection to real-time alert systems (e.g., DIMS, The Loop)
 - **No multilingual support**: English only

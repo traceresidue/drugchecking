@@ -24,7 +24,7 @@ Open data, analysis code, and visualization tools from the UNC Street Drug Analy
 | [`datasets/code/`](datasets/code/) | Production pipeline (Stata `.do` files), Streamlit dashboards, Altair notebooks, and NC county geodata. |
 | [`textexport/`](textexport/) | Stata code that auto-generates plain-language result narratives. |
 | [`status/`](status/) | `pending.csv` — samples received by the lab, awaiting results. |
-| `build_index.py`, `vercel.json` | Password-gated landing page + Vercel deployment for the visualization framework. |
+| `build_index.py`, `vercel.json` | Password-gated landing page + Vercel deployment for the visualization framework. **Not access control** — it's a client-side visibility deterrent only (see [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)); it does not protect embargoed or private data. |
 
 ## The data model in one minute
 

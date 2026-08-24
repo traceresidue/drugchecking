@@ -1,5 +1,16 @@
 #!/usr/bin/env python3
-"""Generate index.html with password gate from MAIN_PASSWORD environment variable.
+"""Generate index.html with a password gate from MAIN_PASSWORD environment variable.
+
+IMPORTANT — what this gate is and isn't:
+This is a CLIENT-SIDE VISIBILITY GATE, not access control. MAIN_PASSWORD is baked
+into index.html as plaintext JS (readable via view-source/devtools), and every
+individual viz page under visualization-framework/viz/ only checks
+localStorage.getItem('dcf_auth'), which anyone can set from a browser console in
+one line without ever seeing the password. It deters casual browsing/search
+indexing; it does NOT protect embargoed, private, or otherwise sensitive data. If
+that's needed, use Vercel's server-side Deployment Protection (password or
+SSO/Vercel Authentication, configured in the Vercel dashboard or REST API — not a
+vercel.json field) instead of or in addition to this gate. See docs/ARCHITECTURE.md.
 
 Run locally:
   MAIN_PASSWORD=yourpassword python3 build_index.py
@@ -64,6 +75,15 @@ html = f"""<!doctype html>
 <script>
 function login(){{
   const v=document.getElementById('pwd').value;
+  // NOTE (honesty, not security): this compares against a password that is
+  // inlined in plaintext into this page's HTML/JS source (visible via
+  // view-source or devtools), and every other viz page only checks
+  // localStorage.getItem('dcf_auth') — settable from any console in one line,
+  // no password required. This is a client-side visibility deterrent, not
+  // access control. It does NOT protect embargoed, private, or sensitive
+  // data; do not rely on it for that. Real protection would mean Vercel's
+  // server-side Deployment Protection (password/SSO, dashboard/API-only —
+  // see docs/ARCHITECTURE.md) or an equivalent edge/server check.
   if(v==='{pwd}'){{
     localStorage.setItem('dcf_auth',Date.now());
     const r=new URLSearchParams(location.search).get('r');
