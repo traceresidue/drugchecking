@@ -110,7 +110,7 @@ DCF.injectCSS();
 DCF_NAV.buildIndexPage({{
   mode: "viz",
   title: "Drug Checking Visualizations",
-  dek: "Browse {count} standalone views — spectral benches, supply aggregates, and result cards. Aggregate charts use real data from 6,580 samples; spectra are illustrative.",
+  dek: "Browse {count} standalone views — spectral benches, supply aggregates, and result cards. Aggregate charts use real data from 6,580 samples; spectra are illustrative. {variant_count} additional variant explorations (alternate takes on Nos. 06, 12, 17) are collapsed below the main list.",
   switchHref: "../viz2/index.html"
 }});
 </script>
@@ -130,6 +130,14 @@ def expand_includes(body):
 def nav_registry_json(reg):
     slim = [{'id': s['id'], 'n': s['n'], 'cat': s['cat'], 'title': s['title']} for s in reg]
     return json.dumps(slim, separators=(',', ':'))
+
+# A "variant" page is an alternate take on a canonical numbered visualization
+# (e.g. 06b-ridgeline-3d variants 06-spectral-ridgeline), identified by the
+# `<number><letter>-slug` id convention vs. a canonical `<number>-slug`. This
+# mirrors isVariantId() in viz/_nav.js, which does the actual index-page
+# splitting client-side; the count here is only for the dek text below.
+def is_variant_id(id_):
+    return bool(re.match(r'^\d+[a-z]-', id_))
 
 def build(spec, reg):
     body = (ROOT/'src'/(spec['id']+'.js')).read_text(encoding='utf-8')
@@ -151,12 +159,15 @@ def build(spec, reg):
     return out, len(html)
 
 def build_index(reg):
+    variant_count = sum(1 for s in reg if is_variant_id(s['id']))
+    canonical_count = len(reg) - variant_count
     html = INDEX_TEMPLATE.format(
         nav=NAV_GLOBAL,
         shared=SHARED_GLOBAL,
         auth=AUTH_GUARD,
         nav_registry=nav_registry_json(reg),
-        count=len(reg),
+        count=canonical_count,
+        variant_count=variant_count,
     )
     out = ROOT/'viz'/'index.html'
     out.write_text(html, encoding='utf-8')

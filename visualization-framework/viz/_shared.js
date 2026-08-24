@@ -2,7 +2,19 @@
    Loaded by every standalone visualization. Pure ES module, no dependencies.
    Provides: design tokens (CSS injection), substance classification + palette,
    spectral synthesis (Gaussian chromatograms, stick spectra, FTIR curves),
-   formatting, tooltip, and a small DOM scaffold builder. */
+   formatting, tooltip, and a small DOM scaffold builder.
+
+   DEPRECATED (fallback path): this file is the legacy, hand-rolled source of
+   truth for design tokens/classify/spectral-synthesis logic. The canonical
+   source is now web/packages/dcf-core/src/* — see build.py's SHARED
+   assignment, which prefers the built dcf-core bundle
+   (web/packages/dcf-core/dist/shared.js) when present and falls back to this
+   file only when that build hasn't been produced yet. Keep this file in sync
+   with web/packages/dcf-core/src/ by hand until dcf-core's build is verified
+   equivalent and reliably available in CI, at which point this fallback
+   should be deleted and build.py's SHARED logic simplified to always use
+   dcf-core. Do not let the two drift silently — any change here should be
+   mirrored there (and vice versa) until then. */
 
 export const TOKENS = {
   bg:'#0b0e14', panel:'#121826', panel2:'#1a2234', line:'#26304a',

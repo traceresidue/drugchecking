@@ -2,6 +2,8 @@
 
 **Status**: All 25 visualizations built, tested, and passing. Each is a fully standalone HTML file that works offline (no CDN, no server required). Open any file in `viz/` directly in a web browser.
 
+**Canonical vs. variant pages**: `src/registry.json` has since grown beyond this document's original 25 entries to a curated set of canonical, numbered pages (`01`–`33`, id like `06-spectral-ridgeline`) plus a handful of **variant** pages — alternate takes on a canonical page's chart form, sharing its number with a letter suffix (`06a-ridgeline-filled`, `06b-ridgeline-3d`, `06c-ridgeline-filter`, and similarly for `12` and `17`). Variants are legitimate explorations kept for reference, not deleted, but they are **not** part of the primary tour: `viz/index.html` lists canonical pages up front and tucks variants into a collapsed "Variant explorations" section below. See [Variant Explorations](#variant-explorations) at the end of this document for the full list. This document otherwise still describes the original 25 canonical pages; it has not been updated for pages `26`–`33`.
+
 ---
 
 ## By Category
@@ -290,6 +292,24 @@ Per `DESIGN_SYSTEM.md`:
 3. **Honest Uncertainty**: Data labeled "illustrative" or "real"; spectral data explicitly flagged as not suitable for authentication.
 4. **Accessibility**: ARIA labels, high contrast, system fonts (no accessibility-breaking web fonts), keyboard navigation.
 5. **Offline-First**: Every file works over `file://` with no external dependencies beyond local `lib/`.
+
+---
+
+## Variant Explorations
+
+These 9 pages are alternate takes on a canonical page above (or on pages 26–33, added after this document) — same underlying data, a different chart form or framing. They're excluded from the primary tour to keep the main index curated; `viz/index.html` shows them in a collapsed "Variant explorations" section, and they're always reachable directly by filename.
+
+| Variant | Of | What's different | File |
+|---|---|---|---|
+| 06a-ridgeline-filled | 06 · Batch Ridgeline Fingerprints | Filled areas colored by substance class instead of stroked lines | `viz/06a-ridgeline-filled.html` |
+| 06b-ridgeline-3d | 06 · Batch Ridgeline Fingerprints | Full 50-sample ridgeline rendered as a rotatable 3D terrain (Plotly) | `viz/06b-ridgeline-3d.html` |
+| 06c-ridgeline-filter | 06 · Batch Ridgeline Fingerprints | Adds a substance-class filter to focus the ridgeline on one class at a time | `viz/06c-ridgeline-filter.html` |
+| 12a-co-nested | 12 · Adulterant Co-occurrence Chord | Click an arc to make it a center hub with an outer ring of just its partners (drill-down focus) | `viz/12a-co-nested.html` |
+| 12b-chord-sankey | 12 · Adulterant Co-occurrence Chord | Overview chord that transforms into a Sankey of one substance's partners on click | `viz/12b-chord-sankey.html` |
+| 12c-co-undirected | 12 · Adulterant Co-occurrence Chord | Same chord, symmetric layout so each pair draws one ribbon instead of duplicate A→B/B→A ribbons | `viz/12c-co-undirected.html` |
+| 17a-adulterant-pull | 17 · Adulterant Force Network | Looser cluster spacing with one-click "pull" buttons that drag a substance to the edge to reveal its connections | `viz/17a-adulterant-pull.html` |
+| 17b-adulterant-3d | 17 · Adulterant Force Network | Same force network rendered in 3D with z-axis repulsion (Plotly) | `viz/17b-adulterant-3d.html` |
+| 17c-adulterant-orbit | 17 · Adulterant Force Network | Solar-system layout: major substances as suns, partners in concentric orbits by co-occurrence strength | `viz/17c-adulterant-orbit.html` |
 
 ---
 

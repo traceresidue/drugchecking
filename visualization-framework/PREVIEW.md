@@ -1,5 +1,7 @@
 # Visualization Preview Guide
 
+**Canonical vs. variant pages**: the numbers below (01–25 in this document; the framework has since grown to 01–33) are the curated, canonical pages — this is the primary tour. A separate set of 9 **variant** pages (alternate takes on 06, 12, and 17, e.g. `06b-ridgeline-3d`) exist for reference but are intentionally left out of this tour to keep it focused; `viz/index.html` puts them in a collapsed "Variant explorations" section below the main grid rather than mixing them into the primary list. See [Variant Explorations](#variant-explorations) below for the full list of those 9.
+
 ## Quick Tour Matrix
 
 | # | Name | Category | Type | Key Feature |
@@ -201,6 +203,24 @@ All 25 visualizations share:
 | 25-glyph-garden.html | 9.4 KB | d3 | top_substances, expected_counts |
 
 **Total**: ~1.3 MB across 25 files (including ~4 MB of vendored libraries in `lib/`)
+
+---
+
+## Variant Explorations
+
+Not part of the primary tour above. Each is an alternate chart form or framing for the same data as its canonical counterpart, kept for reference rather than deleted.
+
+| Variant | Of | File |
+|---|---|---|
+| 06a-ridgeline-filled | 06 · Ridgeline Fingerprints | [viz/06a-ridgeline-filled.html](viz/06a-ridgeline-filled.html) |
+| 06b-ridgeline-3d | 06 · Ridgeline Fingerprints | [viz/06b-ridgeline-3d.html](viz/06b-ridgeline-3d.html) |
+| 06c-ridgeline-filter | 06 · Ridgeline Fingerprints | [viz/06c-ridgeline-filter.html](viz/06c-ridgeline-filter.html) |
+| 12a-co-nested | 12 · Co-occurrence Chord | [viz/12a-co-nested.html](viz/12a-co-nested.html) |
+| 12b-chord-sankey | 12 · Co-occurrence Chord | [viz/12b-chord-sankey.html](viz/12b-chord-sankey.html) |
+| 12c-co-undirected | 12 · Co-occurrence Chord | [viz/12c-co-undirected.html](viz/12c-co-undirected.html) |
+| 17a-adulterant-pull | 17 · Adulterant Network | [viz/17a-adulterant-pull.html](viz/17a-adulterant-pull.html) |
+| 17b-adulterant-3d | 17 · Adulterant Network | [viz/17b-adulterant-3d.html](viz/17b-adulterant-3d.html) |
+| 17c-adulterant-orbit | 17 · Adulterant Network | [viz/17c-adulterant-orbit.html](viz/17c-adulterant-orbit.html) |
 
 ---
 
