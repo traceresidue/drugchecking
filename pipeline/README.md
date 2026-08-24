@@ -27,6 +27,14 @@ pipeline/
   adapters/
     base.py             the Adapter contract (BaseAdapter, ParsedBatch)
     unc_demo.py          B0 -- chemdictionary.csv + datasets/*.csv (real, tested)
+    program_datasets.py   B0 extension -- every datasets/nc/ and
+                          datasets/selfservice/<PROGRAM>/ analysis_dataset.csv,
+                          one adapter/sources row per program/state (real,
+                          tested); reuses unc_demo.parse_analysis_dataset_rows
+                          rather than re-implementing the mapping
+    unc_gcms.py            B0 extension -- datasets/labservice/unc_gcms.csv,
+                          detections only, with gcms_peak -> detections.rt
+                          (real, tested)
     msp_library.py        B1 -- NIST-format MSP reference MS spectra (real
                           parser, fixture-driven)
     jcamp_ftir.py         B1 -- JCAMP-DX reference FTIR spectra (real parser,
@@ -84,6 +92,8 @@ returned dicts, no database required.
 | Adapter | Status |
 |---|---|
 | `unc_demo.py` | **Real, tested.** Loads the checked-in `chemdictionary.csv` and demo `datasets/analysis_dataset.csv` / `datasets/lab_detail.csv`. No network access -- these files are already in the repo. |
+| `program_datasets.py` | **Real, tested.** Loads `datasets/nc/nc_analysis_dataset.csv` and every `datasets/selfservice/<PROGRAM>/analysis_dataset.csv` (`MI` is skipped -- it has no `analysis_dataset.csv`, only `michigan.html`) as one `sources` row per program/state. Samples only -- each program's own `lab_detail.csv` is out of scope for this extension. A handful of samples are distributed under more than one program directory (e.g. some `nc`/`hnc` and `TN`/`hnc` rows are identical physical samples); `samples.sample_id` is a global primary key, so the duplicate is attributed to whichever adapter loads it first (`ADAPTERS` order in `build_db.py`) rather than counted twice. |
+| `unc_gcms.py` | **Real, tested.** Loads `datasets/labservice/unc_gcms.csv` (~22.6k rows) as detections only, mapping `gcms_peak` -> `detections.rt` (`"."` -> `NULL`, never `0`). About a third of its sample IDs have no matching `analysis_dataset.csv` row anywhere in this repo; `build_db.py`'s `load_detections` skips those (logged as a count, not silently) rather than violating the `detections.sample_id` foreign key. |
 | `msp_library.py` | **Real parser, tested against a fixture.** Hand-written parser for the NIST/SWGDRUG "Key: value" MSP text format. Ships only `fixtures/reference/example.msp`, a synthetic 3-compound fixture authored for parser validation. **Does not fetch real SWGDRUG/NIST MSP libraries over the network** -- that's B1's documented-but-not-implemented remainder. |
 | `jcamp_ftir.py` | **Real parser, tested against a fixture.** Hand-written JCAMP-DX parser (LDR key/value + value/point tables + ASDF-compressed `##XYDATA`). Ships only `fixtures/reference/example.jdx`, a synthetic 2-compound fixture. **Does not fetch real NIST WebBook JCAMP-DX exports over the network.** |
 | `mona_json.py` | **Real parser, tested against a real, licensed 7-record excerpt of MoNA's actual GC-MS export** (`fixtures/reference/mona_sample.json`) -- unlike the MSP/JCAMP fixtures, this one is not synthetic: each record carries its own genuine CC BY / CC BY-SA / CC BY-NC-SA license in `meta.license`, so it's real reference-spectrum data, just a small subset. Point `mona_path=` at the full ~19k-record export (available at https://mona.fiehnlab.ucdavis.edu/downloads, not bundled here for size) to ingest more. |
