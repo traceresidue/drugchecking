@@ -23,3 +23,7 @@ pipeline/*.sqlite
 # checked in); keep the directory itself via .gitkeep
 pipeline/cache/*
 !pipeline/cache/.gitkeep
+
+# Claude Code harness scaffolding (e.g. isolated agent worktrees) — local,
+# ephemeral, never part of project history
+.claude/
