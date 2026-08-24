@@ -41,6 +41,19 @@ const PREVIEW_FALLBACK = {
   '17c-adulterant-orbit': '17-adulterant-network',
 };
 
+// A "variant" page is an alternate take on a canonical numbered visualization —
+// e.g. 06b-ridgeline-3d is a variant of 06-spectral-ridgeline. Variants use the
+// `<number><letter>-slug` id convention (already relied on above by
+// PREVIEW_FALLBACK and below by navLabel's suffix logic); canonical pages use
+// a bare `<number>-slug`. Inferring from the id — rather than a manually-set
+// registry flag — means every future page is classified correctly for free as
+// long as it follows this existing naming convention, with no separate field
+// to remember to set (and no risk of the field and the id silently drifting
+// apart).
+function isVariantId(id) {
+  return /^\d+[a-z]-/.test(id);
+}
+
 function pageFile(id, mode) {
   return mode === 'lab' ? `d-${id}.html` : `${id}.html`;
 }
@@ -84,16 +97,24 @@ function injectNavCSS() {
   .dcf-index-switch{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
   .dcf-index-switch a{font:500 12px var(--font-sans);color:var(--muted);text-decoration:none;padding:6px 12px;border:1px solid var(--line);border-radius:999px}
   .dcf-index-switch a[aria-current="page"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+  .dcf-index-variant-badge{display:inline-block;margin-left:6px;font:600 9px/1 var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--faint);border:1px solid var(--line);border-radius:999px;padding:2px 6px;vertical-align:middle}
+  .dcf-variants{margin:8px 0 32px;border-top:1px solid var(--line);padding-top:18px}
+  .dcf-variants>summary{cursor:pointer;list-style:none;font:600 13px var(--font-sans);color:var(--muted);display:flex;align-items:center;gap:8px;padding:4px 0;user-select:none}
+  .dcf-variants>summary::-webkit-details-marker{display:none}
+  .dcf-variants>summary::before{content:'▸';display:inline-block;font-size:11px;transition:transform .15s;color:var(--faint)}
+  .dcf-variants[open]>summary::before{transform:rotate(90deg)}
+  .dcf-variants>summary:hover,.dcf-variants>summary:focus-visible{color:var(--ink);outline:none}
+  .dcf-variants-dek{margin:8px 0 0;color:var(--faint);font-size:13px;line-height:1.5;max-width:72ch}
+  .dcf-variants .dcf-index-grid{margin-top:14px}
   @media (max-width:640px){.dcf-nav-pos{width:100%;margin-left:0;text-align:right}}
-  @media (prefers-reduced-motion:reduce){.dcf-index-card,.dcf-nav-home,.dcf-nav-btn{transition:none}}
+  @media (prefers-reduced-motion:reduce){.dcf-index-card,.dcf-nav-home,.dcf-nav-btn,.dcf-variants>summary::before{transition:none}}
   `;
   document.head.appendChild(s);
 }
 
 function navLabel(entry) {
   const n = String(entry.n).padStart(2, '0');
-  const variant = entry.id.match(/^\d+[a-z]-/);
-  const suffix = variant ? ` · ${entry.id.split('-').slice(1).join(' ')}` : '';
+  const suffix = isVariantId(entry.id) ? ` · ${entry.id.split('-').slice(1).join(' ')}` : '';
   return `Nº ${n} · ${entry.title}${suffix}`;
 }
 
@@ -154,9 +175,52 @@ function injectNav({ pageId, mode = 'viz' } = {}) {
   else document.body.prepend(nav);
 }
 
+function renderCard(entry, mode, { showVariantBadge = false } = {}) {
+  const card = document.createElement('a');
+  card.className = 'dcf-index-card';
+  card.href = pageFile(entry.id, mode);
+  card.setAttribute('role', 'listitem');
+  card.setAttribute('aria-label', `${entry.title} — ${entry.cat}${showVariantBadge ? ' — variant' : ''}`);
+
+  const thumb = document.createElement('div');
+  thumb.className = 'dcf-index-thumb';
+  const img = document.createElement('img');
+  img.src = previewSrc(entry.id, mode);
+  img.alt = '';
+  img.loading = 'lazy';
+  img.onerror = () => {
+    img.remove();
+    const fb = document.createElement('div');
+    fb.className = 'dcf-index-thumb-fallback';
+    fb.textContent = entry.cat;
+    thumb.appendChild(fb);
+  };
+  thumb.appendChild(img);
+
+  const body = document.createElement('div');
+  body.className = 'dcf-index-body';
+  body.innerHTML = `
+    <div class="dcf-index-meta">Nº ${String(entry.n).padStart(2, '0')} · ${entry.cat}${showVariantBadge ? '<span class="dcf-index-variant-badge">Variant</span>' : ''}</div>
+    <h2 class="dcf-index-title">${entry.title}</h2>
+    <p class="dcf-index-cat">${entry.id.replace(/-/g, ' ')}</p>`;
+
+  card.append(thumb, body);
+  return card;
+}
+
+function renderGrid(entries, mode, opts) {
+  const grid = document.createElement('div');
+  grid.className = 'dcf-index-grid';
+  grid.setAttribute('role', 'list');
+  entries.forEach(entry => grid.appendChild(renderCard(entry, mode, opts)));
+  return grid;
+}
+
 function buildIndexPage({ mode = 'viz', title, dek, switchHref } = {}) {
   injectNavCSS();
   const items = typeof NAV_REGISTRY !== 'undefined' ? NAV_REGISTRY : [];
+  const canonical = items.filter(entry => !isVariantId(entry.id));
+  const variants = items.filter(entry => isVariantId(entry.id));
   const prodHref = mode === 'lab' ? '../viz/index.html' : 'index.html';
   const labHref = mode === 'lab' ? 'index.html' : (switchHref || '../viz2/index.html');
   const hero = document.createElement('header');
@@ -169,44 +233,26 @@ function buildIndexPage({ mode = 'viz', title, dek, switchHref } = {}) {
       <a href="${labHref}" aria-current="${mode === 'lab' ? 'page' : 'false'}">Design Lab</a>
     </div>`;
 
-  const grid = document.createElement('div');
-  grid.className = 'dcf-index-grid';
-  grid.setAttribute('role', 'list');
-
-  items.forEach(entry => {
-    const card = document.createElement('a');
-    card.className = 'dcf-index-card';
-    card.href = pageFile(entry.id, mode);
-    card.setAttribute('role', 'listitem');
-    card.setAttribute('aria-label', `${entry.title} — ${entry.cat}`);
-
-    const thumb = document.createElement('div');
-    thumb.className = 'dcf-index-thumb';
-    const img = document.createElement('img');
-    img.src = previewSrc(entry.id, mode);
-    img.alt = '';
-    img.loading = 'lazy';
-    img.onerror = () => {
-      img.remove();
-      const fb = document.createElement('div');
-      fb.className = 'dcf-index-thumb-fallback';
-      fb.textContent = entry.cat;
-      thumb.appendChild(fb);
-    };
-    thumb.appendChild(img);
-
-    const body = document.createElement('div');
-    body.className = 'dcf-index-body';
-    body.innerHTML = `
-      <div class="dcf-index-meta">Nº ${String(entry.n).padStart(2, '0')} · ${entry.cat}</div>
-      <h2 class="dcf-index-title">${entry.title}</h2>
-      <p class="dcf-index-cat">${entry.id.replace(/-/g, ' ')}</p>`;
-
-    card.append(thumb, body);
-    grid.appendChild(card);
-  });
+  // Primary, curated list: canonical numbered pages only (no a/b/c suffix).
+  const grid = renderGrid(canonical, mode);
 
   document.body.append(hero, grid);
+
+  // Secondary, clearly-labeled section: alternate takes on a canonical page
+  // (same number, a/b/c suffix). Collapsed by default so a first-time viewer
+  // sees the curated canonical list first, with variants one click away.
+  if (variants.length) {
+    const section = document.createElement('details');
+    section.className = 'dcf-variants';
+    const summary = document.createElement('summary');
+    summary.textContent = `Variant explorations (${variants.length})`;
+    const dekEl = document.createElement('p');
+    dekEl.className = 'dcf-variants-dek';
+    dekEl.textContent = 'Alternate takes on canonical numbered pages above — different chart forms or framings explored for the same data. Kept for reference, not part of the primary tour.';
+    const variantGrid = renderGrid(variants, mode, { showVariantBadge: true });
+    section.append(summary, dekEl, variantGrid);
+    document.body.append(section);
+  }
 }
 
 
@@ -216,214 +262,176 @@ window.DCF_NAV={injectNav,buildIndexPage,pageFile,previewSrc};
 </script>
 <script>
 (function(){
-// src/tokens.ts
-var TOKENS = {
-  bg: "#0b0e14",
-  panel: "#121826",
-  panel2: "#1a2234",
-  line: "#26304a",
-  ink: "#e8ecf4",
-  muted: "#8b94a8",
-  faint: "#5b6478",
-  opioid: "#ff8a5c",
-  fent: "#ff5c7a",
-  xyl: "#b388ff",
-  stim: "#ffd166",
-  coke: "#4cc9f0",
-  benzo: "#7aa2ff",
-  cut: "#6ee7a8",
-  other: "#94a3b8",
-  alert: "#ff5c7a",
-  watch: "#ffd166",
-  ok: "#6ee7a8",
-  info: "#4cc9f0"
-};
-var FONTS = {
-  sans: 'Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
-  mono: '"Cascadia Mono", ui-monospace, "SF Mono", "Roboto Mono", Consolas, monospace'
+/* Drug Checking Visualization Framework — shared helpers
+   Loaded by every standalone visualization. Pure ES module, no dependencies.
+   Provides: design tokens (CSS injection), substance classification + palette,
+   spectral synthesis (Gaussian chromatograms, stick spectra, FTIR curves),
+   formatting, tooltip, and a small DOM scaffold builder.
+
+   DEPRECATED (fallback path): this file is the legacy, hand-rolled source of
+   truth for design tokens/classify/spectral-synthesis logic. The canonical
+   source is now web/packages/dcf-core/src/* — see build.py's SHARED
+   assignment, which prefers the built dcf-core bundle
+   (web/packages/dcf-core/dist/shared.js) when present and falls back to this
+   file only when that build hasn't been produced yet. Keep this file in sync
+   with web/packages/dcf-core/src/ by hand until dcf-core's build is verified
+   equivalent and reliably available in CI, at which point this fallback
+   should be deleted and build.py's SHARED logic simplified to always use
+   dcf-core. Do not let the two drift silently — any change here should be
+   mirrored there (and vice versa) until then. */
+
+const TOKENS = {
+  bg:'#0b0e14', panel:'#121826', panel2:'#1a2234', line:'#26304a',
+  ink:'#e8ecf4', muted:'#8b94a8', faint:'#5b6478',
+  opioid:'#ff8a5c', fent:'#ff5c7a', xyl:'#b388ff', stim:'#ffd166',
+  coke:'#4cc9f0', benzo:'#7aa2ff', cut:'#6ee7a8', other:'#94a3b8',
+  alert:'#ff5c7a', watch:'#ffd166', ok:'#6ee7a8', info:'#4cc9f0'
 };
 
-// src/classify.ts
-var CLASS = {
-  fent: { color: TOKENS.fent, label: "Fentanyl & analogs" },
-  opioid: { color: TOKENS.opioid, label: "Opioid" },
-  xyl: { color: TOKENS.xyl, label: "Sedative / xylazine" },
-  stim: { color: TOKENS.stim, label: "Stimulant" },
-  coke: { color: TOKENS.coke, label: "Cocaine" },
-  benzo: { color: TOKENS.benzo, label: "Benzodiazepine" },
-  cut: { color: TOKENS.cut, label: "Cut / diluent" },
-  other: { color: TOKENS.other, label: "Other" }
+/* Sans-only UI prose + mono instrument readouts — always terminate with generic family. */
+const FONTS = {
+  sans:'Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+  mono:'"Cascadia Mono", ui-monospace, "SF Mono", "Roboto Mono", Consolas, monospace',
 };
-var RULES = [
-  [/fentanyl|anpp|despropionyl|norfentanyl|acetylfentanyl|n-phenylpropanamide|phenethyl/i, "fent"],
-  [/nitazene|etonitazene|metonitazene|protonitazene|isotonitazene/i, "fent"],
-  [/heroin|morphine|codeine|6-mam|monoacetylmorphine|oxycodone|hydromorphone|tramadol|mitragynine|opioid/i, "opioid"],
-  [/xylazine|medetomidine|detomidine|clonidine/i, "xyl"],
-  [/bromazolam|flualprazolam|alprazolam|etizolam|diazepam|clonazolam|benzodiazep|flubromazolam|diclazepam/i, "benzo"],
-  [/methamphetamine|amphetamine|mdma|cathinone|methylenedioxy|n,n-dimethylamphetamine/i, "stim"],
-  [/cocaine|benzoylecgonine|ecgonine/i, "coke"],
-  [/caffeine|acetaminophen|paracetamol|lidocaine|levamisole|quinine|mannitol|lactose|sucrose|cellulose|diphenhydramine|sulfone|msm|sugar|inositol|procaine|benzocaine|phenacetin|gabapentin|dimethyl|sebacate|btmps|piperidyl|boric|sorbitol|maltose|glucose|creatine|diacetin|tetramethyl/i, "cut"]
+
+/* Map a substance name -> {class, color, label, action} */
+const CLASS = {
+  fent:{color:TOKENS.fent,label:'Fentanyl & analogs'},
+  opioid:{color:TOKENS.opioid,label:'Opioid'},
+  xyl:{color:TOKENS.xyl,label:'Sedative / xylazine'},
+  stim:{color:TOKENS.stim,label:'Stimulant'},
+  coke:{color:TOKENS.coke,label:'Cocaine'},
+  benzo:{color:TOKENS.benzo,label:'Benzodiazepine'},
+  cut:{color:TOKENS.cut,label:'Cut / diluent'},
+  other:{color:TOKENS.other,label:'Other'}
+};
+const RULES = [
+  [/fentanyl|anpp|despropionyl|norfentanyl|acetylfentanyl|n-phenylpropanamide|phenethyl/i,'fent'],
+  [/nitazene|etonitazene|metonitazene|protonitazene|isotonitazene/i,'fent'],
+  [/heroin|morphine|codeine|6-mam|monoacetylmorphine|oxycodone|hydromorphone|tramadol|mitragynine|opioid/i,'opioid'],
+  [/xylazine|medetomidine|detomidine|clonidine/i,'xyl'],
+  [/bromazolam|flualprazolam|alprazolam|etizolam|diazepam|clonazolam|benzodiazep|flubromazolam|diclazepam/i,'benzo'],
+  [/methamphetamine|amphetamine|mdma|cathinone|methylenedioxy|n,n-dimethylamphetamine/i,'stim'],
+  [/cocaine|benzoylecgonine|ecgonine/i,'coke'],
+  [/caffeine|acetaminophen|paracetamol|lidocaine|levamisole|quinine|mannitol|lactose|sucrose|cellulose|diphenhydramine|sulfone|msm|sugar|inositol|procaine|benzocaine|phenacetin|gabapentin|dimethyl|sebacate|btmps|piperidyl|boric|sorbitol|maltose|glucose|creatine|diacetin|tetramethyl/i,'cut'],
 ];
-var FAMILY_MAP = {
-  fent: "opioid",
-  opioid: "opioid",
-  stim: "stim",
-  coke: "stim",
-  xyl: "xyl",
-  benzo: "benzo",
-  cut: "cut",
-  other: "other"
+/* Broad families for filters and labels — cls stays fine-grained for chart colors. */
+const FAMILY_MAP = {
+  fent:'opioid', opioid:'opioid',
+  stim:'stim', coke:'stim',
+  xyl:'xyl', benzo:'benzo', cut:'cut', other:'other',
 };
-var FAMILY_LABEL = {
-  opioid: "Opioid",
-  stim: "Stimulant",
-  xyl: "Sedative / xylazine",
-  benzo: "Benzodiazepine",
-  cut: "Cut / diluent",
-  other: "Other"
+const FAMILY_LABEL = {
+  opioid:'Opioid',
+  stim:'Stimulant',
+  xyl:'Sedative / xylazine',
+  benzo:'Benzodiazepine',
+  cut:'Cut / diluent',
+  other:'Other',
 };
-function classify(name = "") {
+function classify(name=''){
   const n = String(name).toLowerCase();
-  for (const [re, c] of RULES) {
-    if (re.test(n)) {
+  for(const [re,c] of RULES){
+    if(re.test(n)){
       const family = FAMILY_MAP[c] || c;
-      return { cls: c, color: CLASS[c].color, label: CLASS[c].label, family, familyLabel: FAMILY_LABEL[family] || FAMILY_LABEL.other };
+      return {cls:c,color:CLASS[c].color,label:CLASS[c].label,family,familyLabel:FAMILY_LABEL[family]||FAMILY_LABEL.other};
     }
   }
-  return { cls: "other", ...CLASS.other, family: "other", familyLabel: FAMILY_LABEL.other };
+  return {cls:'other',...CLASS.other,family:'other',familyLabel:FAMILY_LABEL.other};
 }
 
-// src/format.ts
-var fmt = {
-  mz: (v) => `${(+v).toFixed(0)}`,
-  rt: (v) => `${(+v).toFixed(2)}`,
-  pct: (v) => `${(+v).toFixed(0)}%`,
-  int: (v) => (+v).toLocaleString("en-US"),
-  month: (m) => {
-    const [y, mo] = m.split("-");
-    return new Date(+y, +mo - 1).toLocaleDateString("en-US", { month: "short", year: "2-digit" });
-  }
+/* ---- formatting ---- */
+const fmt = {
+  mz:v=>`${(+v).toFixed(0)}`,
+  rt:v=>`${(+v).toFixed(2)}`,
+  pct:v=>`${(+v).toFixed(0)}%`,
+  int:v=>(+v).toLocaleString('en-US'),
+  month:m=>{const [y,mo]=m.split('-');return new Date(y,mo-1).toLocaleDateString('en-US',{month:'short',year:'2-digit'});}
 };
 
-// src/spectral.ts
-function chromatogram(peaks, { x0 = 2, x1 = 13, n = 900, sigma = 0.045 } = {}) {
-  const x = [], y = [];
-  for (let i = 0; i < n; i++) {
-    const t = x0 + (x1 - x0) * i / (n - 1);
-    x.push(t);
-    let v = 0;
-    for (const p of peaks) {
-      const d = (t - p.rt) / (p.sigma || sigma);
-      v += p.amp * Math.exp(-0.5 * d * d);
-    }
+/* ---- spectral synthesis ---- */
+// Sum-of-Gaussians chromatogram trace. peaks:[{rt,amp}], returns {x:[],y:[]}
+function chromatogram(peaks,{x0=2,x1=13,n=900,sigma=0.045}={}){
+  const x=[],y=[];
+  for(let i=0;i<n;i++){
+    const t=x0+(x1-x0)*i/(n-1); x.push(t);
+    let v=0; for(const p of peaks){const d=(t-p.rt)/(p.sigma||sigma); v+=p.amp*Math.exp(-0.5*d*d);}
     y.push(v);
   }
-  const mx = Math.max(...y, 1e-9);
-  return { x, y: y.map((v) => v / mx * 100) };
+  const mx=Math.max(...y,1e-9);
+  return {x,y:y.map(v=>v/mx*100)};
 }
-function ftirCurve(bands, { x0 = 4e3, x1 = 400, n = 1100 } = {}) {
-  const x = [], y = [];
-  for (let i = 0; i < n; i++) {
-    const w = x0 + (x1 - x0) * i / (n - 1);
-    x.push(w);
-    let v = 0;
-    for (const [c, I, wd] of bands) {
-      const d = (w - c) / (wd || 20);
-      v += I * Math.exp(-0.5 * d * d);
-    }
+// FTIR absorbance curve from bands [[center,intensity,width],...]; reversed x handled by caller
+function ftirCurve(bands,{x0=4000,x1=400,n=1100}={}){
+  const x=[],y=[];
+  for(let i=0;i<n;i++){
+    const w=x0+(x1-x0)*i/(n-1); x.push(w);
+    let v=0; for(const [c,I,wd] of bands){const d=(w-c)/(wd||20); v+=I*Math.exp(-0.5*d*d);}
     y.push(v);
   }
-  return { x, y };
+  return {x,y}; // y in absorbance-ish 0..~1
 }
-function stickSpectrum(peaks) {
-  const mx = Math.max(...peaks.map((p) => p[1]), 1);
-  return peaks.map(([mz, i]) => ({ mz, i: i / mx * 100 })).sort((a, b) => a.mz - b.mz);
+// Mass spectrum sticks: returns sorted peaks with base-peak normalization
+function stickSpectrum(peaks){
+  const mx=Math.max(...peaks.map(p=>p[1]),1);
+  return peaks.map(([mz,i])=>({mz,i:i/mx*100})).sort((a,b)=>a.mz-b.mz);
 }
-function cosine(a, b, tol = 0.5) {
-  let dot = 0, na = 0, nb = 0;
-  const used = /* @__PURE__ */ new Set();
-  for (const pa of a) {
-    na += pa.i * pa.i;
-  }
-  for (const pb of b) {
-    nb += pb.i * pb.i;
-  }
-  for (const pa of a) {
-    let best = null, bd = tol;
-    for (let k = 0; k < b.length; k++) {
-      if (used.has(k)) continue;
-      const d = Math.abs(pa.mz - b[k].mz);
-      if (d <= bd) {
-        bd = d;
-        best = k;
-      }
-    }
-    if (best != null) {
-      dot += pa.i * b[best].i;
-      used.add(best);
-    }
-  }
-  return dot / (Math.sqrt(na) * Math.sqrt(nb) || 1);
+// cosine similarity between two stick spectra (binned at 1 m/z)
+function cosine(a,b,tol=0.5){
+  let dot=0,na=0,nb=0; const used=new Set();
+  for(const pa of a){na+=pa.i*pa.i;}
+  for(const pb of b){nb+=pb.i*pb.i;}
+  for(const pa of a){let best=null,bd=tol; for(let k=0;k<b.length;k++){if(used.has(k))continue;const d=Math.abs(pa.mz-b[k].mz); if(d<=bd){bd=d;best=k;}} if(best!=null){dot+=pa.i*b[best].i;used.add(best);}}
+  return dot/(Math.sqrt(na)*Math.sqrt(nb)||1);
 }
 
-// src/dom.ts
-var _tt;
-function tooltip() {
-  if (_tt) return _api;
-  _tt = document.createElement("div");
-  _tt.style.cssText = `position:fixed;pointer-events:none;z-index:99;background:${TOKENS.panel2};border:1px solid ${TOKENS.line};border-radius:8px;padding:8px 10px;font:12px/1.4 ${FONTS.sans};color:${TOKENS.ink};box-shadow:0 6px 24px rgba(0,0,0,.5);opacity:0;transition:opacity .12s;max-width:260px`;
+/* ---- tooltip ---- */
+let _tt;
+function tooltip(){
+  if(_tt) return _tt;
+  _tt=document.createElement('div');
+  _tt.style.cssText=`position:fixed;pointer-events:none;z-index:99;background:${TOKENS.panel2};border:1px solid ${TOKENS.line};border-radius:8px;padding:8px 10px;font:12px/1.4 ${FONTS.sans};color:${TOKENS.ink};box-shadow:0 6px 24px rgba(0,0,0,.5);opacity:0;transition:opacity .12s;max-width:260px`;
   document.body.appendChild(_tt);
-  _api = {
-    show(html, x, y) {
-      _tt.innerHTML = html;
-      _tt.style.opacity = "1";
-      const r = _tt.getBoundingClientRect();
-      let nx = x + 14, ny = y + 14;
-      if (nx + r.width > innerWidth) nx = x - r.width - 14;
-      if (ny + r.height > innerHeight) ny = y - r.height - 14;
-      _tt.style.left = nx + "px";
-      _tt.style.top = ny + "px";
-    },
-    hide() {
-      _tt.style.opacity = "0";
-    }
+  return {
+    show(html,x,y){_tt.innerHTML=html;_tt.style.opacity=1;const r=_tt.getBoundingClientRect();let nx=x+14,ny=y+14;if(nx+r.width>innerWidth)nx=x-r.width-14;if(ny+r.height>innerHeight)ny=y-r.height-14;_tt.style.left=nx+'px';_tt.style.top=ny+'px';},
+    hide(){_tt.style.opacity=0;}
   };
-  return _api;
 }
-var _api;
-function scaffold({ tag, title, dek, how, provenance, harm, pageId } = {}) {
+
+/* ---- page scaffold + global CSS ---- */
+function scaffold({tag,title,dek,how,provenance,harm,pageId}={}){
   injectCSS();
-  document.body.innerHTML = `
+  document.body.innerHTML=`
     <header class="dcf-h">
-      <div class="dcf-tag">${tag || ""}</div>
-      <h1>${title || ""}</h1>
-      <p class="dek">${dek || ""}</p>
+      <div class="dcf-tag">${tag||''}</div>
+      <h1>${title||''}</h1>
+      <p class="dek">${dek||''}</p>
     </header>
     <main id="stage"></main>
-    <details class="dcf-how"><summary>How to read this</summary><div>${how || ""}</div></details>
+    <details class="dcf-how"><summary>How to read this</summary><div>${how||''}</div></details>
     <footer class="dcf-f">
-      <p class="prov">${provenance || ""}</p>
-      ${harm ? `<p class="harm">${harm}</p>` : ""}
+      <p class="prov">${provenance||''}</p>
+      ${harm?`<p class="harm">${harm}</p>`:''}
     </footer>`;
-  const pid = pageId || (typeof NAV_PAGE_ID !== "undefined" ? NAV_PAGE_ID : "");
-  const mode = typeof NAV_MODE !== "undefined" ? NAV_MODE : "viz";
+  const pid = pageId || (typeof NAV_PAGE_ID !== 'undefined' ? NAV_PAGE_ID : '');
+  const mode = typeof NAV_MODE !== 'undefined' ? NAV_MODE : 'viz';
   if (pid && window.DCF_NAV) window.DCF_NAV.injectNav({ pageId: pid, mode });
-  return document.getElementById("stage");
+  return document.getElementById('stage');
 }
-function injectFontLink() {
-  if (document.getElementById("dcf-fonts")) return;
-  const link = document.createElement("link");
-  link.id = "dcf-fonts";
-  link.rel = "stylesheet";
-  link.href = "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap";
+function injectFontLink(){
+  if(document.getElementById('dcf-fonts')) return;
+  const link=document.createElement('link');
+  link.id='dcf-fonts';
+  link.rel='stylesheet';
+  link.href='https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap';
   document.head.appendChild(link);
 }
-function injectCSS() {
-  if (document.getElementById("dcf-css")) return;
+
+function injectCSS(){
+  if(document.getElementById('dcf-css')) return;
   injectFontLink();
-  const s = document.createElement("style");
-  s.id = "dcf-css";
-  s.textContent = `
+  const s=document.createElement('style'); s.id='dcf-css';
+  s.textContent=`
   :root{
     --bg:${TOKENS.bg};--panel:${TOKENS.panel};--panel2:${TOKENS.panel2};--line:${TOKENS.line};
     --ink:${TOKENS.ink};--muted:${TOKENS.muted};--faint:${TOKENS.faint};
@@ -442,7 +450,7 @@ function injectCSS() {
   .panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px}
   .dcf-how{margin:22px 0 8px;border:1px solid var(--line);border-radius:10px;background:var(--panel);overflow:hidden}
   .dcf-how summary{cursor:pointer;padding:12px 16px;font-weight:600;font-size:13px;color:var(--ink);list-style:none}
-  .dcf-how summary::before{content:"\u24D8 ";color:var(--muted)}
+  .dcf-how summary::before{content:"ⓘ ";color:var(--muted)}
   .dcf-how[open] summary{border-bottom:1px solid var(--line)}
   .dcf-how>div{padding:14px 16px;font-size:13.5px;line-height:1.6;color:var(--muted)}
   .dcf-how b{color:var(--ink)}
@@ -462,67 +470,40 @@ function injectCSS() {
   `;
   document.head.appendChild(s);
 }
-var _smilesCanvasDrawer = null;
-function smilesCanvasDrawer(w, h) {
-  if (_smilesCanvasDrawer) return _smilesCanvasDrawer;
-  _smilesCanvasDrawer = new SmilesDrawer.SvgDrawer({
-    width: w,
-    height: h,
-    padding: 14,
-    bondThickness: 1.1,
-    themes: {
-      dcf: {
-        C: "#cfd6e4",
-        N: "#7aa2ff",
-        O: "#ff8a5c",
-        F: "#6ee7a8",
-        S: "#ffd166",
-        CL: "#6ee7a8",
-        BR: "#ff8a5c",
-        I: "#b388ff",
-        P: "#d35400",
-        B: "#e67e22",
-        SI: "#e67e22",
-        H: "#8b94a8",
-        BACKGROUND: "#0e1320"
-      }
-    }
+
+/* draw a 2D structure from SMILES into a <canvas id=...>; needs SmilesDrawer loaded.
+   Uses the canvas DrawerBase path (SmilesDrawer.Drawer SVG→canvas is broken in the vendored build). */
+let _smilesCanvasDrawer=null;
+function smilesCanvasDrawer(w,h){
+  if(_smilesCanvasDrawer) return _smilesCanvasDrawer;
+  _smilesCanvasDrawer=new SmilesDrawer.SvgDrawer({
+    width:w,height:h,padding:14,bondThickness:1.1,
+    themes:{
+      dcf:{
+        C:'#cfd6e4',N:'#7aa2ff',O:'#ff8a5c',F:'#6ee7a8',S:'#ffd166',
+        CL:'#6ee7a8',BR:'#ff8a5c',I:'#b388ff',P:'#d35400',B:'#e67e22',SI:'#e67e22',
+        H:'#8b94a8',BACKGROUND:'#0e1320',
+      },
+    },
   }).preprocessor;
   return _smilesCanvasDrawer;
 }
-function smilesStructureNA(el, h) {
-  const c = el.getContext && el.getContext("2d");
-  if (c) {
-    c.fillStyle = "#5b6478";
-    c.font = "11px " + FONTS.sans;
-    c.fillText("structure n/a", 8, h / 2);
-  }
+function smilesStructureNA(el,h){
+  const c=el.getContext&&el.getContext('2d');
+  if(c){c.fillStyle='#5b6478';c.font='11px '+FONTS.sans;c.fillText('structure n/a',8,h/2);}
 }
-function drawSmiles(smiles, canvasId, w = 160, h = 120) {
-  const el = document.getElementById(canvasId);
-  if (!el || typeof SmilesDrawer === "undefined" || !smiles) {
-    if (el) smilesStructureNA(el, h);
-    return;
-  }
-  try {
-    const drawer = smilesCanvasDrawer(w, h);
-    SmilesDrawer.parse(smiles, (t) => {
-      try {
-        drawer.draw(t, el, "dcf", false);
-      } catch (_) {
-        try {
-          drawer.draw(t, el, "dark", false);
-        } catch (__) {
-          smilesStructureNA(el, h);
-        }
-      }
-    }, () => {
-      smilesStructureNA(el, h);
-    });
-  } catch (e) {
-    smilesStructureNA(el, h);
-  }
+function drawSmiles(smiles,canvasId,w=160,h=120){
+  const el=document.getElementById(canvasId);
+  if(!el||typeof SmilesDrawer==='undefined'||!smiles){ if(el) smilesStructureNA(el,h); return; }
+  try{
+    const drawer=smilesCanvasDrawer(w,h);
+    SmilesDrawer.parse(smiles,t=>{
+      try{ drawer.draw(t,el,'dcf',false); }
+      catch(_){ try{ drawer.draw(t,el,'dark',false); } catch(__){ smilesStructureNA(el,h); } }
+    },()=>{ smilesStructureNA(el,h); });
+  }catch(e){ smilesStructureNA(el,h); }
 }
+
 
 window.DCF={TOKENS,FONTS,classify,fmt,chromatogram,ftirCurve,stickSpectrum,cosine,tooltip,scaffold,injectCSS,drawSmiles};
 

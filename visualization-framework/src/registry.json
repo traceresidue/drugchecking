@@ -6,7 +6,7 @@
  {"id":"05-chromatogram-3d","n":5,"cat":"GC–MS","title":"GC–MS Data Cube (3D)","libs":["plotly"],"spec":["ms","chromatograms"],"data":["retention_times"]},
  {"id":"06-spectral-ridgeline","n":6,"cat":"GC–MS","title":"Batch Ridgeline Fingerprints","libs":["d3"],"spec":["chromatograms"],"data":["retention_times"]},
  {"id":"06a-ridgeline-filled","n":6,"cat":"GC–MS","title":"Batch Ridgeline — Class Fills","libs":["d3"],"spec":["chromatograms"],"data":["retention_times"]},
- {"id":"06b-ridgeline-3d","n":6,"cat":"GC–MS","title":"Batch Ridgeline — 3D Terrain","libs":["plotly"],"spec":["chromatograms"],"data":["retention_times"]},
+ {"id":"06b-ridgeline-3d","n":6,"cat":"GC–MS","title":"Batch Ridgeline — 3D Terrain","libs":["plotly","d3"],"spec":["chromatograms"],"data":["retention_times"]},
  {"id":"06c-ridgeline-filter","n":6,"cat":"GC–MS","title":"Batch Ridgeline — Class Focus","libs":["d3"],"spec":["chromatograms"],"data":["retention_times"]},
  {"id":"07-ftir-waterfall","n":7,"cat":"FTIR","title":"FTIR Waterfall (3D)","libs":["plotly"],"spec":["ftir"],"data":[]},
  {"id":"08-mass-defect-map","n":8,"cat":"MS","title":"Mass-Defect Constellation","libs":["d3"],"spec":["ms"],"data":["top_substances","roles"]},
