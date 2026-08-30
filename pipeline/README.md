@@ -24,6 +24,9 @@ pipeline/
                          spectra, libraries, library_members, + FTS5 tables
   build_db.py           loads schema.sql, runs each registered adapter,
                          populates FTS5, prints row counts
+  resolve_smiles.py     one-time script: chemdictionary.csv's PubChemCID ->
+                         canonical SMILES via PubChem PUG-REST, cached to
+                         cache/smiles/ for build_db.py to read (below)
   adapters/
     base.py             the Adapter contract (BaseAdapter, ParsedBatch)
     unc_demo.py          B0 -- chemdictionary.csv + datasets/*.csv (real, tested)
@@ -41,8 +44,11 @@ pipeline/
                           fixture-driven)
   fixtures/reference/    synthetic fixtures used ONLY to test the MSP/JCAMP
                          parsers -- not real SWGDRUG/NIST library data
-  cache/                 gitignored; where a future network-fetching adapter
-                         would cache downloaded raw files (empty today)
+  cache/                 gitignored (pipeline/cache/*, kept via .gitkeep);
+                         where a future network-fetching adapter would cache
+                         downloaded raw files. cache/smiles/<CID>.txt is
+                         populated by resolve_smiles.py today (see below);
+                         otherwise empty
   test/                  unittest suite (stdlib `unittest`, no pytest --
                          nothing else in this repo's Python code uses
                          pytest, see datasets/code/, so we didn't introduce it)
@@ -91,7 +97,7 @@ returned dicts, no database required.
 
 | Adapter | Status |
 |---|---|
-| `unc_demo.py` | **Real, tested.** Loads the checked-in `chemdictionary.csv` and demo `datasets/analysis_dataset.csv` / `datasets/lab_detail.csv`. No network access -- these files are already in the repo. |
+| `unc_demo.py` | **Real, tested.** Loads the checked-in `chemdictionary.csv` and demo `datasets/analysis_dataset.csv` / `datasets/lab_detail.csv`. No network access -- these files are already in the repo. `substances.smiles` is populated from `cache/smiles/<CID>.txt` when present (see `resolve_smiles.py` below); with no cache, or a CID PubChem never resolved, that row's `smiles` is left `NULL` rather than failing the build. |
 | `program_datasets.py` | **Real, tested.** Loads `datasets/nc/nc_analysis_dataset.csv` and every `datasets/selfservice/<PROGRAM>/analysis_dataset.csv` (`MI` is skipped -- it has no `analysis_dataset.csv`, only `michigan.html`) as one `sources` row per program/state. Samples only -- each program's own `lab_detail.csv` is out of scope for this extension. A handful of samples are distributed under more than one program directory (e.g. some `nc`/`hnc` and `TN`/`hnc` rows are identical physical samples); `samples.sample_id` is a global primary key, so the duplicate is attributed to whichever adapter loads it first (`ADAPTERS` order in `build_db.py`) rather than counted twice. |
 | `unc_gcms.py` | **Real, tested.** Loads `datasets/labservice/unc_gcms.csv` (~22.6k rows) as detections only, mapping `gcms_peak` -> `detections.rt` (`"."` -> `NULL`, never `0`). About a third of its sample IDs have no matching `analysis_dataset.csv` row anywhere in this repo; `build_db.py`'s `load_detections` skips those (logged as a count, not silently) rather than violating the `detections.sample_id` foreign key. |
 | `msp_library.py` | **Real parser, tested against a fixture.** Hand-written parser for the NIST/SWGDRUG "Key: value" MSP text format. Ships only `fixtures/reference/example.msp`, a synthetic 3-compound fixture authored for parser validation. **Does not fetch real SWGDRUG/NIST MSP libraries over the network** -- that's B1's documented-but-not-implemented remainder. |
@@ -160,6 +166,29 @@ some spanning multiple lines (e.g. the XY-data table), terminated by
    `(x, y)` list (after XFACTOR/YFACTOR scaling) as JSON, linked to a
    substance by case-insensitive name match on `##TITLE`.
 
+## SMILES resolution (`resolve_smiles.py`)
+
+`chemdictionary.csv` carries a `PubChemCID` per substance but no SMILES
+string, which the planned scaffold-sunburst, substructure-search, and
+similarity-matrix visualizations need (via RDKit.js) to draw or compare
+structures. `resolve_smiles.py` is a one-time, standalone script (not run as
+part of `build_db.py`) that resolves every distinct `PubChemCID` to a
+canonical SMILES via PubChem's public PUG-REST API and caches each raw
+response as `cache/smiles/<CID>.txt`:
+
+```
+python3 pipeline/resolve_smiles.py            # only fetches CIDs not yet cached
+python3 pipeline/resolve_smiles.py --force    # re-fetch everything
+python3 pipeline/resolve_smiles.py --rate 2   # 2s between requests instead of the default ~1s
+```
+
+`build_db.py` never calls the network itself: `unc_demo.py`'s
+`parse_chemdictionary_rows()` just reads whatever `cache/smiles/` already
+holds, so an empty or partial cache degrades to `substances.smiles IS NULL`
+for the missing rows rather than blocking a rebuild. A CID PubChem doesn't
+resolve (dead CID, transient HTTP error, timeout) is logged to stderr and
+skipped -- it does not stop the rest of the run.
+
 ## Running the tests
 
 ```
@@ -188,6 +217,9 @@ these modules.
   computed unit cases, then `example.jdx`'s compressed `##XYDATA` block and
   plain `##PEAK TABLE` block both decode to the expected points, with the
   same substance-linkage check.
+- `test_resolve_smiles.py` -- `distinct_cids()` against a small in-memory
+  CSV, and `resolve_all()`'s caching/rate-limit/failure-handling with the
+  HTTP layer (`fetch`) and `sleep` mocked out -- no real network calls.
 
 ## Notes carried over from B0
 

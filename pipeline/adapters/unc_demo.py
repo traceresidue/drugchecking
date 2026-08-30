@@ -42,24 +42,45 @@ def _read_csv_rows(path: Path) -> list[dict]:
         return list(csv.DictReader(f))
 
 
-def parse_chemdictionary_rows(rows: list[dict]) -> list[dict]:
+def _load_cached_smiles(cid: str | None, smiles_dir: Path | None) -> str | None:
+    """Look up a CID's canonical SMILES in the pipeline/cache/smiles/ cache
+    resolve_smiles.py populates (see that script's docstring). Returns None
+    -- never raises -- when there's no cid, no cache directory, no cache
+    file for this cid, or the cache file is empty; any of those just leaves
+    substances.smiles NULL for this row rather than failing the build."""
+    if not cid or not smiles_dir:
+        return None
+    path = smiles_dir / f'{cid}.txt'
+    if not path.exists():
+        return None
+    return path.read_text(encoding='utf-8').strip() or None
+
+
+def parse_chemdictionary_rows(rows: list[dict], smiles_dir: Path | None = None) -> list[dict]:
     """chemdictionary.csv rows -> substances dicts. Shared so every adapter
     that needs to (re-)seed the chemdictionary uses the exact same mapping;
     in practice only UNCDemoAdapter calls this today since build_db.py's
-    name_to_id cache is shared across all adapters in a single build() run."""
+    name_to_id cache is shared across all adapters in a single build() run.
+
+    `smiles_dir`, when given, is pipeline/cache/smiles/ (resolve_smiles.py's
+    cache directory, one <PubChemCID>.txt file per resolved CID) -- pass
+    None (the default) to leave every row's smiles unset, e.g. from a caller
+    that never resolved cache paths."""
     substances = []
     for row in rows:
         name = row['substance'].strip()
         if not name:
             continue
         classes = [c for c in CHEMDICT_CLASS_COLS if row.get(c, '').strip() == '1']
+        cid = row.get('PubChemCID') or None
         substances.append(dict(
             name=name,
             pronunciation=row.get('pronunciation') or None,
-            pubchem_cid=row.get('PubChemCID') or None,
+            pubchem_cid=cid,
             cas=row.get('CAS') or None,
             unii=row.get('UNII') or None,
             common_role=row.get('commonrole') or None,
+            smiles=_load_cached_smiles(cid, smiles_dir),
             classes=classes,
         ))
     return substances
@@ -122,13 +143,22 @@ class UNCDemoAdapter(BaseAdapter):
         for p in paths:
             if not p.exists():
                 raise FileNotFoundError(p)
+        # pipeline/cache/smiles/ (resolve_smiles.py's one-time PubChem CID ->
+        # SMILES cache) is optional: it won't exist until someone has run
+        # that script with network access, so only pass it through to
+        # parse() when it's actually there -- an empty/missing cache just
+        # means every row's smiles comes back None, not a build failure.
+        smiles_dir = cache_dir / 'smiles'
+        if smiles_dir.is_dir():
+            paths.append(smiles_dir)
         return paths
 
     def parse(self, raw_paths: list[Path]) -> ParsedBatch:
         by_name = {p.name: p for p in raw_paths}
         batch = ParsedBatch()
 
-        batch.substances = parse_chemdictionary_rows(_read_csv_rows(by_name['chemdictionary.csv']))
+        batch.substances = parse_chemdictionary_rows(
+            _read_csv_rows(by_name['chemdictionary.csv']), smiles_dir=by_name.get('smiles'))
         batch.samples = parse_analysis_dataset_rows(_read_csv_rows(by_name['analysis_dataset.csv']))
 
         for row in _read_csv_rows(by_name['lab_detail.csv']):

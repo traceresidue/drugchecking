@@ -23,6 +23,9 @@ CREATE TABLE IF NOT EXISTS substances (
   cas           TEXT,
   unii          TEXT,
   common_role   TEXT,
+  smiles        TEXT,  -- canonical SMILES from PubChem PUG-REST, via pipeline/resolve_smiles.py's
+                        -- cache (pipeline/cache/smiles/<cid>.txt); NULL until resolved or when
+                        -- pubchem_cid has no cache entry (never resolved, or PubChem rejected it)
   classes       TEXT NOT NULL DEFAULT '[]'  -- JSON array, e.g. ["nitazenes","opiates_opioids"]
 );
 

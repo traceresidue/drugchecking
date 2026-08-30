@@ -16,7 +16,7 @@ _PIPELINE_DIR = str(Path(__file__).resolve().parent.parent)
 if _PIPELINE_DIR not in sys.path:
     sys.path.insert(0, _PIPELINE_DIR)
 
-from adapters.unc_demo import UNCDemoAdapter
+from adapters.unc_demo import UNCDemoAdapter, parse_chemdictionary_rows
 import build_db
 
 
@@ -52,6 +52,96 @@ class TestUNCDemoAdapterParse(unittest.TestCase):
         for d in self.batch.detections:
             self.assertTrue(d['sample_id'])
             self.assertTrue(d['substance'])
+
+
+class TestChemdictionarySmilesWiring(unittest.TestCase):
+    """substances.smiles is populated from pipeline/cache/smiles/<CID>.txt
+    (resolve_smiles.py's cache) when present, and left None -- never a
+    crash -- for any row whose CID has no cache entry, or when no
+    smiles_dir is given at all (e.g. an empty/never-run cache)."""
+
+    def setUp(self):
+        rows = [
+            {'substance': 'Fentanyl', 'PubChemCID': '3345', 'pronunciation': '',
+             'CAS': '', 'UNII': '', 'commonrole': ''},
+            {'substance': 'Xylazine', 'PubChemCID': '5707', 'pronunciation': '',
+             'CAS': '', 'UNII': '', 'commonrole': ''},
+            {'substance': 'No CID Substance', 'PubChemCID': '', 'pronunciation': '',
+             'CAS': '', 'UNII': '', 'commonrole': ''},
+        ]
+        self.rows = rows
+
+    def test_no_smiles_dir_leaves_smiles_none(self):
+        substances = parse_chemdictionary_rows(self.rows, smiles_dir=None)
+        self.assertTrue(all(s['smiles'] is None for s in substances))
+
+    def test_cached_cid_populates_smiles(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            smiles_dir = Path(tmp)
+            (smiles_dir / '3345.txt').write_text('CN(CCC1)C1CCNC(=O)c1ccccc1\n')
+            substances = parse_chemdictionary_rows(self.rows, smiles_dir=smiles_dir)
+        by_name = {s['name']: s for s in substances}
+        self.assertEqual(by_name['Fentanyl']['smiles'], 'CN(CCC1)C1CCNC(=O)c1ccccc1')
+        # 5707 (Xylazine) has no cache file -> smiles stays None, no crash.
+        self.assertIsNone(by_name['Xylazine']['smiles'])
+        # No PubChemCID at all -> smiles stays None too.
+        self.assertIsNone(by_name['No CID Substance']['smiles'])
+
+    def test_empty_cache_file_is_treated_as_no_smiles(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            smiles_dir = Path(tmp)
+            (smiles_dir / '3345.txt').write_text('   \n')  # whitespace-only
+            substances = parse_chemdictionary_rows(self.rows, smiles_dir=smiles_dir)
+        by_name = {s['name']: s for s in substances}
+        self.assertIsNone(by_name['Fentanyl']['smiles'])
+
+    def test_adapter_fetch_picks_up_smiles_cache_dir_when_present(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            cache_dir = Path(tmp)
+            (cache_dir / 'smiles').mkdir()
+            paths = UNCDemoAdapter().fetch(cache_dir)
+            names = {p.name for p in paths}
+            self.assertIn('smiles', names)
+
+    def test_adapter_fetch_omits_smiles_dir_when_absent(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            # cache_dir exists but has no smiles/ subdirectory -- as it
+            # would if resolve_smiles.py has never been run.
+            cache_dir = Path(tmp)
+            paths = UNCDemoAdapter().fetch(cache_dir)
+            names = {p.name for p in paths}
+            self.assertNotIn('smiles', names)
+
+    def test_build_populates_smiles_column_from_cache(self):
+        """End-to-end: build_db.build() against the real chemdictionary.csv,
+        with a temporary cache/smiles/ dir substituted in for the module's
+        CACHE_DIR, actually lands a value in substances.smiles."""
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            smiles_dir = tmp_path / 'smiles'
+            smiles_dir.mkdir()
+            # 3345 is fentanyl's real PubChemCID in chemdictionary.csv.
+            (smiles_dir / '3345.txt').write_text('CN(CCC1)C1CCNC(=O)c1ccccc1\n')
+
+            original_cache_dir = build_db.CACHE_DIR
+            build_db.CACHE_DIR = tmp_path
+            try:
+                db_path = tmp_path / 'test.sqlite'
+                conn = build_db.build(db_path=db_path, adapters=[UNCDemoAdapter()])
+                try:
+                    row = conn.execute(
+                        "SELECT smiles FROM substances WHERE lower(name) = 'fentanyl'"
+                    ).fetchone()
+                    self.assertEqual(row[0], 'CN(CCC1)C1CCNC(=O)c1ccccc1')
+                    # A substance with a real CID but no cache entry stays NULL.
+                    other = conn.execute(
+                        "SELECT smiles FROM substances WHERE smiles IS NULL LIMIT 1"
+                    ).fetchone()
+                    self.assertIsNotNone(other)
+                finally:
+                    conn.close()
+            finally:
+                build_db.CACHE_DIR = original_cache_dir
 
 
 class TestUNCDemoAdapterIntegration(unittest.TestCase):

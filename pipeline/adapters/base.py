@@ -12,7 +12,7 @@ Row shapes (all keys optional unless noted; build_db.py fills in anything an
 adapter leaves out, e.g. `source_id`):
 
   substances: {name*, pronunciation, pubchem_cid, cas, unii, common_role,
-               classes: list[str]}
+               smiles, classes: list[str]}
   samples:    {sample_id*, external_id, program, state, county_fips,
                date_collected, expected, color, texture, notes}
   detections: {sample_id*, substance: str | substance_id: int, method,

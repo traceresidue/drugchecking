@@ -69,12 +69,12 @@ def upsert_substances(conn: sqlite3.Connection, name_to_id: dict[str, int], subs
     for s in substances:
         name = s['name'].strip()
         cur = conn.execute(
-            """INSERT INTO substances (name, pronunciation, pubchem_cid, cas, unii, common_role, classes)
-               VALUES (?, ?, ?, ?, ?, ?, ?)
+            """INSERT INTO substances (name, pronunciation, pubchem_cid, cas, unii, common_role, smiles, classes)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                ON CONFLICT(name) DO UPDATE SET
                  pronunciation=excluded.pronunciation, pubchem_cid=excluded.pubchem_cid,
                  cas=excluded.cas, unii=excluded.unii,
-                 common_role=excluded.common_role, classes=excluded.classes
+                 common_role=excluded.common_role, smiles=excluded.smiles, classes=excluded.classes
                RETURNING substance_id""",
             (
                 name,
@@ -83,6 +83,7 @@ def upsert_substances(conn: sqlite3.Connection, name_to_id: dict[str, int], subs
                 s.get('cas'),
                 s.get('unii'),
                 s.get('common_role'),
+                s.get('smiles'),
                 json.dumps(s.get('classes') or []),
             ),
         )
