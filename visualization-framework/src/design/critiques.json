@@ -1,0 +1,652 @@
+{
+  "01-mirror-match": {
+    "thesis": "The mirror plot delivers immediate identity feedback via cosine score and matched-ion highlighting — strong for chemists, but the verdict competes with the spectrum for attention.",
+    "strengths": [
+      "Matched vs unmatched fragment distinction is visually clear",
+      "Cosine score with plain-language verdict supports two-layer reading",
+      "Interactive substance dropdowns enable quick what-if comparisons",
+      "Harm-reduction footer correctly separates identity from potency"
+    ],
+    "weaknesses": [
+      "Score block sits below the chart rather than anchoring the layout",
+      "Peak m/z labels can crowd on dense spectra without density control",
+      "Hardcoded TOKENS colors bypass CSS variable theming",
+      "No reduced label mode for mobile or projection use"
+    ],
+    "visualization": "Score-forward left rail layout in Design Lab widens the mirror plot and elevates the cosine verdict as a persistent hero metric.",
+    "liveNoteTemplates": {
+      "default": "Current settings: {theme} chrome · {palette} palette · {labels} label density.",
+      "low": "Low label mode shows at most 2 peak annotations — suited for projection or dense spectra.",
+      "high": "High label mode adds more m/z annotations — may overwhelm on narrow viewports.",
+      "light_paper": "Paper palette on light chrome improves print legibility but reduces dark-room contrast."
+    }
+  },
+  "02-chromatogram-explorer": {
+    "thesis": "An excellent teaching surface — tap-to-identify peaks with structure and harm notes — but the stacked detail card under the trace underuses horizontal space on desktop.",
+    "strengths": [
+      "Real retention times ground the synthesized trace in dataset medians",
+      "Per-peak classify() colors encode substance class at a glance",
+      "Plain-language NOTE copy is harm-reduction aligned",
+      "SmilesDrawer integration adds chemist-facing depth on selection"
+    ],
+    "weaknesses": [
+      "Detail panel stacks below chart instead of side-by-side inspector",
+      "Peak labels appear without tier control on minor peaks",
+      "Trace fill uses fixed TOKENS.info rather than palette-aware accent",
+      "Selected peak state requires full redraw"
+    ],
+    "visualization": "Sidebar inspector split places the chromatogram left and substance detail right for asymmetric desktop reading.",
+    "liveNoteTemplates": {
+      "default": "{theme} · {palette} · labels: {labels}.",
+      "low": "Low labels hide inline peak names — rely on tap for identification.",
+      "high": "High labels annotate more peaks including minor components above 5% signal."
+    }
+  },
+  "11-supply-streamgraph": {
+    "thesis": "The streamgraph tells the supply-shift story viscerally, but quarterly axis labels and the legend compete for vertical space without a collapsible stats layer.",
+    "strengths": [
+      "Real monthly_class data from 6,580 samples",
+      "Stream vs stacked % toggle supports shape vs proportion reading",
+      "Class-color bands map cleanly to substance semantics",
+      "Hover tooltips identify bands without requiring legend lookup"
+    ],
+    "weaknesses": [
+      "Legend always visible though stream colors are self-evident",
+      "Quarterly x-axis labels sparse — no quick stats strip",
+      "Band colors hardcoded to TOKENS, not theme-swappable",
+      "Wiggle offset can confuse first-time readers"
+    ],
+    "visualization": "Collapsible quarterly stats strip summarizes band totals without stealing focus from the flowing center chart.",
+    "liveNoteTemplates": {
+      "default": "Band colors follow {palette} substance mapping on {theme} chrome.",
+      "low": "Low label mode hides quarterly axis ticks — hover bands for class identity."
+    }
+  },
+  "12-cooccurrence-chord": {
+    "thesis": "The chord diagram surfaces supply recipes powerfully; arc labels on the outer ring need hierarchy when 16 substances compete for angular space.",
+    "strengths": [
+      "Directed ribbons show co-manufacture vs co-use patterns",
+      "Hover dimming isolates a substance's partners effectively",
+      "Top-16 filter keeps the ring readable",
+      "Real co-occurrence counts from aggregate data"
+    ],
+    "weaknesses": [
+      "Arc labels truncate aggressively without density tiers",
+      "No focal emphasis ring on hovered arc",
+      "Ribbon opacity fixed — hard to distinguish weak vs strong ties at a glance",
+      "Inline labels always on regardless of viewport"
+    ],
+    "visualization": "Focal arc emphasis ring on hover strengthens hierarchy and guides the eye to the active substance.",
+    "liveNoteTemplates": {
+      "default": "{palette} class hues on arcs and ribbons · {labels} inline labels.",
+      "low": "Low label mode hides arc substance names — use hover tooltips instead."
+    }
+  },
+  "18-result-card": {
+    "thesis": "The result card productizes harm-reduction messaging well, but reads as a generic panel rather than a shareable document artifact.",
+    "strengths": [
+      "Plain-language summary leads before technical fingerprint",
+      "Component bars separate major vs trace without implying dose",
+      "Harm bullets generated from detected substances, not boilerplate",
+      "Sample switcher demonstrates expected-vs-found scenarios"
+    ],
+    "weaknesses": [
+      "Card lacks document-style accent and visual identity",
+      "Chromatogram peak labels fixed threshold without density control",
+      "Class colors inline in HTML strings bypass CSS variables",
+      "No print/screenshot optimization for light palettes"
+    ],
+    "visualization": "Document sheet layout with substance-class accent bar along the left edge signals shareability and primary finding.",
+    "liveNoteTemplates": {
+      "default": "Result card on {theme} · {palette} · {labels} peak labels on fingerprint.",
+      "low": "Low labels hide fingerprint peak names — summary and bars remain.",
+      "light_paper": "Paper palette improves screenshot legibility on light backgrounds."
+    }
+  },
+  "03-ftir-overlay": {
+    "thesis": "The subtraction bench teaches residual interpretation well, but mixture chip controls and the fingerprint callout compete vertically with the spectrum.",
+    "strengths": [
+      "Fingerprint region shading encodes FTIR convention",
+      "Residual fill makes unexplained signal visceral",
+      "Toggle chips support interactive what-if subtraction",
+      "Harm-reduction note on fent detection floor"
+    ],
+    "weaknesses": [
+      "Wavenumber ticks always on — no label density control",
+      "Residual color hardcoded to TOKENS.fent",
+      "Legend sits below without tier gating",
+      "Chip rows stack on narrow viewports"
+    ],
+    "visualization": "Full-bleed spectrum panel with floating residual legend overlay keeps focus on the unexplained signal band.",
+    "liveNoteTemplates": {
+      "default": "Current settings: {theme} chrome · {palette} palette · {labels} label density.",
+      "low": "Low label mode hides peak and inline annotations — rely on hover and tooltips.",
+      "high": "High label mode surfaces more annotations — may crowd on mobile viewports."
+    }
+  },
+  "04-fragment-tree": {
+    "thesis": "The radial burst is memorable for teaching fragmentation, but spoke labels and guide rings need density tiers for dense spectra.",
+    "strengths": [
+      "m/z mapped to radius is intuitive for MS learners",
+      "Central M⁺ anchor orients the layout",
+      "Class color on spokes ties fragments to substance",
+      "Hover tooltips carry abundance detail"
+    ],
+    "weaknesses": [
+      "No label density control on spoke annotations",
+      "Guide rings add visual noise in low-label mode",
+      "Fixed TOKENS colors ignore palette swaps",
+      "Dropdown-only navigation"
+    ],
+    "visualization": "Emphasis ring on the base peak spoke draws the eye to the diagnostic fragment first.",
+    "liveNoteTemplates": {
+      "default": "Current settings: {theme} chrome · {palette} palette · {labels} label density.",
+      "low": "Low label mode hides peak and inline annotations — rely on hover and tooltips.",
+      "high": "High label mode surfaces more annotations — may crowd on mobile viewports."
+    }
+  },
+  "05-chromatogram-3d": {
+    "thesis": "The 3D data cube reveals a hidden dimension powerfully, but Plotly colors and scene chrome are hardcoded rather than palette-aware.",
+    "strengths": [
+      "Retention time × m/z × signal matches real GC–MS structure",
+      "Draggable camera supports exploration",
+      "Real median retention times ground synthesis",
+      "Clear harm-reduction dose disclaimer"
+    ],
+    "weaknesses": [
+      "Colorscale fixed to Night scheme hex values",
+      "Axis titles always visible regardless of label mode",
+      "No integration with Design Lab palette selector until viz2",
+      "Scene background ignores light mode"
+    ],
+    "visualization": "Design Lab wires Plotly colorscale and scene chrome to the active palette and label density.",
+    "liveNoteTemplates": {
+      "default": "Current settings: {theme} chrome · {palette} palette · {labels} label density.",
+      "low": "Low label mode hides peak and inline annotations — rely on hover and tooltips.",
+      "high": "High label mode surfaces more annotations — may crowd on mobile viewports."
+    }
+  },
+  "06-spectral-ridgeline": {
+    "thesis": "Ridgelines compare batch fingerprints at a glance, but row labels and stable/volatile toggle need hierarchy control.",
+    "strengths": [
+      "22 procedurally generated traces show batch variation",
+      "Dominant-peak class tint encodes substance",
+      "Stable vs volatile modes tell supply-shift story",
+      "Real retention times from aggregates"
+    ],
+    "weaknesses": [
+      "No per-row label density tiers",
+      "Fill opacity fixed at 16%",
+      "Hardcoded TOKENS for grid lines",
+      "Toggle labels always visible"
+    ],
+    "visualization": "Highlight band on hover traces the selected substance column across all ridgelines.",
+    "liveNoteTemplates": {
+      "default": "Current settings: {theme} chrome · {palette} palette · {labels} label density.",
+      "low": "Low label mode hides peak and inline annotations — rely on hover and tooltips.",
+      "high": "High label mode surfaces more annotations — may crowd on mobile viewports."
+    }
+  },
+  "06a-ridgeline-filled": {
+    "thesis": "Class-filled ridgelines emphasize composition over shape, but overlapping fills can obscure weak peaks without label control.",
+    "strengths": [
+      "Class fill distinguishes market segments visually",
+      "Shares ridgeline DNA with Nº 06",
+      "Stroke/fill pairing aids class reading",
+      "Seeded RNG keeps comparisons stable"
+    ],
+    "weaknesses": [
+      "Fill stacking reduces peak-level readability",
+      "No label density API",
+      "Colors not palette-swappable",
+      "Similar layout to base ridgeline without distinct hierarchy"
+    ],
+    "visualization": "Collapsible class legend strip keeps the ridgeline stack as the single focal chart.",
+    "liveNoteTemplates": {
+      "default": "Current settings: {theme} chrome · {palette} palette · {labels} label density.",
+      "low": "Low label mode hides peak and inline annotations — rely on hover and tooltips.",
+      "high": "High label mode surfaces more annotations — may crowd on mobile viewports."
+    }
+  },
+  "06b-ridgeline-3d": {
+    "thesis": "3D terrain elevates batch comparison literally, but Plotly styling bypasses substance-class semantics.",
+    "strengths": [
+      "3D view reveals peak height variation across samples",
+      "Plotly orbit matches data-cube literacy from Nº 05",
+      "Procedural batch generation scales comparison",
+      "Distinct from 2D ridgeline sibling"
+    ],
+    "weaknesses": [
+      "Height colorscale not tied to classify() palette",
+      "No label density on axes",
+      "Performance cost on low-end devices",
+      "Hardcoded scene chrome"
+    ],
+    "visualization": "Design Lab maps terrain colorscale to selected palette stops for coherent theming.",
+    "liveNoteTemplates": {
+      "default": "Current settings: {theme} chrome · {palette} palette · {labels} label density.",
+      "low": "Low label mode hides peak and inline annotations — rely on hover and tooltips.",
+      "high": "High label mode surfaces more annotations — may crowd on mobile viewports."
+    }
+  },
+  "06c-ridgeline-filter": {
+    "thesis": "Class-focus filtering reduces noise for analysts, but filtered-out rows vanish without a density-aware label fallback.",
+    "strengths": [
+      "Class filter buttons support focused reading",
+      "Reduces visual clutter vs full ridgeline",
+      "Maintains real retention-time grounding",
+      "Good for teaching class-specific patterns"
+    ],
+    "weaknesses": [
+      "Filter state not reflected in critique live note",
+      "Hidden rows leave gaps without annotation",
+      "Label tiers undefined",
+      "TOKENS-bound stroke colors"
+    ],
+    "visualization": "Filter chips gain active-state accent from palette alert color for clearer mode indication.",
+    "liveNoteTemplates": {
+      "default": "Current settings: {theme} chrome · {palette} palette · {labels} label density.",
+      "low": "Low label mode hides peak and inline annotations — rely on hover and tooltips.",
+      "high": "High label mode surfaces more annotations — may crowd on mobile viewports."
+    }
+  },
+  "07-ftir-waterfall": {
+    "thesis": "The FTIR waterfall shows temporal drift in 3D effectively, but the violet colorscale is aesthetic-only — not substance-mapped.",
+    "strengths": [
+      "Wavenumber axis reversed to FTIR convention",
+      "Monthly stacking shows supply evolution",
+      "Plotly orbit for exploration",
+      "Distinct from 2D overlay bench"
+    ],
+    "weaknesses": [
+      "Fixed purple–gold colorscale",
+      "No classify() integration",
+      "Axis label density not configurable",
+      "Dark scene only"
+    ],
+    "visualization": "Palette-driven colorscale replaces hardcoded violet gradient for theme coherence.",
+    "liveNoteTemplates": {
+      "default": "Current settings: {theme} chrome · {palette} palette · {labels} label density.",
+      "low": "Low label mode hides peak and inline annotations — rely on hover and tooltips.",
+      "high": "High label mode surfaces more annotations — may crowd on mobile viewports."
+    }
+  },
+  "08-mass-defect-map": {
+    "thesis": "Mass-defect clustering reveals analog families elegantly, but point labels and Kendrick toggle need tier control.",
+    "strengths": [
+      "Scatter encodes exact mass and defect simultaneously",
+      "Radius scales with sample count",
+      "Kendrick toggle supports advanced reading",
+      "Optional SmilesDrawer on hover"
+    ],
+    "weaknesses": [
+      "Fentanyl family callout always on",
+      "Legend always visible",
+      "Point colors hardcoded via classify without palette sync",
+      "Dense clusters overlap without jitter labels"
+    ],
+    "visualization": "Kendrick mode badge animates in high-label mode to signal advanced axis interpretation.",
+    "liveNoteTemplates": {
+      "default": "Current settings: {theme} chrome · {palette} palette · {labels} label density.",
+      "low": "Low label mode hides peak and inline annotations — rely on hover and tooltips.",
+      "high": "High label mode surfaces more annotations — may crowd on mobile viewports."
+    }
+  },
+  "09-sonification": {
+    "thesis": "Sonification makes spectra tangible for non-chemists, but the playhead and stick labels compete for attention during playback.",
+    "strengths": [
+      "Web Audio maps m/z to pitch intuitively",
+      "MS vs FTIR mode toggle",
+      "Animated playhead shows sweep progress",
+      "Experimental category appropriately marked"
+    ],
+    "weaknesses": [
+      "Stick labels always rendered",
+      "Playhead color not palette-aware",
+      "No reduced-motion alternative to tone sweep",
+      "Accessibility of audio-only path limited"
+    ],
+    "visualization": "Playback controls move to a compact transport bar below the spectrum for cleaner focus.",
+    "liveNoteTemplates": {
+      "default": "Current settings: {theme} chrome · {palette} palette · {labels} label density.",
+      "low": "Low label mode hides peak and inline annotations — rely on hover and tooltips.",
+      "high": "High label mode surfaces more annotations — may crowd on mobile viewports."
+    }
+  },
+  "10-chemical-space": {
+    "thesis": "Centroid drift over time tells a supply story, but the legend and time-window slider labels need density tiers.",
+    "strengths": [
+      "Precomputed embedding enables smooth animation",
+      "Centroid trail shows aggregate drift",
+      "Class-colored dots at 50% opacity reduce overlap",
+      "Range slider supports temporal focus"
+    ],
+    "weaknesses": [
+      "Legend always on",
+      "Centroid path labels sparse in low mode",
+      "Dots hardcoded opacity",
+      "Slider month labels fixed"
+    ],
+    "visualization": "Time-window readout as hero metric above the scatter anchors the drift narrative.",
+    "liveNoteTemplates": {
+      "default": "Current settings: {theme} chrome · {palette} palette · {labels} label density.",
+      "low": "Low label mode hides peak and inline annotations — rely on hover and tooltips.",
+      "high": "High label mode surfaces more annotations — may crowd on mobile viewports."
+    }
+  },
+  "12a-co-nested": {
+    "thesis": "Nested chords reveal hierarchical co-occurrence, but dual ring labels demand aggressive density control.",
+    "strengths": [
+      "Nested structure shows partner vs focal relationships",
+      "Real co-occurrence counts",
+      "Hover isolation pattern from base chord",
+      "Distinct layout from flat chord"
+    ],
+    "weaknesses": [
+      "Partner labels truncate without tiers",
+      "Complex ring may overwhelm mobile",
+      "Ribbon opacity fixed",
+      "Hardcoded classify colors"
+    ],
+    "visualization": "Focal substance ring gets emphasis stroke on hover matching Nº 12 Design Lab pattern.",
+    "liveNoteTemplates": {
+      "default": "Current settings: {theme} chrome · {palette} palette · {labels} label density.",
+      "low": "Low label mode hides peak and inline annotations — rely on hover and tooltips.",
+      "high": "High label mode surfaces more annotations — may crowd on mobile viewports."
+    }
+  },
+  "12b-chord-sankey": {
+    "thesis": "Chord-to-Sankey drill-down is powerful for flow detail, but two chart types mean duplicate label surfaces.",
+    "strengths": [
+      "Drill-down from chord to Sankey preserves context",
+      "Directed co-occurrence semantics",
+      "Dual visualization supports two reading modes",
+      "Real aggregate data"
+    ],
+    "weaknesses": [
+      "Sankey node labels always visible",
+      "Chord arc labels dense at 16 substances",
+      "Two draw paths to maintain",
+      "Color sync across views manual"
+    ],
+    "visualization": "Split view with chord left and Sankey right on wide screens reduces mode-switching.",
+    "liveNoteTemplates": {
+      "default": "Current settings: {theme} chrome · {palette} palette · {labels} label density.",
+      "low": "Low label mode hides peak and inline annotations — rely on hover and tooltips.",
+      "high": "High label mode surfaces more annotations — may crowd on mobile viewports."
+    }
+  },
+  "12c-co-undirected": {
+    "thesis": "Undirected chords simplify co-use reading, but symmetric ribbons lose the directed supply-recipe story.",
+    "strengths": [
+      "Undirected layout reduces visual arrow noise",
+      "Easier for co-use vs co-manufacture ambiguity",
+      "Hover dimming still works",
+      "Class colors on arcs"
+    ],
+    "weaknesses": [
+      "Loses directed flow semantics",
+      "Arc labels same density issues as Nº 12",
+      "Less decision-relevant than directed version",
+      "TOKENS-bound styling"
+    ],
+    "visualization": "Ribbon width legend as inline annotation explains co-occurrence strength without separate panel.",
+    "liveNoteTemplates": {
+      "default": "Current settings: {theme} chrome · {palette} palette · {labels} label density.",
+      "low": "Low label mode hides peak and inline annotations — rely on hover and tooltips.",
+      "high": "High label mode surfaces more annotations — may crowd on mobile viewports."
+    }
+  },
+  "13-expected-detected-sankey": {
+    "thesis": "This is the most harm-reduction-relevant supply viz — expected vs detected — but node labels crowd on mixture-heavy flows.",
+    "strengths": [
+      "Sankey width encodes sample count viscerally",
+      "Left/right expected vs detected framing is clear",
+      "Real flow data from 6,580 samples",
+      "Hover tooltips show direction and counts"
+    ],
+    "weaknesses": [
+      "Node labels always on both sides",
+      "Link colors use target class without palette sync",
+      "No label density tiers",
+      "Headers EXPECTED/DETECTED always visible"
+    ],
+    "visualization": "Node labels gain halo stroke from chrome token for readability on light palettes.",
+    "liveNoteTemplates": {
+      "default": "Current settings: {theme} chrome · {palette} palette · {labels} label density.",
+      "low": "Low label mode hides peak and inline annotations — rely on hover and tooltips.",
+      "high": "High label mode surfaces more annotations — may crowd on mobile viewports."
+    }
+  },
+  "14-horizon-wall": {
+    "thesis": "Horizon layers show substance momentum over time, but 22 row labels create a dense wall on mobile.",
+    "strengths": [
+      "Layered horizons encode count tiers per substance",
+      "Momentum ranking surfaces emerging threats",
+      "Real monthly data",
+      "Class color per row"
+    ],
+    "weaknesses": [
+      "Row labels always visible",
+      "22 rows tall on small screens",
+      "Opacity tiers fixed at 25/55/85%",
+      "No collapsible substance groups"
+    ],
+    "visualization": "Sticky substance label column with scroll-synced chart body improves mobile reading.",
+    "liveNoteTemplates": {
+      "default": "Current settings: {theme} chrome · {palette} palette · {labels} label density.",
+      "low": "Low label mode hides peak and inline annotations — rely on hover and tooltips.",
+      "high": "High label mode surfaces more annotations — may crowd on mobile viewports."
+    }
+  },
+  "15-emergence-beeswarm": {
+    "thesis": "Beeswarm debut dates make emergence visceral, but large-dot text labels need high/low density control.",
+    "strengths": [
+      "Force simulation prevents overlap",
+      "First-detection date on time axis is intuitive",
+      "Class filter buttons support focus",
+      "Radius scales with total detections"
+    ],
+    "weaknesses": [
+      "Labels on dots >250 always on",
+      "Grid lines add noise in low-label mode",
+      "Filter button labels fixed",
+      "Collision layout slow on resize"
+    ],
+    "visualization": "Emergence timeline gains a vertical \"now\" marker for temporal anchoring.",
+    "liveNoteTemplates": {
+      "default": "Current settings: {theme} chrome · {palette} palette · {labels} label density.",
+      "low": "Low label mode hides peak and inline annotations — rely on hover and tooltips.",
+      "high": "High label mode surfaces more annotations — may crowd on mobile viewports."
+    }
+  },
+  "16-supply-terrain-3d": {
+    "thesis": "Supply terrain in 3D dramatizes monthly substance counts, but height colorscale ignores per-substance class semantics.",
+    "strengths": [
+      "Substance × month × count matches epidemiology mental model",
+      "Draggable Plotly camera",
+      "Top 14 substances keep surface readable",
+      "Real monthly detection data"
+    ],
+    "weaknesses": [
+      "Fixed fent-toned colorscale",
+      "No palette integration",
+      "Z-axis labels always on",
+      "No substance ridge labels"
+    ],
+    "visualization": "Design Lab palette colorscale replaces hardcoded supply gradient.",
+    "liveNoteTemplates": {
+      "default": "Current settings: {theme} chrome · {palette} palette · {labels} label density.",
+      "low": "Low label mode hides peak and inline annotations — rely on hover and tooltips.",
+      "high": "High label mode surfaces more annotations — may crowd on mobile viewports."
+    }
+  },
+  "17-adulterant-network": {
+    "thesis": "Force network reveals supply topology, but node labels and legend duplicate class information.",
+    "strengths": [
+      "Link width scales with co-occurrence",
+      "Draggable nodes support exploration",
+      "Role tooltips from DATA.roles",
+      "Class-colored nodes"
+    ],
+    "weaknesses": [
+      "Legend always visible",
+      "No node label density control",
+      "Simulation re-runs on every resize",
+      "Link color uniform TOKENS.line"
+    ],
+    "visualization": "Hover focus dims non-incident nodes more aggressively for clearer partner identification.",
+    "liveNoteTemplates": {
+      "default": "Current settings: {theme} chrome · {palette} palette · {labels} label density.",
+      "low": "Low label mode hides peak and inline annotations — rely on hover and tooltips.",
+      "high": "High label mode surfaces more annotations — may crowd on mobile viewports."
+    }
+  },
+  "19-expected-reality-gap": {
+    "thesis": "Morph animation between expected and detected chromatograms is pedagogically strong, but peak labels fade in without density tiers.",
+    "strengths": [
+      "Color morph between expected and detected classes",
+      "900ms animation respects narrative beat",
+      "Scenario dropdown covers common gaps",
+      "Caption updates with detected list"
+    ],
+    "weaknesses": [
+      "Labels fade in past t=0.5 regardless of density mode",
+      "Grid always visible",
+      "Single reveal toggle only",
+      "Morph colors not palette-synced"
+    ],
+    "visualization": "Before/after split panel shows expected trace ghosted beside morphed reality.",
+    "liveNoteTemplates": {
+      "default": "Current settings: {theme} chrome · {palette} palette · {labels} label density.",
+      "low": "Low label mode hides peak and inline annotations — rely on hover and tooltips.",
+      "high": "High label mode surfaces more annotations — may crowd on mobile viewports."
+    }
+  },
+  "20-potency-uncertainty": {
+    "thesis": "Gauge and histogram pair honesty about potency claims well, but axis labels on histogram need tier control.",
+    "strengths": [
+      "Confidence slider widens/narrows plausible range",
+      "Gauge gradient encodes uncertainty semantically",
+      "Histogram of mixture complexity adds context",
+      "Harm-reduction aligned copy"
+    ],
+    "weaknesses": [
+      "Gauge colors hardcoded ok/watch/alert",
+      "Histogram bar labels sparse",
+      "No palette sync on semantic colors",
+      "Slider label always visible"
+    ],
+    "visualization": "Claim readout as monospace hero number above gauge anchors the uncertainty story.",
+    "liveNoteTemplates": {
+      "default": "Current settings: {theme} chrome · {palette} palette · {labels} label density.",
+      "low": "Low label mode hides peak and inline annotations — rely on hover and tooltips.",
+      "high": "High label mode surfaces more annotations — may crowd on mobile viewports."
+    }
+  },
+  "21-geo-tilegrid": {
+    "thesis": "Tile-grid cartogram fixes geographic bias, but state abbreviations on every tile need low-label mode for dense grids.",
+    "strengths": [
+      "Equal-area tiles avoid big-state dominance",
+      "Three metric modes (volume, fent, xyl)",
+      "Real per-state counts",
+      "Offline — no geometry fetch"
+    ],
+    "weaknesses": [
+      "State labels always on every tile",
+      "Inferno scale hardcoded for volume mode",
+      "Fent/xyl scales use fixed TOKENS",
+      "Legend text always visible"
+    ],
+    "visualization": "Metric mode tabs gain palette-aware fill scales instead of hardcoded interpolators.",
+    "liveNoteTemplates": {
+      "default": "Current settings: {theme} chrome · {palette} palette · {labels} label density.",
+      "low": "Low label mode hides peak and inline annotations — rely on hover and tooltips.",
+      "high": "High label mode surfaces more annotations — may crowd on mobile viewports."
+    }
+  },
+  "22-xylazine-spread": {
+    "thesis": "Timeline plus county bars tell xylazine geography well, but playhead month labels and county names need density tiers.",
+    "strengths": [
+      "Stacked area shows primary vs secondary detections",
+      "Play timeline animates spread",
+      "County bar chart for selected month",
+      "Xylazine class color consistent"
+    ],
+    "weaknesses": [
+      "County bar labels always on",
+      "Play controls labels fixed",
+      "Area colors hardcoded TOKENS.xyl",
+      "Bottom panel competes with area chart"
+    ],
+    "visualization": "Playhead month readout as sticky header during timeline scrub.",
+    "liveNoteTemplates": {
+      "default": "Current settings: {theme} chrome · {palette} palette · {labels} label density.",
+      "low": "Low label mode hides peak and inline annotations — rely on hover and tooltips.",
+      "high": "High label mode surfaces more annotations — may crowd on mobile viewports."
+    }
+  },
+  "23-structure-flipbook": {
+    "thesis": "Structure gallery supports analog recognition, but card borders and filter chips need palette-aware class colors.",
+    "strengths": [
+      "SmilesDrawer 2D structures on dark canvas",
+      "Class filter buttons slice gallery",
+      "Sorted by detection count",
+      "Card top border encodes class"
+    ],
+    "weaknesses": [
+      "Gallery grid uniform without hierarchy",
+      "Filter labels always visible",
+      "Canvas background hardcoded",
+      "No label density on card subtitles"
+    ],
+    "visualization": "Featured top-3 cards span double width for detection-count hierarchy.",
+    "liveNoteTemplates": {
+      "default": "Current settings: {theme} chrome · {palette} palette · {labels} label density.",
+      "low": "Low label mode hides peak and inline annotations — rely on hover and tooltips.",
+      "high": "High label mode surfaces more annotations — may crowd on mobile viewports."
+    }
+  },
+  "24-anatomy-scrolly": {
+    "thesis": "Scrollytelling builds chromatogram cumulatively — excellent pedagogy — but step peak labels need scroll-synced density.",
+    "strengths": [
+      "IntersectionObserver drives cumulative build",
+      "Sticky chromatogram + scrolling narrative",
+      "Per-peak class colors",
+      "Real retention times"
+    ],
+    "weaknesses": [
+      "Peak labels appear without density control",
+      "Step copy labels always on",
+      "Final panel border fixed TOKENS.ok",
+      "Resize rebuilds all steps"
+    ],
+    "visualization": "Step progress rail on the left encodes scroll position through the sample narrative.",
+    "liveNoteTemplates": {
+      "default": "Current settings: {theme} chrome · {palette} palette · {labels} label density.",
+      "low": "Low label mode hides peak and inline annotations — rely on hover and tooltips.",
+      "high": "High label mode surfaces more annotations — may crowd on mobile viewports."
+    }
+  },
+  "25-glyph-garden": {
+    "thesis": "Organic petal glyphs are distinctive, but category labels and legend compete with the garden focal point.",
+    "strengths": [
+      "Radial petals encode associated substances per category",
+      "Opacity by frequency adds hierarchy",
+      "Hover tooltips with counts",
+      "Regenerates on resize"
+    ],
+    "weaknesses": [
+      "Category labels always visible",
+      "Legend mirrors colors redundantly",
+      "Petal stroke colors TOKENS-bound",
+      "Garden recenters on every resize"
+    ],
+    "visualization": "Single-category focus mode dims non-selected glyph clusters.",
+    "liveNoteTemplates": {
+      "default": "Current settings: {theme} chrome · {palette} palette · {labels} label density.",
+      "low": "Low label mode hides peak and inline annotations — rely on hover and tooltips.",
+      "high": "High label mode surfaces more annotations — may crowd on mobile viewports."
+    }
+  }
+}

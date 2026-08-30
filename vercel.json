@@ -1,0 +1,5 @@
+{
+  "buildCommand": "python3 build_index.py",
+  "outputDirectory": ".",
+  "installCommand": ""
+}

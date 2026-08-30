@@ -1,0 +1,614 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Adulterant Pull Network — Drug Checking Viz</title>
+<script src="lib/d3.min.js"></script>
+</head>
+<body>
+<script>
+(function(){{
+  if(!localStorage.getItem('dcf_auth')){{
+    var loc=encodeURIComponent(location.href);
+    location.replace('../../index.html?r='+encodeURIComponent(location.pathname));
+  }}
+}})();
+</script>
+<script>
+window.DATA = {"cooccurrence":[{"a":"4-anpp","b":"fentanyl","n":2789},{"a":"fentanyl","b":"xylazine","n":1071},{"a":"4-anpp","b":"xylazine","n":998},{"a":"acetaminophen","b":"fentanyl","n":946},{"a":"fentanyl","b":"phenethyl 4-anpp","n":903},{"a":"4-anpp","b":"phenethyl 4-anpp","n":877},{"a":"4-anpp","b":"acetaminophen","n":844},{"a":"fentanyl","b":"lidocaine","n":611},{"a":"ethyl-4-anpp","b":"fentanyl","n":589},{"a":"4-anpp","b":"ethyl-4-anpp","n":584},{"a":"4-anpp","b":"lidocaine","n":553},{"a":"fentanyl","b":"p-fluorofentanyl","n":507},{"a":"fentanyl","b":"heroin","n":504},{"a":"caffeine","b":"fentanyl","n":502},{"a":"4-anpp","b":"p-fluorofentanyl","n":460},{"a":"4-anpp","b":"caffeine","n":460},{"a":"4-anpp","b":"heroin","n":442},{"a":"cocaine","b":"fentanyl","n":434},{"a":"fentanyl","b":"methamphetamine","n":397},{"a":"4-anpp","b":"cocaine","n":384},{"a":"phenethyl 4-anpp","b":"xylazine","n":375},{"a":"bis(2,2,6,6-tetramethyl-4-piperidyl) sebacate","b":"fentanyl","n":370},{"a":"acetylcodeine","b":"heroin","n":350},{"a":"caffeine","b":"xylazine","n":349},{"a":"4-anpp","b":"methamphetamine","n":345},{"a":"acetaminophen","b":"lidocaine","n":340},{"a":"despropionyl p-fluorofentanyl","b":"p-fluorofentanyl","n":337},{"a":"heroin","b":"xylazine","n":311},{"a":"p-fluorofentanyl","b":"xylazine","n":298},{"a":"fentanyl","b":"n-phenylpropanamide","n":298},{"a":"4-anpp","b":"bis(2,2,6,6-tetramethyl-4-piperidyl) sebacate","n":298},{"a":"6-monoacetylmorphine (6-mam)","b":"heroin","n":294},{"a":"lidocaine","b":"xylazine","n":293},{"a":"despropionyl p-fluorofentanyl","b":"fentanyl","n":281},{"a":"acetaminophen","b":"bis(2,2,6,6-tetramethyl-4-piperidyl) sebacate","n":280},{"a":"4-anpp","b":"n-phenylpropanamide","n":275},{"a":"ethyl-4-anpp","b":"phenethyl 4-anpp","n":271},{"a":"4-anpp","b":"despropionyl p-fluorofentanyl","n":259},{"a":"cocaine","b":"xylazine","n":242},{"a":"6-monoacetylmorphine (6-mam)","b":"acetylcodeine","n":241},{"a":"bis(2,2,6,6-tetramethyl-4-piperidyl) sebacate","b":"lidocaine","n":228},{"a":"acetaminophen","b":"xylazine","n":224},{"a":"cocaine","b":"methyl ecgonidine (med)","n":213},{"a":"fentanyl","b":"procaine","n":200},{"a":"lidocaine","b":"phenethyl 4-anpp","n":199},{"a":"caffeine","b":"heroin","n":197},{"a":"p-fluorofentanyl","b":"phenethyl 4-anpp","n":196},{"a":"acetaminophen","b":"ethyl-4-anpp","n":195},{"a":"dimethyl sulfone (methylsulfonylmethane msm)","b":"fentanyl","n":192},{"a":"dimethyl sulfone (methylsulfonylmethane msm)","b":"methamphetamine","n":190},{"a":"acetaminophen","b":"p-fluorofentanyl","n":188},{"a":"1-phenethyl-4-propionyloxypiperidine","b":"fentanyl","n":185},{"a":"4-anpp","b":"procaine","n":183},{"a":"1-phenethyl-4-propionyloxypiperidine","b":"4-anpp","n":180},{"a":"acetylcodeine","b":"fentanyl","n":179},{"a":"despropionyl p-fluorofentanyl","b":"xylazine","n":179},{"a":"6-monoacetylmorphine (6-mam)","b":"fentanyl","n":175},{"a":"heroin","b":"phenethyl 4-anpp","n":175},{"a":"4-anpp","b":"dimethyl sulfone (methylsulfonylmethane msm)","n":175},{"a":"acetaminophen","b":"phenethyl 4-anpp","n":173},{"a":"methamphetamine","b":"xylazine","n":169},{"a":"caffeine","b":"lidocaine","n":164},{"a":"caffeine","b":"phenethyl 4-anpp","n":164},{"a":"heroin","b":"lidocaine","n":163},{"a":"procaine","b":"xylazine","n":163},{"a":"diphenhydramine","b":"fentanyl","n":162},{"a":"caffeine","b":"cocaine","n":161},{"a":"lidocaine","b":"p-fluorofentanyl","n":159},{"a":"cocaine","b":"phenethyl 4-anpp","n":153},{"a":"4-anpp","b":"diphenhydramine","n":151},{"a":"caffeine","b":"p-fluorofentanyl","n":150},{"a":"4-anpp","b":"acetylcodeine","n":148},{"a":"4-anpp","b":"6-monoacetylmorphine (6-mam)","n":146},{"a":"cocaine","b":"heroin","n":144},{"a":"heroin","b":"p-fluorofentanyl","n":136},{"a":"acetaminophen","b":"methamphetamine","n":132},{"a":"ethyl-4-anpp","b":"xylazine","n":131},{"a":"cocaine","b":"p-fluorofentanyl","n":129},{"a":"cocaine","b":"lidocaine","n":126},{"a":"dimethyl sulfone (methylsulfonylmethane msm)","b":"xylazine","n":125},{"a":"acetaminophen","b":"caffeine","n":121},{"a":"diphenhydramine","b":"xylazine","n":121},{"a":"bis(2,2,6,6-tetramethyl-4-piperidyl) sebacate","b":"n-phenylpropanamide","n":121},{"a":"acetaminophen","b":"despropionyl p-fluorofentanyl","n":120},{"a":"acetaminophen","b":"n-phenylpropanamide","n":117},{"a":"acetaminophen","b":"heroin","n":116},{"a":"n-phenylpropanamide","b":"phenethyl 4-anpp","n":116},{"a":"caffeine","b":"procaine","n":113},{"a":"caffeine","b":"methamphetamine","n":112},{"a":"methamphetamine","b":"phenethyl 4-anpp","n":112},{"a":"ethyl-4-anpp","b":"lidocaine","n":111},{"a":"1-phenethyl-4-propionyloxypiperidine","b":"phenethyl 4-anpp","n":110},{"a":"cocaine","b":"methamphetamine","n":106},{"a":"despropionyl p-fluorofentanyl","b":"phenethyl 4-anpp","n":106},{"a":"lidocaine","b":"n-phenylpropanamide","n":103},{"a":"ethyl-4-anpp","b":"p-fluorofentanyl","n":102},{"a":"caffeine","b":"diphenhydramine","n":101},{"a":"6-monoacetylmorphine (6-mam)","b":"xylazine","n":100},{"a":"acetaminophen","b":"cocaine","n":98},{"a":"bis(2,2,6,6-tetramethyl-4-piperidyl) sebacate","b":"xylazine","n":97},{"a":"lidocaine","b":"methamphetamine","n":96},{"a":"acetylcodeine","b":"xylazine","n":93},{"a":"heroin","b":"procaine","n":92},{"a":"ethyl-4-anpp","b":"n-phenylpropanamide","n":90},{"a":"methamphetamine","b":"p-fluorofentanyl","n":89},{"a":"heroin","b":"methamphetamine","n":88},{"a":"despropionyl p-fluorofentanyl","b":"lidocaine","n":85},{"a":"caffeine","b":"despropionyl p-fluorofentanyl","n":84},{"a":"1-phenethyl-4-propionyloxypiperidine","b":"ethyl-4-anpp","n":81},{"a":"cocaine","b":"despropionyl p-fluorofentanyl","n":79},{"a":"dimethyl sulfone (methylsulfonylmethane msm)","b":"phenethyl 4-anpp","n":78},{"a":"caffeine","b":"ethyl-4-anpp","n":74},{"a":"6-monoacetylmorphine (6-mam)","b":"phenethyl 4-anpp","n":71},{"a":"n-phenylpropanamide","b":"xylazine","n":71},{"a":"cocaine","b":"ethyl-4-anpp","n":71},{"a":"ethyl-4-anpp","b":"heroin","n":70},{"a":"bromazolam","b":"fentanyl","n":70},{"a":"diphenhydramine","b":"p-fluorofentanyl","n":69},{"a":"bis(2,2,6,6-tetramethyl-4-piperidyl) sebacate","b":"p-fluorofentanyl","n":69},{"a":"6-monoacetylmorphine (6-mam)","b":"cocaine","n":68}],"top_substances":[{"substance":"fentanyl","samples":3112,"primary":2742,"trace":371},{"substance":"4-anpp","samples":2797,"primary":2160,"trace":637},{"substance":"methamphetamine","samples":1792,"primary":1512,"trace":280},{"substance":"xylazine","samples":1137,"primary":845,"trace":292},{"substance":"cocaine","samples":1082,"primary":775,"trace":308},{"substance":"acetaminophen","samples":1036,"primary":879,"trace":157},{"substance":"phenethyl 4-anpp","samples":908,"primary":236,"trace":673},{"substance":"heroin","samples":701,"primary":531,"trace":170},{"substance":"lidocaine","samples":652,"primary":455,"trace":197},{"substance":"caffeine","samples":591,"primary":367,"trace":225},{"substance":"ethyl-4-anpp","samples":591,"primary":153,"trace":438},{"substance":"p-fluorofentanyl","samples":583,"primary":322,"trace":261},{"substance":"bis(2,2,6,6-tetramethyl-4-piperidyl) sebacate","samples":415,"primary":308,"trace":107},{"substance":"dimethyl sulfone (methylsulfonylmethane msm)","samples":353,"primary":237,"trace":116},{"substance":"acetylcodeine","samples":352,"primary":142,"trace":211},{"substance":"despropionyl p-fluorofentanyl","samples":348,"primary":283,"trace":65},{"substance":"n-phenylpropanamide","samples":311,"primary":117,"trace":195},{"substance":"6-monoacetylmorphine (6-mam)","samples":302,"primary":111,"trace":191},{"substance":"ketamine","samples":240,"primary":199,"trace":41},{"substance":"bromazolam","samples":239,"primary":191,"trace":48},{"substance":"methyl ecgonidine (med)","samples":213,"primary":21,"trace":192},{"substance":"procaine","samples":211,"primary":151,"trace":60},{"substance":"3,4-mdma","samples":194,"primary":178,"trace":16},{"substance":"diphenhydramine","samples":186,"primary":96,"trace":90},{"substance":"1-phenethyl-4-propionyloxypiperidine","samples":185,"primary":37,"trace":148},{"substance":"quinine","samples":181,"primary":65,"trace":116},{"substance":"tramadol","samples":156,"primary":68,"trace":88},{"substance":"p-fluoro phenethyl 4-anpp","samples":155,"primary":32,"trace":123},{"substance":"no compounds of interest detected","samples":131,"primary":131,"trace":0},{"substance":"noramidopyrine","samples":125,"primary":60,"trace":65},{"substance":"1,3-diacetin","samples":103,"primary":82,"trace":21},{"substance":"medetomidine","samples":97,"primary":54,"trace":43},{"substance":"tropacocaine","samples":94,"primary":7,"trace":87},{"substance":"phenacetin","samples":80,"primary":43,"trace":37},{"substance":"1-phenethyl-4-hydroxypiperidine","samples":74,"primary":5,"trace":69},{"substance":"delta-9-thc","samples":71,"primary":57,"trace":14},{"substance":"papaverine","samples":66,"primary":9,"trace":57},{"substance":"phenethyl bromide","samples":64,"primary":4,"trace":60},{"substance":"2-fluoro-2-oxo pce","samples":63,"primary":42,"trace":21},{"substance":"n-propionyl norfentanyl","samples":63,"primary":12,"trace":51}],"roles":{"fentanyl":"active ingredient","4-anpp":"precursor","methamphetamine":"active ingredient","xylazine":"cut","cocaine":"active ingredient","acetaminophen":"cut","phenethyl 4-anpp":"synthesis by-product","heroin":"active ingredient","lidocaine":"cut","caffeine":"cut","ethyl-4-anpp":"synthesis by-product","p-fluorofentanyl":"active ingredient","dimethyl sulfone (methylsulfonylmethane msm)":"cut","acetylcodeine":"metabolite","despropionyl p-fluorofentanyl":"precursor","n-phenylpropanamide":"metabolite","6-monoacetylmorphine (6-mam)":"metabolite","ketamine":"active ingredient","bromazolam":"active ingredient","methyl ecgonidine (med)":"metabolite","procaine":"cut","3,4-mdma":"active ingredient","diphenhydramine":"cut","1-phenethyl-4-propionyloxypiperidine":"synthesis by-product","quinine":"cut","tramadol":"active ingredient","p-fluoro phenethyl 4-anpp":"synthesis by-product","no compounds of interest detected":NaN,"noramidopyrine":NaN,"1,3-diacetin":"cut","medetomidine":"cut","tropacocaine":NaN,"phenacetin":"cut","delta-9-thc":"active ingredient","papaverine":NaN,"phenethyl bromide":"precursor","n-propionyl norfentanyl":"synthesis by-product"}};
+window.SPEC = {};
+window.TOPO = {};
+</script>
+<script>
+const NAV_REGISTRY = [{"id":"01-mirror-match","n":1,"cat":"MS","title":"Spectral Mirror Match"},{"id":"02-chromatogram-explorer","n":2,"cat":"GC\u2013MS","title":"Annotated Chromatogram Explorer"},{"id":"03-ftir-overlay","n":3,"cat":"FTIR","title":"FTIR Overlay & Subtraction Bench"},{"id":"04-fragment-tree","n":4,"cat":"MS","title":"Fragmentation Radial"},{"id":"05-chromatogram-3d","n":5,"cat":"GC\u2013MS","title":"GC\u2013MS Data Cube (3D)"},{"id":"06-spectral-ridgeline","n":6,"cat":"GC\u2013MS","title":"Batch Ridgeline Fingerprints"},{"id":"06a-ridgeline-filled","n":6,"cat":"GC\u2013MS","title":"Batch Ridgeline \u2014 Class Fills"},{"id":"06b-ridgeline-3d","n":6,"cat":"GC\u2013MS","title":"Batch Ridgeline \u2014 3D Terrain"},{"id":"06c-ridgeline-filter","n":6,"cat":"GC\u2013MS","title":"Batch Ridgeline \u2014 Class Focus"},{"id":"07-ftir-waterfall","n":7,"cat":"FTIR","title":"FTIR Waterfall (3D)"},{"id":"08-mass-defect-map","n":8,"cat":"MS","title":"Mass-Defect Constellation"},{"id":"09-sonification","n":9,"cat":"EXPERIMENTAL","title":"Hear the Spectrum (Sonification)"},{"id":"10-chemical-space","n":10,"cat":"EXPERIMENTAL","title":"Chemical-Space Drift"},{"id":"11-supply-streamgraph","n":11,"cat":"SUPPLY","title":"Supply Composition Streamgraph"},{"id":"12-cooccurrence-chord","n":12,"cat":"SUPPLY","title":"Adulterant Co-occurrence Chord"},{"id":"12a-co-nested","n":12,"cat":"SUPPLY","title":"Nested Co-occurrence Chord"},{"id":"12b-chord-sankey","n":12,"cat":"SUPPLY","title":"Chord \u2192 Sankey Co-occurrence"},{"id":"12c-co-undirected","n":12,"cat":"SUPPLY","title":"Undirected Co-occurrence Chord"},{"id":"13-expected-detected-sankey","n":13,"cat":"SUPPLY","title":"Expected vs. Detected Sankey"},{"id":"14-horizon-wall","n":14,"cat":"SUPPLY","title":"Substance Horizon Wall"},{"id":"15-emergence-beeswarm","n":15,"cat":"SUPPLY","title":"Novel-Substance Emergence Swarm"},{"id":"16-supply-terrain-3d","n":16,"cat":"SUPPLY","title":"Supply Terrain (3D)"},{"id":"17-adulterant-network","n":17,"cat":"SUPPLY","title":"Adulterant Force Network"},{"id":"17a-adulterant-pull","n":17,"cat":"SUPPLY","title":"Adulterant Pull Network"},{"id":"17b-adulterant-3d","n":17,"cat":"SUPPLY","title":"Adulterant Network (3D)"},{"id":"17c-adulterant-orbit","n":17,"cat":"SUPPLY","title":"Adulterant Orbit Graph"},{"id":"18-result-card","n":18,"cat":"RESULT","title":"Sample Result Card"},{"id":"19-expected-reality-gap","n":19,"cat":"RESULT","title":"Expected-Reality Gap"},{"id":"20-potency-uncertainty","n":20,"cat":"RESULT","title":"Potency Uncertainty Gauge"},{"id":"21-geo-choropleth","n":21,"cat":"GEO","title":"Supply Choropleth Map"},{"id":"22-xylazine-spread","n":22,"cat":"GEO","title":"Xylazine Spread Timeline"},{"id":"23-structure-flipbook","n":23,"cat":"MS","title":"Structure Flipbook"},{"id":"24-anatomy-scrolly","n":24,"cat":"RESULT","title":"Anatomy of a Sample (Scrollytelling)"},{"id":"25-glyph-garden","n":25,"cat":"EXPERIMENTAL","title":"Sample Glyph Garden"},{"id":"26-reagent-matrix","n":26,"cat":"EXPERIMENTAL","title":"Reagent Color Matrix"},{"id":"27-supply-weather","n":27,"cat":"EXPERIMENTAL","title":"Supply Weather Report"},{"id":"28-temporal-crosssection","n":28,"cat":"EXPERIMENTAL","title":"Temporal Cross-Section"},{"id":"29-supply-rhythm","n":29,"cat":"SONIC","title":"Supply Rhythm Machine"},{"id":"30-spectral-theremin","n":30,"cat":"SONIC","title":"Spectral Theremin"},{"id":"31-substance-cloud","n":31,"cat":"SUPPLY","title":"Substance Point Cloud"},{"id":"32-monthly-cloud","n":32,"cat":"SUPPLY","title":"Monthly Substance Point Clouds"},{"id":"33-sample-clusters","n":33,"cat":"SUPPLY","title":"Sample Point Clusters"}];
+const NAV_PAGE_ID = "17a-adulterant-pull";
+const NAV_MODE = "viz";
+(function(){
+/* Compact series navigation — dropdown, prev/next, home link.
+   NAV_REGISTRY is inlined at build time from src/registry.json. */
+
+const PREVIEW_FALLBACK = {
+  '06a-ridgeline-filled': '06-spectral-ridgeline',
+  '06b-ridgeline-3d': '06-spectral-ridgeline',
+  '06c-ridgeline-filter': '06-spectral-ridgeline',
+  '12a-co-nested': '12-cooccurrence-chord',
+  '12b-chord-sankey': '12-cooccurrence-chord',
+  '12c-co-undirected': '12-cooccurrence-chord',
+  '17a-adulterant-pull': '17-adulterant-network',
+  '17b-adulterant-3d': '17-adulterant-network',
+  '17c-adulterant-orbit': '17-adulterant-network',
+};
+
+function pageFile(id, mode) {
+  return mode === 'lab' ? `d-${id}.html` : `${id}.html`;
+}
+
+function previewId(id) {
+  return PREVIEW_FALLBACK[id] || id;
+}
+
+function previewSrc(id, mode) {
+  const base = mode === 'lab' ? '../viz/review-previews' : 'review-previews';
+  return `${base}/${previewId(id)}.png`;
+}
+
+function injectNavCSS() {
+  if (document.getElementById('dcf-nav-css')) return;
+  const s = document.createElement('style');
+  s.id = 'dcf-nav-css';
+  s.textContent = `
+  .dcf-nav{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;padding:10px 14px;margin:0 0 14px;background:var(--panel);border:1px solid var(--line);border-radius:12px;position:sticky;top:0;z-index:30}
+  .dcf-nav-home{font:600 12px/1 var(--font-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-decoration:none;padding:6px 10px;border-radius:8px;border:1px solid transparent;transition:color .15s,background .15s,border-color .15s}
+  .dcf-nav-home:hover,.dcf-nav-home:focus-visible{color:var(--ink);background:var(--panel2);border-color:var(--line);outline:none}
+  .dcf-nav-btn{min-width:40px;min-height:40px;padding:0 12px;background:var(--panel2);color:var(--muted);border:1px solid var(--line);border-radius:999px;font:600 15px/1 var(--font-sans);cursor:pointer;transition:background .15s,color .15s}
+  .dcf-nav-btn:hover,.dcf-nav-btn:focus-visible{background:var(--panel);color:var(--ink);outline:none}
+  .dcf-nav-btn:disabled{opacity:.35;cursor:not-allowed}
+  .dcf-nav-select{flex:1 1 180px;min-width:140px;max-width:420px;min-height:40px;padding:8px 32px 8px 12px;background:var(--panel2);color:var(--ink);border:1px solid var(--line);border-radius:10px;font:500 13px var(--font-sans);cursor:pointer}
+  .dcf-nav-select:hover,.dcf-nav-select:focus-visible{border-color:var(--muted);outline:none}
+  .dcf-nav-pos{margin-left:auto;font:500 11px/1 var(--font-mono);color:var(--faint);white-space:nowrap}
+  .dcf-index-hero{margin-bottom:22px;border-bottom:1px solid var(--line);padding-bottom:18px}
+  .dcf-index-hero h1{font-size:28px;line-height:1.15;margin:0 0 8px;font-weight:700;letter-spacing:-.01em}
+  .dcf-index-hero p{margin:0;color:var(--muted);font-size:15px;line-height:1.5;max-width:72ch}
+  .dcf-index-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;margin:18px 0 32px}
+  .dcf-index-card{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden;text-decoration:none;color:inherit;transition:border-color .15s,transform .15s}
+  .dcf-index-card:hover,.dcf-index-card:focus-visible{border-color:var(--muted);transform:translateY(-1px);outline:none}
+  .dcf-index-thumb{aspect-ratio:16/10;background:var(--panel2);border-bottom:1px solid var(--line);overflow:hidden;display:flex;align-items:center;justify-content:center}
+  .dcf-index-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+  .dcf-index-thumb-fallback{font:600 11px/1.3 var(--font-mono);color:var(--faint);text-align:center;padding:12px}
+  .dcf-index-body{padding:14px 16px 16px}
+  .dcf-index-meta{font:600 10px/1 var(--font-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin-bottom:6px}
+  .dcf-index-title{font-size:15px;font-weight:650;line-height:1.3;margin:0 0 4px;color:var(--ink);font-family:var(--font-sans)}
+  .dcf-index-cat{font-size:12px;color:var(--muted);margin:0}
+  .dcf-index-switch{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+  .dcf-index-switch a{font:500 12px var(--font-sans);color:var(--muted);text-decoration:none;padding:6px 12px;border:1px solid var(--line);border-radius:999px}
+  .dcf-index-switch a[aria-current="page"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+  @media (max-width:640px){.dcf-nav-pos{width:100%;margin-left:0;text-align:right}}
+  @media (prefers-reduced-motion:reduce){.dcf-index-card,.dcf-nav-home,.dcf-nav-btn{transition:none}}
+  `;
+  document.head.appendChild(s);
+}
+
+function navLabel(entry) {
+  const n = String(entry.n).padStart(2, '0');
+  const variant = entry.id.match(/^\d+[a-z]-/);
+  const suffix = variant ? ` · ${entry.id.split('-').slice(1).join(' ')}` : '';
+  return `Nº ${n} · ${entry.title}${suffix}`;
+}
+
+function injectNav({ pageId, mode = 'viz' } = {}) {
+  if (!pageId || document.querySelector('.dcf-nav')) return;
+  injectNavCSS();
+  const items = typeof NAV_REGISTRY !== 'undefined' ? NAV_REGISTRY : [];
+  if (!items.length) return;
+
+  const idx = items.findIndex(e => e.id === pageId);
+  const cur = idx >= 0 ? idx : 0;
+  const prev = items[(cur - 1 + items.length) % items.length];
+  const next = items[(cur + 1) % items.length];
+
+  const nav = document.createElement('nav');
+  nav.className = 'dcf-nav';
+  nav.setAttribute('aria-label', 'Visualization series navigation');
+
+  const home = document.createElement('a');
+  home.className = 'dcf-nav-home';
+  home.href = 'index.html';
+  home.textContent = mode === 'lab' ? 'Design Lab' : 'All viz';
+
+  const prevBtn = document.createElement('button');
+  prevBtn.type = 'button';
+  prevBtn.className = 'dcf-nav-btn';
+  prevBtn.setAttribute('aria-label', `Previous: ${prev.title}`);
+  prevBtn.textContent = '←';
+  prevBtn.onclick = () => { location.href = pageFile(prev.id, mode); };
+
+  const sel = document.createElement('select');
+  sel.className = 'dcf-nav-select';
+  sel.setAttribute('aria-label', 'Jump to visualization');
+  items.forEach(entry => {
+    const opt = document.createElement('option');
+    opt.value = pageFile(entry.id, mode);
+    opt.textContent = navLabel(entry);
+    if (entry.id === pageId) opt.selected = true;
+    sel.appendChild(opt);
+  });
+  sel.onchange = () => { if (sel.value) location.href = sel.value; };
+
+  const nextBtn = document.createElement('button');
+  nextBtn.type = 'button';
+  nextBtn.className = 'dcf-nav-btn';
+  nextBtn.setAttribute('aria-label', `Next: ${next.title}`);
+  nextBtn.textContent = '→';
+  nextBtn.onclick = () => { location.href = pageFile(next.id, mode); };
+
+  const pos = document.createElement('span');
+  pos.className = 'dcf-nav-pos';
+  pos.textContent = `${cur + 1} / ${items.length}`;
+
+  nav.append(home, prevBtn, sel, nextBtn, pos);
+
+  const hdr = document.querySelector('.dcf-h');
+  if (hdr) document.body.insertBefore(nav, hdr);
+  else document.body.prepend(nav);
+}
+
+function buildIndexPage({ mode = 'viz', title, dek, switchHref } = {}) {
+  injectNavCSS();
+  const items = typeof NAV_REGISTRY !== 'undefined' ? NAV_REGISTRY : [];
+  const prodHref = mode === 'lab' ? '../viz/index.html' : 'index.html';
+  const labHref = mode === 'lab' ? 'index.html' : (switchHref || '../viz2/index.html');
+  const hero = document.createElement('header');
+  hero.className = 'dcf-index-hero';
+  hero.innerHTML = `
+    <h1>${title || 'Drug Checking Visualizations'}</h1>
+    <p>${dek || ''}</p>
+    <div class="dcf-index-switch">
+      <a href="${prodHref}" aria-current="${mode === 'viz' ? 'page' : 'false'}">Production viz</a>
+      <a href="${labHref}" aria-current="${mode === 'lab' ? 'page' : 'false'}">Design Lab</a>
+    </div>`;
+
+  const grid = document.createElement('div');
+  grid.className = 'dcf-index-grid';
+  grid.setAttribute('role', 'list');
+
+  items.forEach(entry => {
+    const card = document.createElement('a');
+    card.className = 'dcf-index-card';
+    card.href = pageFile(entry.id, mode);
+    card.setAttribute('role', 'listitem');
+    card.setAttribute('aria-label', `${entry.title} — ${entry.cat}`);
+
+    const thumb = document.createElement('div');
+    thumb.className = 'dcf-index-thumb';
+    const img = document.createElement('img');
+    img.src = previewSrc(entry.id, mode);
+    img.alt = '';
+    img.loading = 'lazy';
+    img.onerror = () => {
+      img.remove();
+      const fb = document.createElement('div');
+      fb.className = 'dcf-index-thumb-fallback';
+      fb.textContent = entry.cat;
+      thumb.appendChild(fb);
+    };
+    thumb.appendChild(img);
+
+    const body = document.createElement('div');
+    body.className = 'dcf-index-body';
+    body.innerHTML = `
+      <div class="dcf-index-meta">Nº ${String(entry.n).padStart(2, '0')} · ${entry.cat}</div>
+      <h2 class="dcf-index-title">${entry.title}</h2>
+      <p class="dcf-index-cat">${entry.id.replace(/-/g, ' ')}</p>`;
+
+    card.append(thumb, body);
+    grid.appendChild(card);
+  });
+
+  document.body.append(hero, grid);
+}
+
+
+window.DCF_NAV={injectNav,buildIndexPage,pageFile,previewSrc};
+
+})();
+</script>
+<script>
+(function(){
+/* Drug Checking Visualization Framework — shared helpers
+   Loaded by every standalone visualization. Pure ES module, no dependencies.
+   Provides: design tokens (CSS injection), substance classification + palette,
+   spectral synthesis (Gaussian chromatograms, stick spectra, FTIR curves),
+   formatting, tooltip, and a small DOM scaffold builder. */
+
+const TOKENS = {
+  bg:'#0b0e14', panel:'#121826', panel2:'#1a2234', line:'#26304a',
+  ink:'#e8ecf4', muted:'#8b94a8', faint:'#5b6478',
+  opioid:'#ff8a5c', fent:'#ff5c7a', xyl:'#b388ff', stim:'#ffd166',
+  coke:'#4cc9f0', benzo:'#7aa2ff', cut:'#6ee7a8', other:'#94a3b8',
+  alert:'#ff5c7a', watch:'#ffd166', ok:'#6ee7a8', info:'#4cc9f0'
+};
+
+/* Sans-only UI prose + mono instrument readouts — always terminate with generic family. */
+const FONTS = {
+  sans:'Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+  mono:'"Cascadia Mono", ui-monospace, "SF Mono", "Roboto Mono", Consolas, monospace',
+};
+
+/* Map a substance name -> {class, color, label, action} */
+const CLASS = {
+  fent:{color:TOKENS.fent,label:'Fentanyl & analogs'},
+  opioid:{color:TOKENS.opioid,label:'Opioid'},
+  xyl:{color:TOKENS.xyl,label:'Sedative / xylazine'},
+  stim:{color:TOKENS.stim,label:'Stimulant'},
+  coke:{color:TOKENS.coke,label:'Cocaine'},
+  benzo:{color:TOKENS.benzo,label:'Benzodiazepine'},
+  cut:{color:TOKENS.cut,label:'Cut / diluent'},
+  other:{color:TOKENS.other,label:'Other'}
+};
+const RULES = [
+  [/fentanyl|anpp|despropionyl|norfentanyl|acetylfentanyl|n-phenylpropanamide|phenethyl/i,'fent'],
+  [/nitazene|etonitazene|metonitazene|protonitazene|isotonitazene/i,'fent'],
+  [/heroin|morphine|codeine|6-mam|monoacetylmorphine|oxycodone|hydromorphone|tramadol|mitragynine|opioid/i,'opioid'],
+  [/xylazine|medetomidine|detomidine|clonidine/i,'xyl'],
+  [/bromazolam|flualprazolam|alprazolam|etizolam|diazepam|clonazolam|benzodiazep|flubromazolam|diclazepam/i,'benzo'],
+  [/methamphetamine|amphetamine|mdma|cathinone|methylenedioxy|n,n-dimethylamphetamine/i,'stim'],
+  [/cocaine|benzoylecgonine|ecgonine/i,'coke'],
+  [/caffeine|acetaminophen|paracetamol|lidocaine|levamisole|quinine|mannitol|lactose|sucrose|cellulose|diphenhydramine|sulfone|msm|sugar|inositol|procaine|benzocaine|phenacetin|gabapentin|dimethyl|sebacate|btmps|piperidyl|boric|sorbitol|maltose|glucose|creatine|diacetin|tetramethyl/i,'cut'],
+];
+/* Broad families for filters and labels — cls stays fine-grained for chart colors. */
+const FAMILY_MAP = {
+  fent:'opioid', opioid:'opioid',
+  stim:'stim', coke:'stim',
+  xyl:'xyl', benzo:'benzo', cut:'cut', other:'other',
+};
+const FAMILY_LABEL = {
+  opioid:'Opioid',
+  stim:'Stimulant',
+  xyl:'Sedative / xylazine',
+  benzo:'Benzodiazepine',
+  cut:'Cut / diluent',
+  other:'Other',
+};
+function classify(name=''){
+  const n = String(name).toLowerCase();
+  for(const [re,c] of RULES){
+    if(re.test(n)){
+      const family = FAMILY_MAP[c] || c;
+      return {cls:c,color:CLASS[c].color,label:CLASS[c].label,family,familyLabel:FAMILY_LABEL[family]||FAMILY_LABEL.other};
+    }
+  }
+  return {cls:'other',...CLASS.other,family:'other',familyLabel:FAMILY_LABEL.other};
+}
+
+/* ---- formatting ---- */
+const fmt = {
+  mz:v=>`${(+v).toFixed(0)}`,
+  rt:v=>`${(+v).toFixed(2)}`,
+  pct:v=>`${(+v).toFixed(0)}%`,
+  int:v=>(+v).toLocaleString('en-US'),
+  month:m=>{const [y,mo]=m.split('-');return new Date(y,mo-1).toLocaleDateString('en-US',{month:'short',year:'2-digit'});}
+};
+
+/* ---- spectral synthesis ---- */
+// Sum-of-Gaussians chromatogram trace. peaks:[{rt,amp}], returns {x:[],y:[]}
+function chromatogram(peaks,{x0=2,x1=13,n=900,sigma=0.045}={}){
+  const x=[],y=[];
+  for(let i=0;i<n;i++){
+    const t=x0+(x1-x0)*i/(n-1); x.push(t);
+    let v=0; for(const p of peaks){const d=(t-p.rt)/(p.sigma||sigma); v+=p.amp*Math.exp(-0.5*d*d);}
+    y.push(v);
+  }
+  const mx=Math.max(...y,1e-9);
+  return {x,y:y.map(v=>v/mx*100)};
+}
+// FTIR absorbance curve from bands [[center,intensity,width],...]; reversed x handled by caller
+function ftirCurve(bands,{x0=4000,x1=400,n=1100}={}){
+  const x=[],y=[];
+  for(let i=0;i<n;i++){
+    const w=x0+(x1-x0)*i/(n-1); x.push(w);
+    let v=0; for(const [c,I,wd] of bands){const d=(w-c)/(wd||20); v+=I*Math.exp(-0.5*d*d);}
+    y.push(v);
+  }
+  return {x,y}; // y in absorbance-ish 0..~1
+}
+// Mass spectrum sticks: returns sorted peaks with base-peak normalization
+function stickSpectrum(peaks){
+  const mx=Math.max(...peaks.map(p=>p[1]),1);
+  return peaks.map(([mz,i])=>({mz,i:i/mx*100})).sort((a,b)=>a.mz-b.mz);
+}
+// cosine similarity between two stick spectra (binned at 1 m/z)
+function cosine(a,b,tol=0.5){
+  let dot=0,na=0,nb=0; const used=new Set();
+  for(const pa of a){na+=pa.i*pa.i;}
+  for(const pb of b){nb+=pb.i*pb.i;}
+  for(const pa of a){let best=null,bd=tol; for(let k=0;k<b.length;k++){if(used.has(k))continue;const d=Math.abs(pa.mz-b[k].mz); if(d<=bd){bd=d;best=k;}} if(best!=null){dot+=pa.i*b[best].i;used.add(best);}}
+  return dot/(Math.sqrt(na)*Math.sqrt(nb)||1);
+}
+
+/* ---- tooltip ---- */
+let _tt;
+function tooltip(){
+  if(_tt) return _tt;
+  _tt=document.createElement('div');
+  _tt.style.cssText=`position:fixed;pointer-events:none;z-index:99;background:${TOKENS.panel2};border:1px solid ${TOKENS.line};border-radius:8px;padding:8px 10px;font:12px/1.4 ${FONTS.sans};color:${TOKENS.ink};box-shadow:0 6px 24px rgba(0,0,0,.5);opacity:0;transition:opacity .12s;max-width:260px`;
+  document.body.appendChild(_tt);
+  return {
+    show(html,x,y){_tt.innerHTML=html;_tt.style.opacity=1;const r=_tt.getBoundingClientRect();let nx=x+14,ny=y+14;if(nx+r.width>innerWidth)nx=x-r.width-14;if(ny+r.height>innerHeight)ny=y-r.height-14;_tt.style.left=nx+'px';_tt.style.top=ny+'px';},
+    hide(){_tt.style.opacity=0;}
+  };
+}
+
+/* ---- page scaffold + global CSS ---- */
+function scaffold({tag,title,dek,how,provenance,harm,pageId}={}){
+  injectCSS();
+  document.body.innerHTML=`
+    <header class="dcf-h">
+      <div class="dcf-tag">${tag||''}</div>
+      <h1>${title||''}</h1>
+      <p class="dek">${dek||''}</p>
+    </header>
+    <main id="stage"></main>
+    <details class="dcf-how"><summary>How to read this</summary><div>${how||''}</div></details>
+    <footer class="dcf-f">
+      <p class="prov">${provenance||''}</p>
+      ${harm?`<p class="harm">${harm}</p>`:''}
+    </footer>`;
+  const pid = pageId || (typeof NAV_PAGE_ID !== 'undefined' ? NAV_PAGE_ID : '');
+  const mode = typeof NAV_MODE !== 'undefined' ? NAV_MODE : 'viz';
+  if (pid && window.DCF_NAV) window.DCF_NAV.injectNav({ pageId: pid, mode });
+  return document.getElementById('stage');
+}
+function injectCSS(){
+  if(document.getElementById('dcf-css')) return;
+  const s=document.createElement('style'); s.id='dcf-css';
+  s.textContent=`
+  :root{
+    --bg:${TOKENS.bg};--panel:${TOKENS.panel};--panel2:${TOKENS.panel2};--line:${TOKENS.line};
+    --ink:${TOKENS.ink};--muted:${TOKENS.muted};--faint:${TOKENS.faint};
+    --font-sans:${FONTS.sans};--font-mono:${FONTS.mono}
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-sans);-webkit-font-smoothing:antialiased;font-feature-settings:"kern","liga","calt"}
+  body{max-width:1180px;margin:0 auto;padding:28px 22px 64px}
+  .mono{font-family:var(--font-mono);font-variant-numeric:tabular-nums}
+  .muted{color:var(--muted)} .faint{color:var(--faint)}
+  .dcf-h{margin-bottom:18px;border-bottom:1px solid var(--line);padding-bottom:16px}
+  .dcf-tag{font:600 11px/1 var(--font-mono);letter-spacing:.14em;color:var(--muted);text-transform:uppercase;margin-bottom:10px}
+  .dcf-h h1{font-size:27px;line-height:1.15;margin:0 0 8px;font-weight:700;letter-spacing:-.01em}
+  .dek{font-size:15px;line-height:1.5;color:var(--muted);margin:0;max-width:74ch}
+  #stage{margin:18px 0}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px}
+  .dcf-how{margin:22px 0 8px;border:1px solid var(--line);border-radius:10px;background:var(--panel);overflow:hidden}
+  .dcf-how summary{cursor:pointer;padding:12px 16px;font-weight:600;font-size:13px;color:var(--ink);list-style:none}
+  .dcf-how summary::before{content:"ⓘ ";color:var(--muted)}
+  .dcf-how[open] summary{border-bottom:1px solid var(--line)}
+  .dcf-how>div{padding:14px 16px;font-size:13.5px;line-height:1.6;color:var(--muted)}
+  .dcf-how b{color:var(--ink)}
+  .dcf-f{margin-top:26px;padding-top:14px;border-top:1px solid var(--line);font-size:12px;line-height:1.5}
+  .dcf-f .prov{color:var(--faint);margin:0 0 6px}
+  .dcf-f .harm{color:var(--muted);margin:0;padding-left:11px;border-left:3px solid ${TOKENS.ok}}
+  button.tgl{background:var(--panel);color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:7px 13px;font:500 13px var(--font-sans);cursor:pointer;transition:.15s}
+  .dcf-ctl-select{background:var(--panel2);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:7px 10px;font:500 13px var(--font-sans);min-height:40px}
+  svg text{font-family:var(--font-mono);font-variant-numeric:tabular-nums}
+  button.tgl:hover{background:var(--panel2);color:var(--ink)}
+  button.tgl[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+  .controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+  input[type=range]{accent-color:${TOKENS.info}}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:10px}
+  .legend i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+  @media (prefers-reduced-motion:reduce){*{animation-duration:.001ms!important;transition-duration:.001ms!important}}
+  `;
+  document.head.appendChild(s);
+}
+
+/* draw a 2D structure from SMILES into a <canvas id=...>; needs SmilesDrawer loaded.
+   Uses the canvas DrawerBase path (SmilesDrawer.Drawer SVG→canvas is broken in the vendored build). */
+let _smilesCanvasDrawer=null;
+function smilesCanvasDrawer(w,h){
+  if(_smilesCanvasDrawer) return _smilesCanvasDrawer;
+  _smilesCanvasDrawer=new SmilesDrawer.SvgDrawer({
+    width:w,height:h,padding:14,bondThickness:1.1,
+    themes:{
+      dcf:{
+        C:'#cfd6e4',N:'#7aa2ff',O:'#ff8a5c',F:'#6ee7a8',S:'#ffd166',
+        CL:'#6ee7a8',BR:'#ff8a5c',I:'#b388ff',P:'#d35400',B:'#e67e22',SI:'#e67e22',
+        H:'#8b94a8',BACKGROUND:'#0e1320',
+      },
+    },
+  }).preprocessor;
+  return _smilesCanvasDrawer;
+}
+function smilesStructureNA(el,h){
+  const c=el.getContext&&el.getContext('2d');
+  if(c){c.fillStyle='#5b6478';c.font='11px '+FONTS.sans;c.fillText('structure n/a',8,h/2);}
+}
+function drawSmiles(smiles,canvasId,w=160,h=120){
+  const el=document.getElementById(canvasId);
+  if(!el||typeof SmilesDrawer==='undefined'||!smiles){ if(el) smilesStructureNA(el,h); return; }
+  try{
+    const drawer=smilesCanvasDrawer(w,h);
+    SmilesDrawer.parse(smiles,t=>{
+      try{ drawer.draw(t,el,'dcf',false); }
+      catch(_){ try{ drawer.draw(t,el,'dark',false); } catch(__){ smilesStructureNA(el,h); } }
+    },()=>{ smilesStructureNA(el,h); });
+  }catch(e){ smilesStructureNA(el,h); }
+}
+
+
+window.DCF={TOKENS,FONTS,classify,fmt,chromatogram,ftirCurve,stickSpectrum,cosine,tooltip,scaffold,injectCSS,drawSmiles};
+
+})();
+</script>
+<script>
+/* Nº 17a · Adulterant Pull Network — looser cluster spacing, co-occurrence-weighted
+   gravity, and one-click "pull" buttons that drag a substance to the edge to
+   reveal its connection fan. */
+const {scaffold,classify,tooltip,fmt,TOKENS}=DCF;
+/* Shared co-occurrence network prep for Nº 17 / 17a / 17b / 17c. */
+const CO=DATA.cooccurrence, SUB=DATA.top_substances, ROLES=DATA.roles;
+
+const counts=Object.fromEntries(SUB.map(d=>[d.substance,d.samples]));
+const nodeNames=[...new Set(CO.flatMap(d=>[d.a,d.b]))].filter(n=>counts[n]).sort((a,b)=>counts[b]-counts[a]).slice(0,22);
+const nset=new Set(nodeNames);
+
+function makeNodes(){
+  return nodeNames.map(n=>({id:n,v:counts[n],...classify(n)}));
+}
+
+function makeLinks(){
+  return CO.filter(d=>nset.has(d.a)&&nset.has(d.b)).map(d=>({source:d.a,target:d.b,v:d.n}));
+}
+
+function shortLabel(id,max=14){
+  return id.length>max?id.slice(0,max-1)+'…':id;
+}
+
+function pullTargets(nodes){
+  const picks=['xylazine','fentanyl','methamphetamine','methyl ecgonidine (med)','heroin','cocaine','4-anpp','caffeine','lidocaine','acetaminophen'];
+  return picks.filter(id=>nodes.some(n=>n.id===id));
+}
+
+function neighborsOf(id,links){
+  const out=[];
+  links.forEach(l=>{
+    const s=typeof l.source==='object'?l.source.id:l.source;
+    const t=typeof l.target==='object'?l.target.id:l.target;
+    if(s===id) out.push({id:t,v:l.v});
+    else if(t===id) out.push({id:s,v:l.v});
+  });
+  return out.sort((a,b)=>b.v-a.v);
+}
+
+function renderLegend(nodes,hostId){
+  const cls=[...new Set(nodes.map(n=>n.cls))];
+  const host=document.getElementById(hostId);
+  if(!host) return;
+  host.innerHTML=cls.map(c=>{
+    const o=nodes.find(n=>n.cls===c);
+    return `<span><i style="background:${o.color}"></i>${o.label}</span>`;
+  }).join('');
+}
+
+function nodeTooltipHtml(d){
+  return `<b style="text-transform:capitalize">${d.id}</b><br><span class="muted">${d.label} · ${ROLES[d.id]||''}</span><br><span class="muted">${fmt.int(d.v)} samples</span>`;
+}
+
+
+const stage=scaffold({
+  tag:'Nº 17a · SUPPLY',
+  title:'Adulterant Pull Network',
+  dek:'Same co-occurrence physics with breathing room — stronger pairs pull tighter, weak ties stay loose. Hit "pull" on any substance to yank it to the edge and watch its neighborhood stretch into view.',
+  how:`Each <b>node</b> is a substance (size = prevalence, color = class). <b>Link strength</b> scales with shared-sample count — frequent pairs behave like stronger gravity. Repulsion and spring length are tuned <b>looser</b> than the base network so clusters stay readable. Use the <b>pull</b> buttons to pin a substance to the right edge; its partners stay tethered, exposing the co-occurrence fan. Click <b>release</b> or another pull target to reset. <b>Drag</b> nodes manually anytime.`,
+  provenance:'Real co-occurrence among the 22 most connected substances, 6,580-sample dataset.',
+  harm:'A pulled fan shows what else tends to ride along. If you see one member of that fan, test for its neighbors.'
+});
+
+stage.innerHTML=`
+<style>
+  .pull-grid{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+  .pull-grid button{font:500 11px/1.2 ui-monospace,monospace;padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--muted);cursor:pointer;transition:.15s}
+  .pull-grid button:hover{background:var(--panel2);color:var(--ink)}
+  .pull-grid button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+  .pull-grid button.release{font-style:italic}
+</style>
+<div class="pull-grid" id="pull-btns" role="toolbar" aria-label="Pull substance to edge"></div>
+<div class="panel"><svg id="svg" width="100%" height="620" role="img" aria-label="Loose force network with pull controls"></svg></div>
+<div class="legend" id="leg"></div>`;
+
+const tt=tooltip();
+const nodes=makeNodes();
+const links=makeLinks();
+let pulled=null;
+let sim=null;
+
+const pullHost=document.getElementById('pull-btns');
+pullTargets(nodes).forEach(id=>{
+  const b=document.createElement('button');
+  b.type='button';
+  b.textContent=`pull (${shortLabel(id,18).toLowerCase()})`;
+  b.setAttribute('aria-pressed','false');
+  b.onclick=()=>setPull(id);
+  pullHost.appendChild(b);
+});
+const releaseBtn=document.createElement('button');
+releaseBtn.type='button';
+releaseBtn.className='release';
+releaseBtn.textContent='release';
+releaseBtn.setAttribute('aria-pressed','false');
+releaseBtn.onclick=()=>setPull(null);
+pullHost.appendChild(releaseBtn);
+
+function setPull(id){
+  pulled=id;
+  [...pullHost.querySelectorAll('button')].forEach(b=>{
+    const on=b!==releaseBtn && id && b.textContent.includes(`(${shortLabel(id,18).toLowerCase()})`);
+    b.setAttribute('aria-pressed',on?'true':'false');
+  });
+  releaseBtn.setAttribute('aria-pressed',id?'false':'true');
+  if(sim){
+    nodes.forEach(n=>{ if(n.id!==id) n.fx=null; n.fy=null; });
+    const target=nodes.find(n=>n.id===id);
+    if(target && sim){
+      const W=sim.width,H=sim.height;
+      target.fx=W*0.88;
+      target.fy=H*0.5;
+      sim.alphaTarget(0.45).restart();
+      setTimeout(()=>sim.alphaTarget(0),900);
+    }
+  }
+  draw();
+}
+
+function linkStrength(d){ return Math.min(1.2, d.v/450); }
+function linkDistance(d){ return 180 - Math.min(90, d.v/35); }
+
+function draw(){
+  const svg=d3.select('#svg'); svg.selectAll('*').remove();
+  const W=svg.node().clientWidth,H=620;
+  nodes.forEach(n=>{ n.x=undefined; n.y=undefined; if(n.id!==pulled){ n.fx=null; n.fy=null; } });
+  const r=d3.scaleSqrt(d3.extent(nodes,d=>d.v),[6,32]);
+  const lw=d3.scaleLinear(d3.extent(links,d=>d.v),[.4,6]);
+  sim=d3.forceSimulation(nodes)
+    .force('link',d3.forceLink(links).id(d=>d.id).distance(linkDistance).strength(linkStrength))
+    .force('charge',d3.forceManyBody().strength(-420))
+    .force('center',d3.forceCenter(W*0.46,H/2).strength(0.04))
+    .force('collide',d3.forceCollide(d=>r(d.v)+8));
+  sim.width=W; sim.height=H;
+  if(pulled){
+    const t=nodes.find(n=>n.id===pulled);
+    if(t){ t.fx=W*0.88; t.fy=H/2; }
+  }
+  const link=svg.append('g').attr('stroke-linecap','round').selectAll('line').data(links).join('line')
+    .attr('stroke',TOKENS.line).attr('stroke-width',d=>lw(d.v)).attr('opacity',.38);
+  const node=svg.append('g').selectAll('g').data(nodes).join('g').style('cursor','grab')
+    .call(d3.drag()
+      .on('start',(e,d)=>{ if(!e.active) sim.alphaTarget(0.35).restart(); d.fx=d.x; d.fy=d.y; if(d.id===pulled) pulled=null; })
+      .on('drag',(e,d)=>{ d.fx=e.x; d.fy=e.y; })
+      .on('end',(e,d)=>{ if(!e.active) sim.alphaTarget(0); if(d.id!==pulled){ d.fx=null; d.fy=null; } }));
+  node.append('circle').attr('r',d=>r(d.v)).attr('fill',d=>d.color).attr('opacity',.9)
+    .attr('stroke',d=>d.id===pulled?TOKENS.ink:TOKENS.bg).attr('stroke-width',d=>d.id===pulled?2.5:1.5)
+    .on('mouseover',(e,d)=>{
+      const nb=new Set(neighborsOf(d.id,links).map(x=>x.id));
+      link.attr('opacity',l=>{
+        const s=l.source.id||l.source,t=l.target.id||l.target;
+        return s===d.id||t===d.id||nb.has(s)||nb.has(t)?0.85:0.05;
+      });
+    })
+    .on('mousemove',(e,d)=>tt.show(nodeTooltipHtml(d),e.clientX,e.clientY))
+    .on('mouseleave',()=>{ link.attr('opacity',.38); tt.hide(); });
+  node.append('text').attr('text-anchor','middle').attr('dy',d=>r(d.v)+12)
+    .attr('fill',TOKENS.muted).attr('font-size',9.5).text(d=>shortLabel(d.id));
+  sim.on('tick',()=>{
+    link.attr('x1',d=>d.source.x).attr('y1',d=>d.source.y).attr('x2',d=>d.target.x).attr('y2',d=>d.target.y);
+    node.attr('transform',d=>`translate(${d.x=Math.max(r(d.v),Math.min(W-r(d.v),d.x))},${d.y=Math.max(r(d.v),Math.min(H-r(d.v),d.y))})`);
+  });
+  renderLegend(nodes,'leg');
+}
+window.__vizRedraw=draw;
+draw();
+addEventListener('resize',draw);
+
+</script>
+</body>
+</html>
