@@ -5,7 +5,7 @@ const fs = require('fs');
 (async () => {
   const browser = await chromium.launch();
   const dir = path.join(__dirname, '..', 'viz');
-  const files = fs.readdirSync(dir).filter(f => f.endsWith('.html')).sort();
+  const files = fs.readdirSync(dir).filter(f => f.endsWith('.html') && f !== 'index.html').sort();
   let failed = 0;
   for (const f of files) {
     const page = await browser.newPage();
