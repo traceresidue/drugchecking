@@ -1,0 +1,1 @@
+function t(e){return getComputedStyle(document.documentElement).getPropertyValue(e).trim()}const n={bg:"var(--bg)",panel2:"var(--panel-2)",line:"var(--line)",ink:"var(--ink)",muted:"var(--muted)",faint:"var(--faint)"};export{n as V,t as c};

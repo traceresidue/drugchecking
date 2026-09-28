@@ -1,0 +1,1 @@
+function n(t,e=800){if(t&&typeof t=="object"&&"clientWidth"in t){const i=t.clientWidth;return i&&i>0?i:e}return e}function r(t,e=400){if(t&&typeof t=="object"&&"clientHeight"in t){const i=t.clientHeight;return i&&i>0?i:e}return e}export{r as a,n as s};
