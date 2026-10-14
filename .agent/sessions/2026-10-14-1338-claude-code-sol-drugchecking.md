@@ -1,0 +1,116 @@
+# Session Handoff
+
+Project key: `drugchecking`
+Agent: `Claude Code (Sonnet 5.5)`
+Machine: `Desktop (Sol)`
+Timestamp: `2026-10-14T13:38:27-05:00`
+Branch: `claude/drug-checking-viz-expansion-9uwjyh`
+Git reference: `f33c6d01b` (baseline; the scaffold-adoption commit follows it)
+
+## Goal
+
+Assess the repo's stashed and staged changes and plan files, then bring the work to a clean, verified, pushed
+state; make the password gate optional; adopt the agent-project scaffold for closeout.
+
+## Context read
+
+- `AGENTS.md` (original design guide), `STATE.md`, `TASKS.md` (created this session), `DECISIONS.md` (created this session).
+- `docs/REORG_PLAN.md`, `docs/ROADMAP.md`, `spectral-sourcer/PROGRESS.md`, `web/apps/viz-lab/CRITIQUE_STATUS.md`,
+  `web/apps/viz-lab/README.md`, `pipeline/README.md`, `visualization-framework/README.md`.
+- Scaffold at `B:\ClaudeHub\templates\agent-project`: `AGENTS.md`, `README.md`, `INSTALL.md`, `VALIDATION.md`,
+  `BOOTSTRAP-PROMPT.md`, `manifest.json`, `CLAUDE.md`, `PROJECT.md`, `STATE.md`, `TASKS.md`, `DECISIONS.md`,
+  the three templates and the three directory READMEs, `scripts/Test-AgentProject.ps1`.
+- No prior handoffs existed in `.agent/sessions/`.
+
+## Work completed
+
+- Found no stash entry; the "stashed" work was a half-popped stash (conflict markers in page 02 plus 91 staged files).
+- Resolved page 02 conflicts; merged `claude/spectral-sourcer-6zvao0` (it held the pipeline, exporter, Librarian,
+  Design Lab layer); replayed the staged work as three commits (MoNA fixture 107 to 351 records, viz-lab app, docs).
+- Fixed `06b-ridgeline-3d` (registry declared only plotly, needed d3) and the missing
+  `chromatogram-sample-3d.png` preview that broke the gallery.
+- Dropped the stale `docs/REORG_PLAN.md` (history retained); parked its useful ideas and the `cid-hash.md` idea
+  in `DECISIONS.md`; ignored `scratch_*.json`; dropped the stash and the backup branch after verifying content.
+- Added a status table to `docs/ROADMAP.md` and corrected its layout diagram.
+- Switched the client-side password gate off by default behind `DCF_GATE`; confirmed the deployed site is
+  private through Vercel Authentication (read-only API check).
+- Wrote `STATE.md`, `TASKS.md`, `DECISIONS.md`, `GuideToProgress.md` (drafted by a Haiku subagent, corrected by me).
+- Adopted the scaffold: copied missing files, merged `AGENTS.md`, drafted `PROJECT.md`, reshaped `STATE.md`/`TASKS.md`.
+
+## Files or systems changed
+
+- Commits `14bafaa26` to `f33c6d01b` (all pushed to `origin/claude/drug-checking-viz-expansion-9uwjyh`) plus the
+  scaffold-adoption commit (local at handoff time).
+- Scaffold adoption: `AGENTS.md` (additions only), `STATE.md`, `TASKS.md`, `DECISIONS.md` (entry added), new
+  `PROJECT.md`, `CLAUDE.md`, `BOOTSTRAP-PROMPT.md`, `VALIDATION.md`, `.agent/**`, `scripts/Test-AgentProject.ps1`,
+  this handoff.
+- Untracked and left on disk: `scratch_matched.json` (gitignored).
+- External systems: Vercel read only (list teams, list projects, get project). Nothing changed there.
+- Deleted: `docs/REORG_PLAN.md`, `cid-hash.md` (content parked), the stash, `backup/staged-pre-merge-2026-10-14`.
+
+## Verification performed
+
+| Check | Command | Result | Kind |
+|---|---|---|---|
+| Pipeline unit tests | `python -m unittest discover -s pipeline/test` | 55 OK (re-run at handoff) | software |
+| Browser check of all built pages | `node test/check.js` (visualization-framework) | 0 of 45 failed (run after the gate change; only docs changed since) | software |
+| viz-lab types | `npx tsc --noEmit` | exit 0 | software |
+| Librarian tests | `vitest run` | 15 passed | software |
+| Gate-on build equals committed pages | `DCF_GATE=1 python build.py` then `git diff -- viz` | 0 diffs | software |
+| Pages load with no login | Playwright, fresh context, no `dcf_auth` | 4 pages stayed and rendered | software |
+| Scaffold structure | `Test-AgentProject.ps1` | see Results | software |
+| Page 02 TIC rework looks right | owner opened in browser | pass | **manual** |
+
+## Results
+
+- All software checks above pass. Page 02 visual review is a manual confirmation by the owner.
+- Scaffold validation (`scripts/Test-AgentProject.ps1`): 22 failures before the reshape (all in `STATE.md` and
+  `TASKS.md`); 4 after (missing `BOOTSTRAP-PROMPT.md` and `VALIDATION.md`, and the sync terms `Local ahead` and
+  `Notion ahead`); after copying the two docs and adding the sync vocabulary to `STATE.md`: **49 passed, exit 0,
+  "Structural validation passed."** The script checks structure only, not accuracy.
+- A typo in my own `DECISIONS.md` entry (Windows path with `	` and `` read as control characters) was caught
+  by reading the file back and corrected the same session.
+
+## Decisions
+
+- Password gate off by default behind `DCF_GATE`; real access control parked (server-side).
+- Drop `docs/REORG_PLAN.md`.
+- Data precedence for viz-lab: real over simulated, newer if equal (moot after merge: files byte-identical).
+- Adopt the agent-project scaffold, canonical key `drugchecking`, machine Desktop (Sol).
+- All recorded in `DECISIONS.md`.
+
+## Blockers and uncertainty
+
+- Notion record and URL unconfirmed, so the sync state cannot be `Synced`.
+- `PROJECT.md`: parent outcome, Notion URL and created date unknown.
+- Unidentified push: `origin` received commits up to `0ecca9852` at 12:52 on 2026-10-14 without a session push.
+  No local hook or `git config` explains it (suspected GitHub Desktop auto-sync). [NEEDS VERIFICATION]
+- Vercel project `drugchecking` linked to this repository: not confirmed. [NEEDS VERIFICATION]
+- A user memory note (`viz-preview-capture-workflow`) still says `build.py` has bare `open()` calls; after the merge
+  it does not. The note is outside the repo and was not edited.
+
+## Conflicts preserved for review
+
+- `AGENTS.md`: scaffold operating rules and the original design guide both kept (Part 1 and Part 2). No
+  contradiction found; the bridge section says to mark `Needs review` if one appears later.
+- `STATE.md` and `TASKS.md` were created earlier this session without the scaffold shape; reshaped, with the old
+  sections preserved under "Session log (preserved)" and in git history.
+
+## Synchronization state
+
+`Needs review`
+
+## Single next action
+
+Decide whether `claude/drug-checking-viz-expansion-9uwjyh` goes to `main` (PR vs merge); do not push `main`
+without explicit approval.
+
+## Closeout checklist
+
+- [x] `STATE.md` updated.
+- [x] `TASKS.md` updated.
+- [x] `DECISIONS.md` updated (entries appended for the gate, REORG_PLAN, data precedence, scaffold adoption).
+- [x] Session handoff appended.
+- [x] Verification evidence recorded above.
+- [ ] Notion synchronization assessed: not possible, no Notion URL. Left `Needs review`.
+- [x] `STATE.md` repository status refreshed from live Git.

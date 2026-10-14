@@ -1,11 +1,48 @@
-# STATE
+# Current State
 
-Source of truth for where this repo is. Newest section first. See TASKS.md for what to do next
-and GuideToProgress.md for a plain-language overview and run instructions.
+Status: `In progress`
+Health: `On track`
+Progress: `Not tracked`
+Sync state: `Needs review`
+Sync state values: `Synced | Local ahead | Notion ahead | Needs review`
+Current phase: `Post-merge stabilization; scaffold adopted 2026-10-14`
+Last verified: `2026-10-14` (see "What is verified" below)
+
+## Repository
+
+- Git: `Initialized`
+- Branch: `claude/drug-checking-viz-expansion-9uwjyh`
+- Remote: `origin` https://github.com/traceresidue/drugchecking.git (in sync at `f33c6d01b`; the scaffold-adoption commit is local until pushed)
+- Working tree: `Clean after the scaffold-adoption commit`
+- Baseline commit: `f33c6d01b`
+
+## Current objective
+
+Decide whether this branch goes to `main` (PR vs merge). Nothing else is open in `TASKS.md`.
+
+## Blockers
+
+- None for implementation.
+- Notion record and URL not confirmed, so synchronization cannot be `Synced`. [NEEDS VERIFICATION]
+
+## Risks or uncertainty
+
+- `PROJECT.md` has three unverified fields (parent outcome, Notion URL, created date).
+- Something other than the Claude sessions pushed commits to `origin` on 2026-10-14 (up to `0ecca9852`); source unidentified.
+- Deployed-site privacy relies on Vercel Authentication staying on and no custom domain being added.
+- That the Vercel project `drugchecking` is linked to this repo is not confirmed. [NEEDS VERIFICATION]
+
+## Single next action
+
+Decide whether this branch goes to `main`: open a PR or merge locally, then push `main` only with explicit approval.
+
+---
+
+# Session log (preserved)
 
 ## 2026-10-14
 
-**Branch:** `claude/drug-checking-viz-expansion-9uwjyh` (pushed; in sync with origin after `bc1b18390`)
+**Branch:** `claude/drug-checking-viz-expansion-9uwjyh` (pushed; in sync with origin at `f33c6d01b` before the scaffold-adoption commit)
 
 ### What changed
 - Resolved leftover stash-pop conflict markers in `visualization-framework/src/02-chromatogram-explorer.js`
@@ -37,5 +74,7 @@ and GuideToProgress.md for a plain-language overview and run instructions.
 - `cid-hash.md` idea parked in DECISIONS.md; `scratch_*.json` is now gitignored.
 - `docs/ROADMAP.md` has a dated status table.
 
-### Next action
-Decide whether this branch goes to `main` (PR vs merge). Nothing else is open. Gate is off by default (`DCF_GATE`), deployed site is private via Vercel Authentication; see DECISIONS.md.
+### Scaffold adoption (agent-project)
+- Added `.agent/`, `CLAUDE.md`, `scripts/Test-AgentProject.ps1`, `PROJECT.md`; merged scaffold rules into `AGENTS.md` (original guide preserved verbatim as Part 2).
+- Reshaped this file and `TASKS.md` to the scaffold fields. Pre-reshape content is preserved in the sections below and in git history.
+- Handoff: `.agent/sessions/2026-10-14-1338-claude-code-sol-drugchecking.md`.

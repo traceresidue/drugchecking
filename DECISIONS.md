@@ -2,6 +2,16 @@
 
 Decisions made, and ideas parked on purpose. Newest first. Do not build parked items without moving them to TASKS.md.
 
+## 2026-10-14 — Adopt the agent-project scaffold; canonical key `drugchecking`
+**Decision:** adopt `B:\ClaudeHub\templates\agent-project` for operational memory and closeout.
+Canonical key is `drugchecking`. Machine for handoffs: Desktop (Sol).
+**How:** copied only the missing files (no clobber); `AGENTS.md` merged as Part 1 (scaffold rules, verbatim) plus
+Part 2 (original design guide, verbatim, 63 of 63 lines preserved); scaffold `README.md`, `STATE.md`, `TASKS.md`,
+`DECISIONS.md` not copied; `STATE.md` and `TASKS.md` reshaped to scaffold fields with content preserved.
+**Why:** one state, explicit sync status, and a closeout every session instead of relying on chat history.
+**Not done:** Notion record and URL unconfirmed, so sync state stays `Needs review`.
+**Approved by:** repository owner, in session, 2026-10-14.
+
 ## 2026-10-14 — Password gate switched off by default (`DCF_GATE`)
 **Decision:** the gate is off unless `DCF_GATE=1` is set at build time. With it off, `index.html` redirects to
 the gallery and the 44 built pages carry no guard.
