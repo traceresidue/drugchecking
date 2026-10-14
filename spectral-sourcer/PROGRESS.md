@@ -133,4 +133,50 @@ Librarian). Updated as work lands, not just at the end.
   for size, not committed) to widen coverage past this 7-substance sample --
   `fetch()`/`parse()` don't change, same extension pattern as MSP/JCAMP.
 
+## 2026-07-05 (session 3)
+
+- User clarified this is a local-only prototype (not shared or
+  redistributed), so per-record MoNA licensing is informational provenance
+  only, not an ingestion gate, and asked to expand the fixture further,
+  using conversion libraries if needed.
+- Confirmed `B:\ClaudeHub\ClaudeCode\spectra_library\MoNA-export-GC-MS_Spectra-json\MoNA-export-GC-MS_Spectra.json`
+  (the full 19,171-record local export) is readable directly (loads in
+  ~1s). Also confirmed a `rainbow` (chromatography-file-reading) package is
+  already installed, but it reads raw Agilent/Waters `.D` instrument data,
+  not the NIST MS Search / Agilent ChemStation `.L` binary spectral-library
+  format the rest of `/spectra_library` uses -- that format is still
+  unparseable without vendor tooling, so this session's expansion stayed
+  focused on MoNA.
+- Cross-referenced the full export against `chemdictionary.csv` two ways:
+  exact substance-name match (as before) and, new this session, CAS-number
+  match (stdlib `csv`, no third-party chemistry library needed) -- CAS
+  matching catches synonyms name-matching misses, e.g. MoNA's
+  "5-(2-propenyl)-1,3-benzodioxole" for safrole (an MDMA precursor) and
+  "acetylsalicylic acid" for aspirin. Found 96 new records across 37 unique
+  substances this way (up from the initial 44/38), not yet in the fixture.
+- Added those 96 plus a 148-record diversity fill (stratified across the
+  same 4 peak-count buckets as session 2, `random.seed(42)`, deduped so the
+  diversity fill doesn't repeat a substance) to
+  `pipeline/fixtures/reference/mona_sample.json`: **107 -> 351 records**
+  (~2.9MB). 31 substances now carry more than one MoNA reference spectrum
+  (e.g. benzoic acid x11, caffeine x9, safrole x7) -- multiple
+  contributing sub-libraries/instruments per substance, which is real MoNA
+  structure, not a fixture artifact.
+- Updated `test_mona_adapter.py`: dropped
+  `test_fixture_has_no_duplicate_names` (no longer a valid invariant now
+  that some substances legitimately have multiple records) and widened
+  `test_meta_carries_real_per_record_license` to accept `None` (103 of the
+  351 records, mostly from HMDB/FiehnLib sub-libraries, don't declare a
+  license at all -- also real MoNA structure). 55/55 tests passing.
+- Ran `python3 pipeline/build_db.py`: **397 substances** (up from 235; +40
+  samples/+139 detections came from the pre-existing `unc_viz_cohort`
+  adapter, unrelated to this change), **356 reference/sample spectra** (351
+  MoNA + 5 synthetic MSP/JCAMP, up from 112). Verified directly against the
+  built `.sqlite`: 351 MoNA-JSON rows, zero orphaned substance references,
+  license distribution CC BY-NC-SA 189 / null 103 / CC BY-SA 54 / CC BY 5,
+  peak counts ranging 2-508 (avg 93.6).
+- Updated `pipeline/README.md`'s `mona_json.py` row and licensing-caveat
+  paragraph to describe the 351-record fixture and the CAS-matching
+  strategy instead of the earlier 107-record/name-only description.
+
 <!-- Append further dated entries below as work lands. -->
