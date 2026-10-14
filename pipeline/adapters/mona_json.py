@@ -13,20 +13,26 @@ single JSON array. Each record looks like:
     }
 
 Unlike the MSP/JCAMP-DX fixtures (`msp_library.py`, `jcamp_ftir.py`), which
-are hand-authored synthetic data because SWGDRUG/NIST are proprietary, MoNA
-publishes each record under an explicit Creative Commons license (CC BY /
-CC BY-SA / CC BY-NC-SA, declared per-record). That makes it the first
-source in this pipeline where the bundled fixture is a real excerpt of the
-actual library, not a stand-in -- see `fixtures/reference/mona_sample.json`,
-a 107-record subset: ~44 chosen for name overlap with `chemdictionary.csv`
-(caffeine, cocaine, methamphetamine, morphine, codeine, and other
-drug-checking-relevant substances/cuts), plus a diversity fill of other
-compounds stratified across spectrum-size buckets (peak counts from single
-digits into the hundreds) and all three license types, to exercise the
-pipeline at greater volume. Each record carries its original per-record
-license in `meta.license` (informational provenance; this is a local
-prototype, not a redistributed artifact, so license terms aren't enforced
-here).
+are hand-authored synthetic data because SWGDRUG/NIST are proprietary, most
+MoNA records declare an explicit Creative Commons license (CC BY / CC BY-SA
+/ CC BY-NC-SA), though records contributed via sub-libraries like HMDB or
+FiehnLib often declare none -- both are real MoNA behavior, not a gap in
+this adapter. That makes it the first source in this pipeline where the
+bundled fixture is a real excerpt of the actual library, not a stand-in --
+see `fixtures/reference/mona_sample.json`, a 351-record subset built in two
+passes against the full local 19,171-record export
+(`spectra_library/MoNA-export-GC-MS_Spectra-json/`): ~133 records matched
+to `chemdictionary.csv` substances either by exact name or by CAS number
+(catching synonyms an exact-name match misses, e.g. "5-(2-propenyl)-1,3-
+benzodioxole" for safrole, "acetylsalicylic acid" for aspirin), plus a
+diversity fill of other compounds stratified across spectrum-size buckets
+(peak counts from single digits into the hundreds), to exercise the
+pipeline at greater volume. Since this is a local, non-redistributed
+prototype, per-record license (where present) is kept in `meta.license` for
+informational provenance only -- it does not gate ingestion, and several
+substances now carry more than one reference spectrum (different
+contributing sub-library or instrument), which the adapter and its tests
+treat as normal rather than assuming one record per substance.
 
 This adapter does not fetch the full MoNA export (141MB, ~19k GC-MS records)
 over the network -- that remains documented-but-not-implemented future work,
@@ -74,10 +80,10 @@ class MoNAJSONAdapter(BaseAdapter):
     """B1 reference adapter: parses a MoNA GC-MS JSON export into reference
     MS spectra.
 
-    Defaults to the bundled 7-record real sample; pass `mona_path` to point
-    it at a larger export (e.g. the full 19k-record file), and `only_names`
-    (a set of lowercased substance names) to filter which records get
-    ingested.
+    Defaults to the bundled 351-record real sample; pass `mona_path` to
+    point it at a larger export (e.g. the full 19k-record file), and
+    `only_names` (a set of lowercased substance names) to filter which
+    records get ingested.
     """
 
     source_id = 'mona-gcms-sample'

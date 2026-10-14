@@ -40,6 +40,28 @@ python build.py
 - updates `viz/_shared.js` helpers: `chromatogramFromSample`, `getReferenceSpec`,
   etc. (rebuilt into every `viz/*.html` via `build.py`)
 
+## Viewing MoNA reference spectra
+
+`view_mona_spectra.py` is a standalone Streamlit browser for
+`fixtures/reference/mona_sample.json` (the real 351-record MoNA excerpt
+`mona_json.py` parses -- see that adapter's docstring for the format). It
+does not touch `drugchecking.sqlite` or any adapter code; it reads the fixture
+JSON directly so you can inspect the raw format before/without running the
+full pipeline.
+
+```
+pip install -r pipeline/requirements-viewer.txt
+streamlit run pipeline/view_mona_spectra.py
+```
+
+Pick a record from the sidebar (searchable by name or accession) to see its
+real mass spectrum (m/z sticks, base peak = 100%), an illustrative
+chromatogram position synthesized from its reported retention time (per
+DESIGN_SYSTEM.md's chromatogram convention -- clearly labeled as synthesized,
+since this fixture has no scan-by-scan TIC trace to plot for real), and its
+compound/instrument/provenance metadata. Only needed for exploration --
+`build_db.py` remains dependency-free.
+
 ## Architecture: adapters
 
 `build_db.py` is a thin orchestrator, not where the parsing logic lives:
@@ -113,7 +135,7 @@ returned dicts, no database required.
 | `unc_viz_cohort.py` | **Real, tested.** Loads 40 diverse samples (+ detections) from merged CSV cuts for viz exports (`spectra.json → samples`). |
 | `msp_library.py` | **Real parser, tested against a fixture.** Hand-written parser for the NIST/SWGDRUG "Key: value" MSP text format. Ships only `fixtures/reference/example.msp`, a synthetic 3-compound fixture authored for parser validation. **Does not fetch real SWGDRUG/NIST MSP libraries over the network** -- that's B1's documented-but-not-implemented remainder. |
 | `jcamp_ftir.py` | **Real parser, tested against a fixture.** Hand-written JCAMP-DX parser (LDR key/value + value/point tables + ASDF-compressed `##XYDATA`). Ships only `fixtures/reference/example.jdx`, a synthetic 2-compound fixture. **Does not fetch real NIST WebBook JCAMP-DX exports over the network.** |
-| `mona_json.py` | **Real parser, tested against a real, licensed 7-record excerpt of MoNA's actual GC-MS export** (`fixtures/reference/mona_sample.json`) -- unlike the MSP/JCAMP fixtures, this one is not synthetic: each record carries its own genuine CC BY / CC BY-SA / CC BY-NC-SA license in `meta.license`, so it's real reference-spectrum data, just a small subset. Point `mona_path=` at the full ~19k-record export (available at https://mona.fiehnlab.ucdavis.edu/downloads, not bundled here for size) to ingest more. |
+| `mona_json.py` | **Real parser, tested against a real 351-record excerpt of MoNA's actual GC-MS export** (`fixtures/reference/mona_sample.json`, built against the full local 19,171-record export) -- unlike the MSP/JCAMP fixtures, this one is not synthetic: ~133 records matched `chemdictionary.csv` substances by exact name or CAS number, plus a diversity fill stratified by peak count. Most records carry a genuine CC BY / CC BY-SA / CC BY-NC-SA license in `meta.license`; records from sub-libraries like HMDB/FiehnLib often carry none (kept for provenance only -- this is a local, non-redistributed prototype, so license terms don't gate ingestion here). Point `mona_path=` at a larger export to ingest even more. |
 | DrugsData.org, Toronto DCS, WEDINOS (B2) | Documented in `docs/ROADMAP.md` only. No adapter module exists yet. |
 | Live SWGDRUG/Cayman/MassBank/NIST WebBook network fetch (B1/B3 "real" fetch path) | Documented only. `fetch()` in `msp_library.py`/`jcamp_ftir.py` currently returns the bundled fixture path, not a downloaded file -- there is no scraping or network I/O anywhere in this pipeline today. `mona_json.py` is the one exception: its fixture is real (see above), just not the full export. |
 | Real mzML sample-spectrum ingestion (B3) | Documented only; no adapter module exists yet. |
@@ -124,9 +146,12 @@ in the current build as real SWGDRUG/NIST reference data** -- check the
 fixture for parser validation; not redistributed licensed data") or the
 `meta.comment` / fixture file header comments before treating any of this
 as authoritative. `format_origin = 'MoNA-JSON'` rows are the exception --
-these are real MoNA data; check `meta.license` per-row before reuse since it
-varies record to record (CC BY vs CC BY-SA vs CC BY-NC-SA each impose
-different reuse terms).
+these are real MoNA data; `meta.license` records each record's own license
+where MoNA declares one (CC BY / CC BY-SA / CC BY-NC-SA), and is `null`
+where the contributing sub-library (HMDB, FiehnLib) didn't declare one.
+Since this pipeline is a local, non-redistributed prototype, that field is
+informational provenance, not an ingestion gate -- re-check it before
+redistributing any of this data elsewhere.
 
 ## How the MSP parser works
 
