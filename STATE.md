@@ -3,8 +3,9 @@
 Status: `In progress`
 Health: `On track`
 Progress: `Not tracked`
-Sync state: `Needs review`
+Sync state: `Local ahead`
 Sync state values: `Synced | Local ahead | Notion ahead | Needs review`
+Sync state meaning now: repository committed and pushed; no Notion record exists to compare, so local is the only authority.
 Current phase: `Post-merge stabilization; scaffold adopted 2026-10-14`
 Last verified: `2026-10-14` (see "What is verified" below)
 
@@ -12,9 +13,9 @@ Last verified: `2026-10-14` (see "What is verified" below)
 
 - Git: `Initialized`
 - Branch: `claude/drug-checking-viz-expansion-9uwjyh`
-- Remote: `origin` https://github.com/traceresidue/drugchecking.git (in sync at `f33c6d01b`; the scaffold-adoption commit is local until pushed)
-- Working tree: `Clean after the scaffold-adoption commit`
-- Baseline commit: `f33c6d01b`
+- Remote: `origin` https://github.com/traceresidue/drugchecking.git (scaffold-adoption commit `59f9f8c26` is pushed; in sync at that commit)
+- Working tree: `Clean`
+- Baseline commit: `59f9f8c26`
 
 ## Current objective
 
@@ -23,7 +24,7 @@ Decide whether this branch goes to `main` (PR vs merge). Nothing else is open in
 ## Blockers
 
 - None for implementation.
-- Notion record and URL not confirmed, so synchronization cannot be `Synced`. [NEEDS VERIFICATION]
+- Notion record and URL not confirmed; owner chose to skip Notion for now (2026-10-14). Sync state is therefore `Local ahead`, not `Synced`.
 
 ## Risks or uncertainty
 

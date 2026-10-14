@@ -2,6 +2,14 @@
 
 Decisions made, and ideas parked on purpose. Newest first. Do not build parked items without moving them to TASKS.md.
 
+## 2026-10-14 — Defer Notion; sync state is `Local ahead`
+**Decision:** skip creating or confirming the Notion record for now. Because the repository is committed and
+pushed and no Notion record exists, the sync state is `Local ahead` (not `Synced`, not `Needs review`).
+**Why:** `Needs review` means conflicting or uncertain state; here there is no conflict, just no second copy.
+`Synced` would claim agreement with a record that doesn't exist.
+**Revisit:** when a Notion record is created: fill `PROJECT.md` Notion URL, compare, set `Synced`.
+**Approved by:** repository owner, in session, 2026-10-14.
+
 ## 2026-10-14 — Adopt the agent-project scaffold; canonical key `drugchecking`
 **Decision:** adopt `B:\ClaudeHub\templates\agent-project` for operational memory and closeout.
 Canonical key is `drugchecking`. Machine for handoffs: Desktop (Sol).

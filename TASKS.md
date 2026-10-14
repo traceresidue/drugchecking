@@ -8,7 +8,6 @@ One active task at a time. Park new ideas under Later instead of building them.
 
 ## Next
 
-- [ ] Confirm the Notion record and URL for `drugchecking`, then set the sync state (`PROJECT.md`, `STATE.md`).
 - [ ] Run the shortened cross-agent smoke test from `VALIDATION.md` once (Codex to Claude and back).
 
 ## Later
@@ -23,6 +22,7 @@ One active task at a time. Park new ideas under Later instead of building them.
 
 ## Waiting
 
+- [ ] Notion record and URL for `drugchecking` (deferred by owner 2026-10-14). When it exists: fill the URL in `PROJECT.md`, compare, then set sync state to `Synced`.
 - [ ] Owner to supply `PROJECT.md` unknowns: parent outcome, Notion URL, created date.
 - [ ] Identify what pushed commits to `origin` on 2026-10-14 without a session push (GitHub Desktop auto-sync?).
 - [ ] Owner to confirm the Vercel project `drugchecking` is linked to this repository.

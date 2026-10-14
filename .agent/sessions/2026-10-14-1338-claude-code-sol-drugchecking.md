@@ -114,3 +114,14 @@ without explicit approval.
 - [x] Verification evidence recorded above.
 - [ ] Notion synchronization assessed: not possible, no Notion URL. Left `Needs review`.
 - [x] `STATE.md` repository status refreshed from live Git.
+
+## Addendum 2026-10-14T13:41:20-05:00 (same session, appended)
+
+- Pushed `59f9f8c26` (scaffold adoption) to `origin/claude/drug-checking-viz-expansion-9uwjyh`; 0 ahead, 0 behind.
+- Corrected the stale remote line in `STATE.md` ("local until pushed").
+- **Notion skipped by the owner for now.** No Notion record or URL was created or confirmed; `PROJECT.md` Notion URL
+  stays `[NEEDS VERIFICATION]`. Tracked under Waiting in `TASKS.md`.
+- Synchronization state changed from `Needs review` to `Local ahead` (repo committed and pushed; no Notion record to
+  compare). The `Synchronization state` section above is preserved as written at 13:38 and is superseded by this line.
+- Decision recorded in `DECISIONS.md`.
+- Unchanged: single next action is deciding whether the branch goes to `main`.
