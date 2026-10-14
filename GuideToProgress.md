@@ -6,7 +6,7 @@ Snapshot as of 2026-10-14. Branch: `claude/drug-checking-viz-expansion-9uwjyh`. 
 
 This repo has three working parts: offline visualizations, a data pipeline, and a React web app folder. All checks pass (45 of 45 pages, 55 pipeline tests, 15 librarian tests, viz-lab typecheck). `main` and the feature branch are the same commit on GitHub.
 
-Plain meaning: the work is saved, runs, and is backed up on GitHub. One thing needs your decision: the deployed site is publicly reachable (see Known issues).
+Plain meaning: the work is saved, runs, and is backed up on GitHub. The deployed site is team-only (Vercel Authentication); the GitHub repo itself is public.
 
 Live task list: `TASKS.md`. Current status and what was verified: `STATE.md`. Decisions and parked ideas: `DECISIONS.md`.
 
@@ -26,7 +26,7 @@ Plain meaning first, technical detail in the last column.
 
 | # | Issue | Technical detail |
 |---|---|---|
-| a | **The production site is public.** `aptrealisticsimulation.vercel.app` loads without a login and serves the pages, the sqlite and the data JSON. | The GitHub repo is also public, so the data is already public there. Decision in `TASKS.md` Now; not changed by the agent. |
+| a | The deployed site is team-only through Vercel Authentication. A public domain was removed on 2026-10-14. | Any domain added later would be public under the current scope. The GitHub repo is public anyway. See `DECISIONS.md`. |
 | b | The password gate is off by default. Set `DCF_GATE=1` at build time to turn it on. | Client-side only, so not real security, and it never protected data files. Real access control is parked in `DECISIONS.md`. |
 | c | `web/apps/viz-lab/dist/` is tracked (42 build-artifact files). | Probably should be gitignored. Keep `web/packages/dcf-core/dist/` (`build.py` reads it). |
 | d | Notion record not set up. | Deferred by you; sync state is `Local ahead`. |
@@ -35,9 +35,8 @@ Plain meaning first, technical detail in the last column.
 
 Do these in order. Each one should end with something that works. The live list is `TASKS.md`.
 
-1. Decide the production site's visibility (issue a).
-2. Decide whether to untrack `web/apps/viz-lab/dist/` (issue c).
-3. When ready, set up the Notion record (issue d).
+1. Decide whether to untrack `web/apps/viz-lab/dist/` (issue c).
+2. When ready, set up the Notion record (issue d).
 
 ## How to run and view
 

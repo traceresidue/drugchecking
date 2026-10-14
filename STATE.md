@@ -19,7 +19,7 @@ Last verified: `2026-10-14` (see "What is verified" below)
 
 ## Current objective
 
-`main` was fast-forwarded to this branch on 2026-10-14. Open: the production site's visibility (see Risks); then housekeeping.
+`main` was fast-forwarded to this branch on 2026-10-14. Site visibility resolved (private again). Open: housekeeping only.
 
 ## Blockers
 
@@ -30,12 +30,12 @@ Last verified: `2026-10-14` (see "What is verified" below)
 
 - `PROJECT.md` has three unverified fields (parent outcome, Notion URL, created date).
 - Something other than the Claude sessions pushed commits to `origin` on 2026-10-14 (up to `0ecca9852`); source unidentified.
-- **The production site is publicly reachable** at `aptrealisticsimulation.vercel.app` (HTTP 200, no login; serves pages, the sqlite and data JSON). The earlier "private" finding is superseded; see DECISIONS.md. The GitHub repo is public too. No Vercel setting was changed by the agent.
+- Production deployment is team-only (Vercel Authentication) after the owner removed `aptrealisticsimulation.vercel.app` (verified 404 and no project domains, 2026-10-14T13:54). Any domain added later would be public under the current scope; the GitHub repo is public regardless. Origin of that domain unknown. [NEEDS VERIFICATION]
 - That the Vercel project `drugchecking` is linked to this repo is not confirmed. [NEEDS VERIFICATION]
 
 ## Single next action
 
-Owner decides the production site's visibility (accept public, remove domain `aptrealisticsimulation.vercel.app`, or raise Vercel protection); no change without explicit approval. After that: decide whether to untrack `web/apps/viz-lab/dist/` (keep `web/packages/dcf-core/dist/`).
+Decide whether to untrack and gitignore `web/apps/viz-lab/dist/` (42 tracked build-artifact files; keep `web/packages/dcf-core/dist/`, which `build.py` reads).
 
 ---
 

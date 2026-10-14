@@ -64,7 +64,7 @@ Parked in `TASKS.md` and `DECISIONS.md`; do not absorb without a recorded decisi
 
 ## Dependencies
 
-- Vercel project `drugchecking`: Vercel Authentication on for its team URLs, but the project domain `aptrealisticsimulation.vercel.app` is public (checked 2026-10-14). Visibility decision pending; see `DECISIONS.md`.
+- Vercel project `drugchecking`: Vercel Authentication on (`all_except_custom_domains`), no project domains as of 2026-10-14 (a public one was removed by the owner; see `DECISIONS.md`).
 - GitHub remote `origin` (`traceresidue/drugchecking`); `upstream` is the original project.
 - Local reference spectra at `B:\ClaudeHub\ClaudeCode\spectra_library` (not in the repo).
 

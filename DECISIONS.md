@@ -2,6 +2,17 @@
 
 Decisions made, and ideas parked on purpose. Newest first. Do not build parked items without moving them to TASKS.md.
 
+## 2026-10-14 — RESOLVED: public domain removed by the owner; site is private again
+**Action (owner):** removed `aptrealisticsimulation.vercel.app` from the Vercel project `drugchecking`.
+**Verified after (unauthenticated requests, agent, 2026-10-14T13:54:47-05:00):** that host returns 404 `DEPLOYMENT_NOT_FOUND`, including
+`/` and `/pipeline/drugchecking.sqlite`; `list_project_domains` returns no domains; the two `drugchecking-*aaron-bair-s-projects`
+URLs still return 302 to Vercel SSO. `get_project` still lists the host under `domains`, which appears to be a stale alias list.
+**Status:** supersedes the "publicly reachable" correction above. Visibility is again team-only via Vercel Authentication
+(`ssoProtection: all_except_custom_domains`).
+**Still true:** the GitHub repository is public and contains the same sqlite and data; "private" applies to the deployment only.
+**Watch out:** any domain added to the project later is public under this scope. Re-check protection before adding one.
+**Not known:** who added `aptrealisticsimulation.vercel.app`. [NEEDS VERIFICATION]
+
 ## 2026-10-14 — CORRECTION: the production site is publicly reachable (supersedes the "private" finding)
 **Finding (checked ~13:50, unauthenticated requests):** `https://aptrealisticsimulation.vercel.app/` returns HTTP 200 and
 serves this project's gallery, pages, `pipeline/drugchecking.sqlite` (4.1 MB) and `visualization-framework/data/*.json`.

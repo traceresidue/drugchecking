@@ -153,3 +153,16 @@ without explicit approval.
 - Docs aligned to live state: `STATE.md`, `TASKS.md`, `DECISIONS.md` (correction appended), `PROJECT.md`,
   `GuideToProgress.md` (stale commit table, summary, issues and next tasks rewritten).
 - **Single next action (changed):** the owner decides the production site's visibility. Sync state remains `Local ahead`.
+
+## Addendum 2026-10-14T13:54:47-05:00 (same session, appended): visibility resolved
+
+- The owner removed `aptrealisticsimulation.vercel.app` from the Vercel project. Agent re-check with unauthenticated
+  requests: that host returns 404 `DEPLOYMENT_NOT_FOUND` (also for `/pipeline/drugchecking.sqlite`);
+  `list_project_domains` returns no domains; the two `drugchecking-*aaron-bair-s-projects` URLs still 302 to Vercel SSO.
+  A newer production deployment `dpl_FZNokYzffYftjUoJAuMMKyjFBt7E` (READY) exists from the docs push.
+- `get_project` still lists the host in `domains`; judged a stale alias list, since the project-domains call is empty
+  and the host does not resolve to a deployment.
+- The earlier correction (site publicly reachable) is superseded by this addendum and by the new `DECISIONS.md` entry.
+- No Vercel setting was changed by the agent.
+- **Single next action (changed):** decide whether to untrack and gitignore `web/apps/viz-lab/dist/`.
+  Sync state remains `Local ahead`.
