@@ -34,22 +34,16 @@ Plain meaning first, technical detail in the last column.
 
 | # | Issue | Technical detail |
 |---|---|---|
-| a | `docs/ROADMAP.md` does not mention the pipeline or `viz-lab`. | Written before those existed. |
-| b | `viz-lab` README says 20 pages, but the folder holds 21 page files. | `web/apps/viz-lab/src/pages`. |
-| c | Chart 02 (TIC) was checked for errors, not checked by eye. | Manual visual review still needed. |
-| d | Root `index.html` is a generated login page. It needs a `MAIN_PASSWORD` environment variable. | Gitignored. Do not commit it. |
-| e | Two untracked scratch files are waiting for a keep-or-delete decision. | `scratch_matched.json`, `cid-hash.md`. |
-| f | A git stash and a backup branch are kept as safety nets. | Branch: `backup/staged-pre-merge-2026-10-14`. Drop only after confirming the merge. |
-| g | Nothing is pushed. | No remote work has been done. |
+| a | Chart 02 (TIC) was checked for errors, not checked by eye. | Manual visual review still needed. |
+| b | Root `index.html` is a generated login page. It needs a `MAIN_PASSWORD` environment variable. | Gitignored. Do not commit it. |
+| c | Nothing is pushed. | No remote work has been done. |
 
 ## Next tasks
 
 Do these in order. Each one should end with something that works. The live list is `TASKS.md`.
 
-1. Look at chart 02 in a browser (issue c).
-2. Clean up: decide on the two scratch files, the stash, and the backup branch (issues e and f).
-3. Fix the viz-lab README page count and update `docs/ROADMAP.md` (issues a and b).
-4. Decide when to push, and to which remote. Ask before creating a new remote or branch.
+1. Look at chart 02 in a browser (issue a).
+2. Push the branch (see `STATE.md`).
 
 ## How to run and view
 

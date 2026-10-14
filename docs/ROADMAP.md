@@ -8,6 +8,27 @@ Companion documents: [ARCHITECTURE.md](ARCHITECTURE.md) (current state). A rende
 
 ---
 
+## Status (as of 2026-10-14)
+
+Source of truth for current state is [STATE.md](../STATE.md); this table only maps it onto the phases below.
+
+| Phase | Status | Evidence |
+|-------|--------|----------|
+| A0 | Partial | `web/` workspace with Vite + TypeScript; Vitest in `apps/librarian` (15 tests). No ESLint/Prettier/CI recorded. |
+| A1 | Done | `packages/dcf-core` built; `build.py` consumes it; `node test/check.js` 0 of 45 failed. |
+| A2, A3, A4, A5 | Not started | No `dcf-data` or `dcf-charts` package. `apps/viz-lab` re-implements pages directly in React instead of going through `dcf-charts`. |
+| B0 | Done | `pipeline/build_db.py`, `schema.sql`, `unc_demo` and `unc_viz_cohort` adapters. |
+| B1 | Parsers done, library data partial | MSP and JCAMP-DX parsers over synthetic fixtures; MoNA JSON adapter over 351 real records (per-record CC licenses). No live SWGDRUG/NIST fetch. |
+| B2, B3 | Not started | No external-source fetchers, no mzML ingestion. |
+| B4 | Partial | `pipeline/export_viz_data.py` writes real cohort samples and reference spectra into `spectra.json` (44 chromatograms, 10 references). |
+| D0-D2 | Done | `apps/librarian`: index, viewer, compare tray, library save/export. |
+| D3 | Not started | Viewer button is disabled. |
+| (new) viz-lab | Done, unreviewed by eye | `apps/viz-lab`: 20 pages on one dark token system. Not in the original plan. |
+
+Build-log detail for B0-B1 and D0-D2: `spectral-sourcer/PROGRESS.md`.
+
+---
+
 ## Track A — JS + React enablement
 
 **Principle: additive, not destructive.** Standalone single-file HTML remains a supported distribution format (harm-reduction orgs open these offline). React is added for stateful apps; the existing 33 visualizations keep working throughout.
@@ -26,9 +47,10 @@ web/                          # new npm-workspaces monorepo root
                               # <MirrorMatch/>, <FtirOverlay/>, hooks (useSpectrum, useTooltip)
   apps/
     librarian/                # Track D: React + SQLite index/viewer
+    viz-lab/                  # React + Vite: 20 curated visualizations (added; not in original plan)
     studio/                   # Track C: new linked-view exploratory app
-  pipeline/                   # Track B: ingestion (Python + Node)
 visualization-framework/      # unchanged during migration; build target of the new core
+pipeline/                     # Track B: stdlib-only Python ingestion, at repo root (no JS deps)
 ```
 
 ### Phases

@@ -32,9 +32,10 @@ and GuideToProgress.md for a plain-language overview and run instructions.
 - `06b-ridgeline-3d`: registry declared only plotly but its shared include needs d3 (`registry.json`).
 - `viz/index.html`: `review-previews/chromatogram-sample-3d.png` was missing; captured it.
 
-### Safety nets still present
-- `stash@{0}` (everything in it is committed except the two scratch files)
-- branch `backup/staged-pre-merge-2026-10-14`
+### Housekeeping
+- Stash and backup branch dropped after confirming every file was identical in HEAD (only the deliberately dropped REORG_PLAN differed).
+- `cid-hash.md` idea parked in DECISIONS.md; `scratch_*.json` is now gitignored.
+- `docs/ROADMAP.md` has a dated status table.
 
 ### Next action
-Look at page 02 in a browser, then housekeeping. `docs/REORG_PLAN.md` was dropped (see DECISIONS.md). Full list in TASKS.md.
+Look at page 02 in a browser (the only open task), then push. `docs/REORG_PLAN.md` was dropped (see DECISIONS.md). Full list in TASKS.md.
