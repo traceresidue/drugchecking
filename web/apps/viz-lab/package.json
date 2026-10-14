@@ -1,0 +1,41 @@
+{
+  "name": "@dcf/viz-lab",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "React + Vite visualization lab — curated viz2 designs with unified dark tokens and live sqlite data",
+  "scripts": {
+    "predev": "node scripts/copy-assets.mjs",
+    "dev": "vite",
+    "prebuild": "node scripts/copy-assets.mjs",
+    "build": "tsc --noEmit -p tsconfig.json && vite build",
+    "preview": "vite preview",
+    "capture": "node scripts/capture-previews.mjs",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "@dcf/core": "*",
+    "d3": "^7.9.0",
+    "d3-sankey": "^0.12.3",
+    "plotly.js-dist-min": "^2.35.3",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.28.0",
+    "smiles-drawer": "^2.1.7",
+    "sql.js": "^1.11.0",
+    "three": "^0.165.0"
+  },
+  "devDependencies": {
+    "@types/d3": "^7.4.3",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@types/sql.js": "^1.4.9",
+    "@types/three": "^0.165.0",
+    "@vitejs/plugin-react": "^4.3.3",
+    "playwright": "^1.49.0",
+    "typescript": "^5.6.3",
+    "vite": "^7.0.0",
+    "vitest": "^3.0.0"
+  }
+}

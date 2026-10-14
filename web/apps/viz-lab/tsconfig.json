@@ -1,0 +1,15 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "types": ["vite/client"],
+    "resolveJsonModule": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "outDir": "dist",
+    "paths": {
+      "@critiques": ["../../../visualization-framework/src/design/critiques.json"]
+    }
+  },
+  "include": ["src", "test", "vite.config.ts", "vitest.config.ts"]
+}
