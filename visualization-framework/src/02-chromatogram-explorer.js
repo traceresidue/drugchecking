@@ -27,7 +27,7 @@ const stage=scaffold({
   tag:'Nº 02 · GC–MS',
   title:'Annotated Chromatogram Explorer',
   dek:'A GC–MS chromatogram is a sample\'s visual fingerprint. Each peak is one substance, separated by how fast it travels through the instrument. Tap a peak to learn what it is.',
-  how:`<b>Reading the trace.</b> The x-axis is <b>retention time</b> — how long a compound takes to pass through the column (a fixed property, like a fingerprint). The y-axis is <b>relative abundance</b>. <b>More peaks = more substances. Taller peaks = more signal, NOT higher purity or dose.</b> Different compounds ionise with wildly different efficiency, so a tall peak and a short peak can be present in similar amounts. <b>Tap any peak</b> to see its mass spectrum, structure, and a plain-language card.`,
+  how:`<b>Reading the TIC.</b> The x-axis is <b>retention time</b> — how long a compound takes to pass through the column (a fixed property, like a fingerprint). The y-axis is <b>total ion current</b> (summed detector signal, normalized). <b>More peaks = more substances. Taller peaks = more signal, NOT higher purity or dose.</b> Different compounds ionise with wildly different efficiency, so a tall peak and a short peak can be present in similar amounts. <b>Tap any peak</b> to see its mass spectrum, structure, and a plain-language card.`,
   provenance:'Trace synthesized from real median GC–MS retention times in this dataset; mass spectra illustrative.',
   harm:'Carry naloxone and test strips. A clean-looking fingerprint can still hide a fatal dose — height shows signal, not strength.'
 });
@@ -37,7 +37,7 @@ stage.innerHTML=`
   <label class="muted" style="font-size:13px">Sample archetype</label>
   <select id="arch"></select>
 </div>
-<div class="panel"><svg id="svg" width="100%" height="340" role="img" aria-label="Interactive GC-MS chromatogram"></svg></div>
+<div class="panel"><svg id="svg" width="100%" style="display:block;min-height:240px" role="img" aria-label="Interactive GC-MS total ion chromatogram"></svg></div>
 <div id="detail" class="panel" style="margin-top:14px;min-height:170px"></div>`;
 
 const archSel=document.getElementById('arch');
@@ -47,21 +47,35 @@ const tt=tooltip();
 let selected=null;
 archSel.onchange=()=>{selected=null;draw();};
 
+const TIC_X0=3;
+const TIC_X1=13;
+
+function ticChartHeight(W){return Math.round(Math.max(240,Math.min(420,W*0.38)));}
+
+function ticApexOnTrace(trace,rt,halfWin=0.12){
+  let maxV=-1,maxI=0;
+  trace.x.forEach((t,k)=>{if(Math.abs(t-rt)<=halfWin&&trace.y[k]>maxV){maxV=trace.y[k];maxI=k;}});
+  if(maxV<0) maxI=trace.x.reduce((best,t,k)=>Math.abs(t-rt)<Math.abs(trace.x[best]-rt)?k:best,0);
+  return {rt:trace.x[maxI],amp:trace.y[maxI]};
+}
+
 function peaksFor(key){
   return CH[key].peaks.map(([s,rt,amp])=>({s,rt:RT[s]||rt,amp,sigma:0.05}));
 }
 
 function draw(){
   const svg=d3.select('#svg'); svg.selectAll('*').remove();
-  const W=svg.node().clientWidth,H=340,m={t:20,r:16,b:40,l:46};
+  const W=svg.node().clientWidth,H=ticChartHeight(W),m={t:20,r:16,b:40,l:46};
+  svg.attr('height',H);
   const peaks=peaksFor(archSel.value);
-  const trace=chromatogram(peaks,{x0:3,x1:13,sigma:0.05});
-  const x=d3.scaleLinear([3,13],[m.l,W-m.r]);
+  const trace=chromatogram(peaks,{x0:TIC_X0,x1:TIC_X1,sigma:0.05,n:900});
+  const x=d3.scaleLinear([TIC_X0,TIC_X1],[m.l,W-m.r]);
   const y=d3.scaleLinear([0,105],[H-m.b,m.t]);
   // grid
-  x.ticks(10).forEach(t=>svg.append('text').attr('x',x(t)).attr('y',H-14).attr('fill',TOKENS.faint).attr('font-size',11).attr('text-anchor','middle').attr('font-family','ui-monospace').text(t));
-  svg.append('text').attr('x',(W)/2).attr('y',H-2).attr('text-anchor','middle').attr('fill',TOKENS.muted).attr('font-size',11).text('retention time (minutes)');
-  svg.append('text').attr('transform',`translate(13,${H/2})rotate(-90)`).attr('text-anchor','middle').attr('fill',TOKENS.muted).attr('font-size',11).text('relative abundance');
+  if(!window.DCFDesign||DCFDesign.showTier('axis'))
+    x.ticks(10).forEach(t=>svg.append('text').attr('class','dcf-lbl').attr('data-tier','axis').attr('x',x(t)).attr('y',H-14).attr('fill',TOKENS.faint).attr('font-size',11).attr('text-anchor','middle').attr('font-family','ui-monospace').text(t));
+  svg.append('text').attr('class','dcf-lbl').attr('data-tier','axis').attr('x',(W)/2).attr('y',H-2).attr('text-anchor','middle').attr('fill',TOKENS.muted).attr('font-size',11).text('retention time (minutes)');
+  svg.append('text').attr('class','dcf-lbl').attr('data-tier','axis').attr('transform',`translate(13,${H/2})rotate(-90)`).attr('text-anchor','middle').attr('fill',TOKENS.muted).attr('font-size',11).text('TIC (relative ion current)');
   // area
   const area=d3.area().x((d,i)=>x(trace.x[i])).y0(y(0)).y1(d=>y(d)).curve(d3.curveBasis);
   const grad=svg.append('defs').append('linearGradient').attr('id','g').attr('x1',0).attr('x2',0).attr('y1',0).attr('y2',1);
@@ -72,13 +86,16 @@ function draw(){
   // peak hotspots + labels
   peaks.forEach(p=>{
     const col=classify(p.s).color;
-    const px=x(p.rt), py=y(p.amp);
-    svg.append('circle').attr('cx',px).attr('cy',py-4).attr('r',selected===p.s?7:5).attr('fill',col).attr('stroke',TOKENS.bg).attr('stroke-width',2).style('cursor','pointer')
-      .on('mousemove',e=>tt.show(`<b>${p.s}</b><br><span class="muted mono">RT ${fmt.rt(p.rt)} min</span>`,e.clientX,e.clientY))
+    const apex=ticApexOnTrace(trace,p.rt);
+    const px=x(apex.rt), py=y(apex.amp);
+    const isSel=selected===p.s;
+    const dotR=isSel?3.5:2.5;
+    svg.append('circle').attr('cx',px).attr('cy',py).attr('r',dotR).attr('fill',col).attr('stroke',TOKENS.bg).attr('stroke-width',1.5).style('cursor','pointer')
+      .on('mousemove',e=>tt.show(`<b>${p.s}</b><br><span class="muted mono">RT ${fmt.rt(p.rt)} min · ${fmt.pct(apex.amp)} TIC</span>`,e.clientX,e.clientY))
       .on('mouseleave',tt.hide)
       .on('click',()=>{selected=p.s;draw();showDetail(p.s);});
-    if(p.amp>14||selected===p.s)
-      svg.append('text').attr('x',px).attr('y',py-12).attr('text-anchor','middle').attr('font-size',10).attr('font-family','ui-monospace').attr('fill',selected===p.s?col:TOKENS.muted).text(p.s.length>12?p.s.slice(0,11)+'…':p.s);
+    if((p.amp>14||isSel)&&(!window.DCFDesign||DCFDesign.showTier('peak')))
+      svg.append('text').attr('class','dcf-lbl').attr('data-tier','peak').attr('x',px).attr('y',py-7).attr('text-anchor','middle').attr('font-size',9).attr('font-family','ui-monospace').attr('fill',isSel?col:TOKENS.muted).text(fmt.rt(p.rt));
   });
   if(!selected) document.getElementById('detail').innerHTML=`<div class="muted" style="display:flex;height:140px;align-items:center;justify-content:center;font-size:14px">▲ Tap a peak to identify the substance</div>`;
 }
