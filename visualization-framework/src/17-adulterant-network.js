@@ -2,7 +2,9 @@
    The force layout self-organizes into the supply's natural communities: the
    fentanyl synthesis cluster, the stimulant cluster, the cut cluster. */
 const {scaffold,classify,tooltip,fmt,TOKENS}=DCF;
-const CO=DATA.cooccurrence, SUB=DATA.top_substances, ROLES=DATA.roles;
+function subColor(name){const c=classify(name);return window.DCFDesign?DCFDesign.getClassColor(c.cls):c.color;}
+function sigColor(k){return window.DCFDesign?DCFDesign.getClassColor(k):TOKENS[k];}
+// @include 17-adulterant-network-shared.js
 
 const stage=scaffold({
   tag:'Nº 17 · SUPPLY',
@@ -14,12 +16,8 @@ const stage=scaffold({
 });
 stage.innerHTML=`<div class="panel"><svg id="svg" width="100%" height="600" role="img" aria-label="Force-directed substance network"></svg></div><div class="legend" id="leg"></div>`;
 const tt=tooltip();
-
-const counts=Object.fromEntries(SUB.map(d=>[d.substance,d.samples]));
-const nodeNames=[...new Set(CO.flatMap(d=>[d.a,d.b]))].filter(n=>counts[n]).sort((a,b)=>counts[b]-counts[a]).slice(0,22);
-const nset=new Set(nodeNames);
-const nodes=nodeNames.map(n=>({id:n,v:counts[n],...classify(n)}));
-const links=CO.filter(d=>nset.has(d.a)&&nset.has(d.b)).map(d=>({source:d.a,target:d.b,v:d.n}));
+const nodes=makeNodes();
+const links=makeLinks();
 
 function draw(){
   const svg=d3.select('#svg'); svg.selectAll('*').remove();
@@ -39,15 +37,15 @@ function draw(){
       .on('end',(e,d)=>{if(!e.active)sim.alphaTarget(0);d.fx=null;d.fy=null;}));
   node.append('circle').attr('r',d=>r(d.v)).attr('fill',d=>d.color).attr('opacity',.88).attr('stroke',TOKENS.bg).attr('stroke-width',1.5)
     .on('mouseover',(e,d)=>{link.attr('opacity',l=>l.source===d||l.target===d?.8:.06);})
-    .on('mousemove',(e,d)=>tt.show(`<b style="text-transform:capitalize">${d.id}</b><br><span class="muted">${d.label} · ${ROLES[d.id]||''}</span><br><span class="muted">${fmt.int(d.v)} samples</span>`,e.clientX,e.clientY))
+    .on('mousemove',(e,d)=>tt.show(nodeTooltipHtml(d),e.clientX,e.clientY))
     .on('mouseleave',()=>{link.attr('opacity',.4);tt.hide();});
   node.append('text').attr('text-anchor','middle').attr('dy',d=>r(d.v)+11).attr('fill',TOKENS.muted).attr('font-size',9.5).text(d=>d.id.length>14?d.id.slice(0,13)+'…':d.id);
   sim.on('tick',()=>{
     link.attr('x1',d=>d.source.x).attr('y1',d=>d.source.y).attr('x2',d=>d.target.x).attr('y2',d=>d.target.y);
     node.attr('transform',d=>`translate(${d.x=Math.max(r(d.v),Math.min(W-r(d.v),d.x))},${d.y=Math.max(r(d.v),Math.min(H-r(d.v),d.y))})`);
   });
-  const cls=[...new Set(nodes.map(n=>n.cls))];
-  document.getElementById('leg').innerHTML=cls.map(c=>{const o=nodes.find(n=>n.cls===c);return `<span><i style="background:${o.color}"></i>${o.label}</span>`;}).join('');
+  renderLegend(nodes,'leg');
 }
+window.__vizRedraw=draw;
 draw();
 addEventListener('resize',draw);

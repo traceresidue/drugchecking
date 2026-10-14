@@ -3,6 +3,8 @@
    and a stacked area chart (right) showing primary vs. secondary detections
    over 36 months. Playback animates the map fill in sync with the timeline. */
 const {scaffold,classify,fmt,tooltip,TOKENS}=DCF;
+function subColor(name){const c=classify(name);return window.DCFDesign?DCFDesign.getClassColor(c.cls):c.color;}
+function sigColor(k){return window.DCFDesign?DCFDesign.getClassColor(k):TOKENS[k];}
 const XS=DATA.xylazine_status, GEO=DATA.geo;
 const TOPO_US=TOPO.us_states;
 
@@ -156,9 +158,9 @@ function drawCty(){
     .attr('x',c=>x(c.xyl)+5).attr('y',c=>y(c.county+', '+c.state)+y.bandwidth()/2+3)
     .attr('fill',TOKENS.faint).attr('font-size',9).attr('font-family','ui-monospace').text(c=>c.xyl);
 }
-
 function drawAll(){drawMap();drawArea();drawCty();}
 drawAll();
+window.__vizRedraw=drawAll;
 
 let timer;
 document.getElementById('play').onclick=e=>{

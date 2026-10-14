@@ -110,7 +110,7 @@ All visualizations reflow to window width.
 - **Cuts/Inerts**: acetaminophen, levamisole, quinine, mannitol, lactose
 
 ### **Data Scope**
-- **Sample Count**: 6,580 unique seized samples
+- **Sample Count**: 6,580 unique submitted samples
 - **Geographic**: 11 US states (largest: Washington ~2,847 samples)
 - **Time Period**: 36 months (3 years) of monthly aggregates
 - **Substance Variety**: 300+ unique detected substances

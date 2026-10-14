@@ -2,6 +2,8 @@
    (a classical-MDS layout learned from which substances co-occur). Scrub through
    time and watch the whole supply migrate as its composition shifts. */
 const {scaffold,classify,tooltip,fmt,TOKENS}=DCF;
+function subColor(name){const c=classify(name);return window.DCFDesign?DCFDesign.getClassColor(c.cls):c.color;}
+function sigColor(k){return window.DCFDesign?DCFDesign.getClassColor(k):TOKENS[k];}
 const EMB=DATA.embedding, PTS=DATA.space_points;
 const months=[...new Set(PTS.map(p=>p.m))].sort();
 
@@ -43,7 +45,7 @@ function render(idx){
   svg.append('rect').attr('x',0).attr('y',0).attr('width',w).attr('height',H).attr('fill','none');
   // anchors
   svg.selectAll('text.anc').data(EMB.filter(d=>d.n>120)).join('text').attr('class','anc')
-    .attr('x',d=>x(d.x)).attr('y',d=>y(d.y)).attr('fill',d=>classify(d.substance).color).attr('opacity',.5)
+    .attr('x',d=>x(d.x)).attr('y',d=>y(d.y)).attr('fill',d=>subColor(d.substance)).attr('opacity',.5)
     .attr('font-size',10).attr('text-anchor','middle').text(d=>d.substance.length>12?d.substance.slice(0,11)+'…':d.substance);
   // drift trail: centroids of each month up to idx
   if(document.getElementById('trail').getAttribute('aria-pressed')==='true'){
@@ -56,7 +58,7 @@ function render(idx){
   const cur=PTS.filter(p=>widx.includes(p.m));
   svg.selectAll('circle.pt').data(cur,(d,i)=>i).join('circle').attr('class','pt')
     .attr('cx',d=>x(d.x)).attr('cy',d=>y(d.y)).attr('r',3.4)
-    .attr('fill',d=>classify(d.c==='fent'?'fentanyl':d.c==='xyl'?'xylazine':d.c==='stim'?'methamphetamine':d.c==='coke'?'cocaine':d.c==='opioid'?'heroin':d.c==='benzo'?'bromazolam':'other').color)
+    .attr('fill',d=>subColor(d.c==='fent'?'fentanyl':d.c==='xyl'?'xylazine':d.c==='stim'?'methamphetamine':d.c==='coke'?'cocaine':d.c==='opioid'?'heroin':d.c==='benzo'?'bromazolam':'other'))
     .attr('opacity',d=>d.m===mo?.9:.3)
     .on('mousemove',(e,d)=>tt.show(`<span class="muted">${fmt.month(d.m)}</span> · ${classify(d.c==='fent'?'fentanyl':d.c).label}`,e.clientX,e.clientY)).on('mouseleave',tt.hide);
   document.getElementById('leg').innerHTML=['fent','opioid','xyl','stim','coke','benzo'].map(c=>{const cl=classify(c==='fent'?'fentanyl':c==='xyl'?'xylazine':c==='stim'?'methamphetamine':c==='coke'?'cocaine':c==='opioid'?'heroin':'bromazolam');return `<span><i style="background:${cl.color}"></i>${cl.label}</span>`;}).join('')+`<span class="faint">showing ${win}-month window around ${fmt.month(mo)}</span>`;
@@ -72,4 +74,5 @@ document.getElementById('play').onclick=e=>{
   timer=setInterval(()=>{i++;if(i>=months.length){clearInterval(timer);timer=null;e.target.textContent='▶ animate';e.target.setAttribute('aria-pressed',false);return;}slider.value=i;render(i);},520);
 };
 render(months.length-1);
+window.__vizRedraw=()=>{setup();render(+slider.value);};
 addEventListener('resize',()=>{setup();render(+slider.value);});

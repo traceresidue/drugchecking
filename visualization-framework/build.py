@@ -10,24 +10,35 @@ src/<id>.js. Data slices are inlined from data/*.json.
 """
 import json, re, os, pathlib
 ROOT = pathlib.Path(__file__).parent
-AGG = json.load(open(ROOT/'data'/'aggregates.json'))
-SPEC = json.load(open(ROOT/'data'/'spectra.json'))
-TOPO_US = json.load(open(ROOT/'viz'/'lib'/'us-states.json'))  # TopoJSON for US states
-SHARED = (ROOT/'viz'/'_shared.js').read_text()
+AGG = json.load(open(ROOT/'data'/'aggregates.json', encoding='utf-8'))
+SPEC = json.load(open(ROOT/'data'/'spectra.json', encoding='utf-8'))
+TOPO_US = json.load(open(ROOT/'viz'/'lib'/'us-states.json', encoding='utf-8'))  # TopoJSON for US states
+
+# Prefer the typed dcf-core build (web/packages/dcf-core, ROADMAP Track A1) once
+# it's been built; fall back to the hand-rolled ES module so builds still work
+# before `npm run build` has been run in web/.
+_DCF_CORE_DIST = ROOT.parent/'web'/'packages'/'dcf-core'/'dist'/'shared.js'
+SHARED = (_DCF_CORE_DIST if _DCF_CORE_DIST.exists() else ROOT/'viz'/'_shared.js').read_text(encoding='utf-8')
+NAV = (ROOT/'viz'/'_nav.js').read_text(encoding='utf-8')
 
 # Turn the ES module into a global-exposing IIFE: strip `export ` and the loadData fetch helper.
-def globalize(js):
+def globalize(js, window_name, export_names):
     js = re.sub(r'^export\s+(async\s+)?function', r'\1function', js, flags=re.M)
     js = re.sub(r'^export\s+const', 'const', js, flags=re.M)
-    # drop loadData (uses fetch; data is inlined instead)
-    js = re.sub(r'/\* fetch the shared datasets.*?\n\}\n', '', js, flags=re.S)
-    names = ['TOKENS','classify','fmt','chromatogram','ftirCurve','stickSpectrum',
-             'cosine','tooltip','scaffold','injectCSS','drawSmiles']
-    js += '\nwindow.DCF={' + ','.join(names) + '};\n'
-    # wrap in an IIFE so top-level function/const declarations don't collide
-    # with `const {scaffold,...}=DCF` destructuring in the per-viz <script>
+    js = re.sub(r'^export\s*\{[^}]+\};?\s*', '', js, flags=re.M)
+    if window_name == 'DCF':
+        js = re.sub(r'/\* fetch the shared datasets.*?\n\}\n', '', js, flags=re.S)
+    js += '\nwindow.' + window_name + '={' + ','.join(export_names) + '};\n'
     return '(function(){\n' + js + '\n})();'
-SHARED_GLOBAL = globalize(SHARED)
+
+SHARED_GLOBAL = globalize(SHARED, 'DCF', [
+    'TOKENS','FONTS','classify','fmt','chromatogram','ftirCurve','stickSpectrum',
+    'normalizePeaks','chromatogramPeaksFromSample','chromatogramFromSample',
+    'getReferenceSpec','stickSpectrumFromReference',
+    'isRealChromatogram','fillChromatogramSelect',
+    'cosine','tooltip','scaffold','injectCSS','drawSmiles',
+])
+NAV_GLOBAL = globalize(NAV, 'DCF_NAV', ['injectNav','buildIndexPage','pageFile','previewSrc'])
 
 # Libraries are vendored locally in viz/lib/ (see lib/README) so every file in
 # viz/ works fully offline via file:// with no CDN/network dependency.
@@ -59,11 +70,16 @@ TEMPLATE = """<!doctype html>
 </head>
 <body>
 {auth}
-{nav}
 <script>
 window.DATA = {data};
 window.SPEC = {spec};
 window.TOPO = {topo};
+</script>
+<script>
+const NAV_REGISTRY = {nav_registry};
+const NAV_PAGE_ID = {nav_page_id};
+const NAV_MODE = "viz";
+{nav}
 </script>
 <script>
 {shared}
@@ -75,61 +91,83 @@ window.TOPO = {topo};
 </html>
 """
 
-NAV_CSS = """<style id="dcf-nav-css">
-#dcf-nav{position:fixed;top:0;left:0;right:0;z-index:9999;height:40px;
-  background:rgba(11,14,20,.92);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
-  border-bottom:1px solid #26304a;display:flex;align-items:center;
-  font-family:ui-monospace,monospace;font-size:12px;padding:0 4px}
-#dcf-nav a,#dcf-nav span.nav-btn{display:flex;align-items:center;height:40px;padding:0 12px;
-  text-decoration:none;white-space:nowrap;color:#8b94a8;transition:color .1s,background .1s;border-radius:4px}
-#dcf-nav a:hover{color:#e8ecf4;background:rgba(255,255,255,.05)}
-#dcf-nav .nav-home{color:#6ee7a8;border-right:1px solid #26304a;margin-right:4px;border-radius:0}
-#dcf-nav .nav-home:hover{color:#e8ecf4;background:rgba(110,231,168,.08)}
-#dcf-nav .nav-title{flex:1;text-align:center;color:#5b6478;font-size:11px;
-  overflow:hidden;text-overflow:ellipsis;padding:0 8px}
-#dcf-nav .nav-dim{color:#2d3648;cursor:default;pointer-events:none}
-body{padding-top:40px}
-</style>"""
+INDEX_TEMPLATE = """<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Drug Checking Visualizations</title>
+</head>
+<body>
+{auth}
+<script>
+const NAV_REGISTRY = {nav_registry};
+const NAV_MODE = "viz";
+{nav}
+</script>
+<script>
+{shared}
+</script>
+<script>
+DCF.injectCSS();
+DCF_NAV.buildIndexPage({{
+  mode: "viz",
+  title: "Drug Checking Visualizations",
+  dek: "Browse {count} standalone views — spectral benches, supply aggregates, and result cards. Aggregate charts use real data from 6,580 samples; spectra are illustrative.",
+  switchHref: "../viz2/index.html"
+}});
+</script>
+</body>
+</html>
+"""
 
-def make_nav(spec, reg):
-    by_n = sorted(reg, key=lambda s: s['n'])
-    idx = next((i for i, s in enumerate(by_n) if s['id'] == spec['id']), -1)
-    if idx > 0:
-        p = by_n[idx - 1]
-        prev_el = f'<a href="{p["id"]}.html" class="nav-arrow" title="#{p["n"]:02d} {p["title"]}">&#8592; {p["n"]:02d}</a>'
-    else:
-        prev_el = '<span class="nav-btn nav-dim">&#8592; &#8212;</span>'
-    if idx >= 0 and idx < len(by_n) - 1:
-        n = by_n[idx + 1]
-        next_el = f'<a href="{n["id"]}.html" class="nav-arrow" title="#{n["n"]:02d} {n["title"]}">{n["n"]:02d} &#8594;</a>'
-    else:
-        next_el = '<span class="nav-btn nav-dim">&#8212; &#8594;</span>'
-    title_txt = f'Nº {spec["n"]:02d} · {spec["title"]}'
-    return (NAV_CSS +
-            f'<nav id="dcf-nav">'
-            f'<a href="../../index.html" class="nav-home">&#8962;&nbsp;All</a>'
-            f'{prev_el}'
-            f'<span class="nav-title">{title_txt}</span>'
-            f'{next_el}'
-            f'</nav>')
+def expand_includes(body):
+    while '// @include ' in body:
+        m = re.search(r'// @include (\S+)', body)
+        if not m:
+            break
+        inc = (ROOT/'src'/m.group(1)).read_text(encoding='utf-8')
+        body = body.replace(m.group(0), inc, 1)
+    return body
+
+def nav_registry_json(reg):
+    slim = [{'id': s['id'], 'n': s['n'], 'cat': s['cat'], 'title': s['title']} for s in reg]
+    return json.dumps(slim, separators=(',', ':'))
 
 def build(spec, reg):
-    body = (ROOT/'src'/(spec['id']+'.js')).read_text()
+    body = (ROOT/'src'/(spec['id']+'.js')).read_text(encoding='utf-8')
+    body = expand_includes(body)
     libtags = '\n'.join(LIBS[l] for l in spec.get('libs',[]))
     data = json.dumps({k:AGG[k] for k in spec.get('data',[])}, separators=(',',':'))
     specdata = json.dumps({k:SPEC[k] for k in spec.get('spec',[])}, separators=(',',':')) if spec.get('spec') else '{}'
     topo_keys = spec.get('topo', [])
     topo = json.dumps({'us_states': TOPO_US} if 'us_states' in topo_keys else {}, separators=(',',':'))
-    nav = make_nav(spec, reg)
-    html = TEMPLATE.format(title=spec['title'], libtags=libtags, data=data,
-                           spec=specdata, topo=topo, auth=AUTH_GUARD,
-                           shared=SHARED_GLOBAL, body=body, nav=nav)
+    html = TEMPLATE.format(
+        title=spec['title'], libtags=libtags, data=data, spec=specdata,
+        topo=topo, auth=AUTH_GUARD,
+        shared=SHARED_GLOBAL, body=body, nav=NAV_GLOBAL,
+        nav_registry=nav_registry_json(reg),
+        nav_page_id=json.dumps(spec['id']),
+    )
     out = ROOT/'viz'/(spec['id']+'.html')
-    out.write_text(html)
+    out.write_text(html, encoding='utf-8')
     return out, len(html)
 
+def build_index(reg):
+    html = INDEX_TEMPLATE.format(
+        nav=NAV_GLOBAL,
+        shared=SHARED_GLOBAL,
+        auth=AUTH_GUARD,
+        nav_registry=nav_registry_json(reg),
+        count=len(reg),
+    )
+    out = ROOT/'viz'/'index.html'
+    out.write_text(html, encoding='utf-8')
+    return out
+
 if __name__=='__main__':
-    reg = json.load(open(ROOT/'src'/'registry.json'))
+    reg = json.load(open(ROOT/'src'/'registry.json', encoding='utf-8'))
+    print(f"shared bundle: {'dcf-core (built)' if _DCF_CORE_DIST.exists() else 'viz/_shared.js (legacy)'}")
     os.makedirs(ROOT/'viz',exist_ok=True)
     # Generate root index.html from MAIN_PASSWORD env var (file is gitignored)
     import subprocess, sys
@@ -141,4 +179,5 @@ if __name__=='__main__':
             print(f"  {s['id']:34s} {sz//1024:4d} KB")
         except FileNotFoundError:
             print(f"  {s['id']:34s} (src pending)")
-    print(f"built {total} files")
+    build_index(reg)
+    print(f"built {total} viz files + index.html")

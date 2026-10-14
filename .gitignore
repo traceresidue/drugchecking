@@ -12,3 +12,14 @@ venv/
 *.tgz
 # Generated at build time from MAIN_PASSWORD env var — never commit
 /index.html
+
+# web/ workspace (ROADMAP Track A): build artifacts, not source
+dist/
+
+# pipeline/ (ROADMAP Track B): generated from checked-in CSVs, run build_db.py
+pipeline/*.sqlite
+
+# pipeline/cache/: adapters' fetched/cached raw files (never large binaries
+# checked in); keep the directory itself via .gitkeep
+pipeline/cache/*
+!pipeline/cache/.gitkeep

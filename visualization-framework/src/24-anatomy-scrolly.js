@@ -1,8 +1,10 @@
 /* Nº 24 · Anatomy of a Sample (Scrollytelling) — a scroll-driven narrative that
-   walks a reader from a single seized bag through GC–MS, building the chromatogram
+   walks a reader from a single submitted sample through GC–MS, building the chromatogram
    one substance at a time and ending at the harm-reduction takeaway. Each point is
    a person. Uses IntersectionObserver (no external scrollytelling dependency). */
 const {scaffold,chromatogram,classify,fmt,TOKENS,drawSmiles}=DCF;
+function subColor(name){const c=classify(name);return window.DCFDesign?DCFDesign.getClassColor(c.cls):c.color;}
+function sigColor(k){return window.DCFDesign?DCFDesign.getClassColor(k):TOKENS[k];}
 const MS=SPEC.ms, RT=Object.fromEntries(DATA.retention_times.map(d=>[d.substance,d.rt]));
 
 const STEPS=[
@@ -19,7 +21,7 @@ const STEPS=[
 const stage=scaffold({
   tag:'Nº 24 · RESULT',
   title:'Anatomy of a Sample',
-  dek:'Scroll slowly. A single seized bag becomes a chromatogram, one peak at a time — and what looked like heroin turns into something else entirely. Each peak is a real kind of substance found in the supply.',
+  dek:'Scroll slowly. A single submitted sample becomes a chromatogram, one peak at a time — and what looked like heroin turns into something else entirely. Each peak is a real kind of substance found in the supply.',
   how:`This is <b>scrollytelling</b>: as you scroll, each step adds one component to the GC–MS trace on the left, narrating what it is and why it matters. It dramatizes the core insight of drug checking — a sample sold as one thing is usually a <b>mixture</b> — and ends with advice tied to exactly this composition. The technique (sticky graphic + scroll-triggered steps) is how modern newsrooms explain complex data. <b>Limit:</b> heights are relative signal, not dose, a point the story makes explicitly.`,
   provenance:'Illustrative narrative over real GC–MS retention times; composition reflects a common "tranq-dope" profile.',
   harm:'If you expect an opioid, plan for fentanyl plus a sedative: naloxone, rescue breathing, never alone, and test every time.'
@@ -68,7 +70,7 @@ function draw(){
   svg.append('path').datum(trace.y).attr('d',area).attr('fill',dom).attr('opacity',.16);
   svg.append('path').datum(trace.y).attr('d',d3.line().x((d,i)=>x(trace.x[i])).y(d=>y(d)).curve(d3.curveBasis)).attr('fill','none').attr('stroke',dom).attr('stroke-width',1.7);
   built.forEach((p,i)=>{
-    const col=classify(p.s).color;
+    const col=subColor(p.s);
     svg.append('circle').attr('cx',x(p.rt)).attr('cy',y(p.amp)-3).attr('r',i===built.length-1?6:4).attr('fill',col).attr('stroke',TOKENS.bg).attr('stroke-width',1.5);
     svg.append('text').attr('x',x(p.rt)).attr('y',y(p.amp)-12).attr('text-anchor','middle').attr('font-size',10).attr('font-family','ui-monospace').attr('fill',i===built.length-1?col:TOKENS.muted).text(p.s.length>13?p.s.slice(0,12)+'…':p.s);
   });
@@ -79,3 +81,4 @@ const io=new IntersectionObserver(es=>{
 document.querySelectorAll('.scrolly-step').forEach(s=>io.observe(s));
 rebuild(0);
 addEventListener('resize',draw);
+if(typeof draw==="function")window.__vizRedraw=draw;

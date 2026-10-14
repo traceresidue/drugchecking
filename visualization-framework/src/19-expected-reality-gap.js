@@ -2,6 +2,8 @@
    model (what you think you bought). Right: the chemical reality. Animated
    morph between the two makes the substitution and contamination visceral. */
 const {scaffold,chromatogram,classify,fmt,TOKENS}=DCF;
+function subColor(name){const c=classify(name);return window.DCFDesign?DCFDesign.getClassColor(c.cls):c.color;}
+function sigColor(k){return window.DCFDesign?DCFDesign.getClassColor(k):TOKENS[k];}
 const CH=SPEC.chromatograms, RT=Object.fromEntries(DATA.retention_times.map(d=>[d.substance,d.rt]));
 
 const SCEN={
@@ -28,7 +30,7 @@ stage.innerHTML=`
 <div id="caption" style="margin-top:12px;font-size:14px"></div>`;
 const sel=document.getElementById('sel');
 for(const k of Object.keys(SCEN)) sel.add(new Option(SCEN[k].label,k));
-sel.style.cssText='background:#1a2234;color:#e8ecf4;border:1px solid #26304a;border-radius:8px;padding:7px 10px;font:500 13px Inter';
+sel.className='dcf-ctl-select';
 let showReal=false;
 sel.onchange=()=>{showReal=false;document.getElementById('flip').setAttribute('aria-pressed',false);document.getElementById('flip').textContent='reveal reality →';render(0);};
 document.getElementById('flip').onclick=e=>{showReal=!showReal;e.target.setAttribute('aria-pressed',showReal);e.target.textContent=showReal?'← back to expectation':'reveal reality →';animate();};
@@ -49,7 +51,7 @@ function render(t){ // t 0=expected 1=real
   svg.append('text').attr('x',W/2).attr('y',H-2).attr('text-anchor','middle').attr('fill',TOKENS.muted).attr('font-size',11).text('retention time (min)');
   const y0=exp.y, y1=real.y;
   const yv=y0.map((v,i)=>v*(1-t)+y1[i]*t);
-  const col=d3.interpolateRgb(classify(sc.expected[0].s).color, classify(realPeaks.sort((a,b)=>b.amp-a.amp)[0].s).color)(t);
+  const col=d3.interpolateRgb(subColor(sc.expected[0].s), classify(realPeaks.sort((a,b)=>b.amp-a.amp)[0].s).color)(t);
   const area=d3.area().x((d,i)=>x(exp.x[i])).y0(y(0)).y1(d=>y(d)).curve(d3.curveBasis);
   svg.append('path').datum(yv).attr('d',area).attr('fill',col).attr('opacity',.2);
   svg.append('path').datum(yv).attr('d',d3.line().x((d,i)=>x(exp.x[i])).y(d=>y(d)).curve(d3.curveBasis)).attr('fill','none').attr('stroke',col).attr('stroke-width',1.8);
@@ -69,4 +71,5 @@ function animate(){
   (function step(){const e=Math.min(1,(performance.now()-t0)/dur);const ease=e<.5?2*e*e:1-Math.pow(-2*e+2,2)/2;render(from+(to-from)*ease);if(e<1)requestAnimationFrame(step);})();
 }
 render(0);
+window.__vizRedraw=()=>render(showReal?1:0);
 addEventListener('resize',()=>render(showReal?1:0));

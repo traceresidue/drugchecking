@@ -2,6 +2,8 @@
    was first detected, as a beeswarm. Each dot is a debut; size = how common it
    later became. The clustering shows the relentless churn of novel substances. */
 const {scaffold,classify,tooltip,fmt,TOKENS}=DCF;
+function subColor(name){const c=classify(name);return window.DCFDesign?DCFDesign.getClassColor(c.cls):c.color;}
+function sigColor(k){return window.DCFDesign?DCFDesign.getClassColor(k):TOKENS[k];}
 const EM=DATA.emergence;
 
 const stage=scaffold({
@@ -51,5 +53,6 @@ function draw(){
   // label big ones
   data.filter(d=>d.total>250).forEach(d=>svg.append('text').attr('x',d.x).attr('y',d.y+3).attr('text-anchor','middle').attr('font-size',9).attr('fill',TOKENS.bg).attr('font-weight',700).text(d.substance.length>9?d.substance.slice(0,8):d.substance));
 }
+window.__vizRedraw=draw;
 draw();
 addEventListener('resize',draw);

@@ -1,0 +1,17 @@
+{
+  "name": "@dcf/core",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Typed ESM port of viz/_shared.js: design tokens, substance classification, spectral synthesis, formatting, tooltip, page scaffold",
+  "main": "./dist/index.js",
+  "exports": {
+    ".": "./dist/index.js",
+    "./shared": "./dist/shared.js"
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "node build.mjs",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  }
+}

@@ -4,7 +4,8 @@
 const {scaffold,classify,tooltip,fmt,TOKENS}=DCF;
 const MC=DATA.monthly_class;
 const CLS=[['fent','Fentanyl & analogs'],['opioid','Opioid'],['xyl','Sedative / xylazine'],['stim','Stimulant'],['coke','Cocaine'],['benzo','Benzodiazepine'],['cut','Cut / diluent'],['other','Other']];
-const COL={fent:TOKENS.fent,opioid:TOKENS.opioid,xyl:TOKENS.xyl,stim:TOKENS.stim,coke:TOKENS.coke,benzo:TOKENS.benzo,cut:TOKENS.cut,other:TOKENS.other};
+function clsFill(k){return window.DCFDesign?DCFDesign.getClassColor(k):TOKENS[k==='fent'?'fent':k==='opioid'?'opioid':k==='xyl'?'xyl':k==='stim'?'stim':k==='coke'?'coke':k==='benzo'?'benzo':k==='cut'?'cut':'other'];}
+const COL=Object.fromEntries(CLS.map(([k])=>[k,clsFill(k)]));
 
 const stage=scaffold({
   tag:'Nº 11 · SUPPLY',
@@ -32,6 +33,7 @@ const months=[...new Set(MC.map(d=>d.month))].sort();
 const rows=months.map(m=>{const o={month:m};CLS.forEach(([k])=>o[k]=0);MC.filter(d=>d.month===m).forEach(d=>o[d.cls]=d.n);return o;});
 
 function draw(){
+  Object.assign(COL,Object.fromEntries(CLS.map(([k])=>[k,clsFill(k)])));
   const svg=d3.select('#svg'); svg.selectAll('*').remove();
   const W=svg.node().clientWidth,H=480,m={t:18,r:16,b:34,l:40};
   const keys=CLS.map(c=>c[0]);
@@ -43,8 +45,12 @@ function draw(){
   svg.selectAll('path').data(series).join('path').attr('d',area).attr('fill',s=>COL[s.key]).attr('opacity',.85).attr('stroke',TOKENS.bg).attr('stroke-width',.4)
     .on('mousemove',(e,s)=>{const lbl=CLS.find(c=>c[0]===s.key)[1];tt.show(`<b style="color:${COL[s.key]}">${lbl}</b>`,e.clientX,e.clientY);}).on('mouseleave',tt.hide);
   // x labels (quarterly)
-  months.forEach((mo,i)=>{ if(i%3===0) svg.append('text').attr('x',x(mo)).attr('y',H-14).attr('text-anchor','middle').attr('fill',TOKENS.faint).attr('font-size',10).attr('font-family','ui-monospace').text(fmt.month(mo)); });
-  document.getElementById('leg').innerHTML=CLS.map(([k,l])=>`<span><i style="background:${COL[k]}"></i>${l}</span>`).join('');
+  if(!window.DCFDesign||DCFDesign.showTier('axis'))
+    months.forEach((mo,i)=>{ if(i%3===0) svg.append('text').attr('class','dcf-lbl').attr('data-tier','axis').attr('x',x(mo)).attr('y',H-14).attr('text-anchor','middle').attr('fill',TOKENS.faint).attr('font-size',10).attr('font-family','ui-monospace').text(fmt.month(mo)); });
+  if(!window.DCFDesign||DCFDesign.showTier('legend'))
+    document.getElementById('leg').innerHTML=CLS.map(([k,l])=>`<span><i style="background:${COL[k]}"></i>${l}</span>`).join('');
+  else document.getElementById('leg').innerHTML='';
 }
 draw();
 addEventListener('resize',draw);
+window.__vizRedraw=draw;

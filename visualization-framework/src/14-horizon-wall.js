@@ -2,6 +2,8 @@
    compact wall of horizon charts. Each thin band layers magnitude through color,
    so an emerging threat is visible the moment its band darkens. */
 const {scaffold,classify,fmt,tooltip,TOKENS}=DCF;
+function subColor(name){const c=classify(name);return window.DCFDesign?DCFDesign.getClassColor(c.cls):c.color;}
+function sigColor(k){return window.DCFDesign?DCFDesign.getClassColor(k):TOKENS[k];}
 const MONTHLY=DATA.monthly, TOTAL=DATA.monthly_total;
 
 const stage=scaffold({
@@ -52,5 +54,6 @@ function draw(){
     }
   });
 }
+window.__vizRedraw=draw;
 draw();
 addEventListener('resize',draw);

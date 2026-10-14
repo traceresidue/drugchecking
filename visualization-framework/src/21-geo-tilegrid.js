@@ -3,6 +3,7 @@
    keeps small states legible. Each tile shows testing volume and a fentanyl/
    xylazine split. Built fully offline — no external geometry fetch. */
 const {scaffold,fmt,tooltip,TOKENS}=DCF;
+function sigColor(k){return window.DCFDesign?DCFDesign.getClassColor(k):TOKENS[k];}
 const STATE_COUNTS=DATA.state_counts, GEO=DATA.geo;
 
 // tile-grid layout [row,col] (standard US statebins)
@@ -72,5 +73,6 @@ function draw(){
     metric==='fent'?`<span><i style="background:${TOKENS.fent}"></i>higher = larger share of samples with fentanyl</span>`:
     `<span><i style="background:${TOKENS.xyl}"></i>higher = larger share of samples with xylazine</span>`;
 }
+window.__vizRedraw=draw;
 draw();
 addEventListener('resize',draw);

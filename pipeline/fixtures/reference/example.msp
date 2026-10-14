@@ -1,0 +1,26 @@
+# SYNTHETIC TEST FIXTURE -- hand-authored for pipeline/adapters/msp_library.py
+# parser validation only. The header fields (Name/CAS#) refer to real
+# substances so linkage to chemdictionary.csv can be tested, but the peak
+# lists below are FABRICATED numbers, not real SWGDRUG/NIST spectral data.
+# Do not treat this file as a source of real reference spectra.
+
+Name: Fentanyl
+CAS#: 437-38-7
+DB#: 1
+Comment: Synthetic fixture peak list for parser validation only -- not real SWGDRUG/NIST data.
+Num Peaks: 5
+57 15; 105 25; 146 45; 189 100; 245 60
+
+Name: Acetaminophen
+CAS#: 103-90-2
+DB#: 2
+Comment: Synthetic fixture peak list for parser validation only -- not real SWGDRUG/NIST data.
+Num Peaks: 4
+109 20; 111 5; 150 15; 151 100
+
+Name: Xylazine
+CAS#: 7361-61-7
+DB#: 3
+Comment: Synthetic fixture peak list for parser validation only -- not real SWGDRUG/NIST data.
+Num Peaks: 3
+90 35; 132 55; 220 100

@@ -1,0 +1,41 @@
+{
+  "version": 1,
+  "skills": {
+    "accessibility-expert": {
+      "source": "slb2248/ai-ux-skills",
+      "sourceType": "github",
+      "skillPath": "skills/accessibility-expert/SKILL.md",
+      "computedHash": "faa8b2c309169fecdc72754b5fbc43fb6ed217f387feb513301006a2d93a6ba8"
+    },
+    "design-critique": {
+      "source": "slb2248/ai-ux-skills",
+      "sourceType": "github",
+      "skillPath": "skills/design-critique/SKILL.md",
+      "computedHash": "b1a323e42d6e442ad3c9a6310339e5f96be27263e7656811456d1e7d83c14dec"
+    },
+    "frontend-design": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "skillPath": "skills/frontend-design/SKILL.md",
+      "computedHash": "93f53fd1c0352d3d7ec17b8f73d7351bf76f4821e55d123c9d2abc2c53ba48e4"
+    },
+    "ui-principles": {
+      "source": "aussiegingersnap/cursor-skills",
+      "sourceType": "github",
+      "skillPath": "skills/ui-principles/SKILL.md",
+      "computedHash": "171c63592e320ffdfca76969a325d9439baaf528a0c54e2c87185d300769d2fd"
+    },
+    "visual-qa-testing": {
+      "source": "spencerpauly/awesome-cursor-skills",
+      "sourceType": "github",
+      "skillPath": "resources/visual-qa-testing/SKILL.md",
+      "computedHash": "fdac81ef9adb898cfacf5251da637f2986b4f09300dc43c708cc611cb09c7685"
+    },
+    "web-design-guidelines": {
+      "source": "vercel-labs/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/web-design-guidelines/SKILL.md",
+      "computedHash": "f3bc47f890f42a44db1007ab390709ec368e4b8c089baee6b0007182236ac474"
+    }
+  }
+}

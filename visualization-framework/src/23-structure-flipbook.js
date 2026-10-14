@@ -2,6 +2,8 @@
    of 2D structures (rendered from SMILES) for the most common detected substances,
    grouped by class, revealing how chemically similar the fentanyl analogues are. */
 const {scaffold,classify,fmt,TOKENS,drawSmiles}=DCF;
+function subColor(name){const c=classify(name);return window.DCFDesign?DCFDesign.getClassColor(c.cls):c.color;}
+function sigColor(k){return window.DCFDesign?DCFDesign.getClassColor(k):TOKENS[k];}
 const MS=SPEC.ms, SUB=DATA.top_substances, ROLES=DATA.roles;
 
 const stage=scaffold({
@@ -18,25 +20,26 @@ stage.innerHTML=`
 <div id="grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px"></div>`;
 
 const items=SUB.filter(d=>MS[d.substance]&&MS[d.substance].smiles).map(d=>({...d,...classify(d.substance),smiles:MS[d.substance].smiles,mw:MS[d.substance].mw,role:ROLES[d.substance]}));
-const classes=[['all','All'],['fent','Fentanyl & analogs'],['opioid','Opioid'],['stim','Stimulant'],['coke','Cocaine'],['benzo','Benzo'],['cut','Cuts']];
+const classes=[['all','All'],['opioid','Opioid'],['stim','Stimulant'],['xyl','Sedative'],['benzo','Benzo'],['cut','Cuts']];
 let filt='all';
 const fltHost=document.getElementById('flt');
 classes.forEach(([c,l])=>{const b=document.createElement('button');b.className='tgl';b.textContent=l;b.setAttribute('aria-pressed',c==='all');b.onclick=()=>{filt=c;fltHost.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b));draw();};fltHost.appendChild(b);});
 
 function draw(){
   const grid=document.getElementById('grid'); grid.innerHTML='';
-  const data=items.filter(d=>filt==='all'||d.cls===filt).sort((a,b)=>b.samples-a.samples);
+  const data=items.filter(d=>filt==='all'||d.family===filt).sort((a,b)=>b.samples-a.samples);
   data.forEach((d,i)=>{
     const card=document.createElement('div');
-    card.className='panel'; card.style.cssText='padding:12px;border-top:3px solid '+d.color;
+    card.className='panel'; card.style.cssText='padding:12px;border-top:3px solid '+subColor(d.substance);
     card.innerHTML=`
       <canvas id="m${i}" width="160" height="120" style="width:100%;background:#0e1320;border-radius:8px"></canvas>
       <div style="margin-top:8px;font-size:13px;font-weight:600;text-transform:capitalize;line-height:1.25">${d.substance}</div>
-      <div class="muted" style="font-size:11px">${d.label}${d.role?' · '+d.role:''}</div>
+      <div class="muted" style="font-size:11px">${d.familyLabel}${d.role?' · '+d.role:''}</div>
       <div class="faint mono" style="font-size:10px;margin-top:3px">MW ${d.mw} · ${fmt.int(d.samples)} samples</div>`;
     grid.appendChild(card);
   });
   // render after in DOM
   requestAnimationFrame(()=>data.forEach((d,i)=>drawSmiles(d.smiles,'m'+i,160,120)));
 }
+window.__vizRedraw=draw;
 draw();

@@ -6,9 +6,76 @@ Shared visual language for all 25 standalone visualizations. Every file in `viz/
 
 1. **Two-layer reading.** Every visualization must work at two altitudes: a 5-second plain-language takeaway for someone who just got their sample result, and a technically faithful layer for chemists and epidemiologists. The plain-language layer is never a dumbed-down replacement — it's an annotation layer on top of real data.
 2. **Honest uncertainty.** Peak height ≠ purity. Trace ≠ harmless. Every spectral visualization carries a "How to read this" disclosure stating what the method can and cannot say.
-3. **Harm reduction first.** Color and emphasis encode actionability (what should a person do differently), not moral judgment. No skull icons, no "danger drug" framing — the supply is the hazard, not the person.
+3. **Harm reduction first.** Color and emphasis encode actionability (what should a person do differently), not moral judgment. No skull icons, no "danger drug" framing — the supply is the hazard, not the person. Do not use enforcement or punishment terms like seized, samples are submitted
 4. **Real data.** Aggregate views are driven by real aggregates from this repository (`data/aggregates.json`, derived from 6,580 samples across 11 US states). Spectra are clearly labeled "illustrative" (`data/spectra.json`): peak positions reflect characteristic fragments/bands, intensities are approximate.
 5. **Standalone.** Each HTML file is self-contained: inline data, CDN libraries only, opens from the filesystem with no build step.
+
+## Design Lab (`viz2/`)
+
+A design-oriented sibling to `viz/` for experimenting with palettes, label density, and layout without forking all viz logic. Built pages live at `viz2/d-{id}.html` (e.g. `d-01-mirror-match.html`).
+
+**Build:** from `visualization-framework/`, run `python build-design.py` (builds all pages with critique entries; use `--pilot-only` for the 5 Phase 1 pilots only).
+
+**Libraries:** reuse `viz/lib/*.min.js` via relative paths — no duplicate vendoring.
+
+### Design toolbar
+
+Inserted below the page header by `DCFDesign.designScaffold()` (via patched `DCF.scaffold` in Design Lab builds):
+
+```
+[ Theme: Dark | Light ]  [ Palette ▾ (Recommended + Custom optgroups) + swatch strip ]  [ Labels: Low · Default · High ]
+```
+
+State persists in `localStorage` key `dcf-design:{pageId}`. On change: CSS tokens update → `window.__vizRedraw?.()` → critique live note refreshes.
+
+### Palettes (10)
+
+Applied via `data-palette` on `<html>`; substance semantics preserved across palettes.
+
+| ID | Name | Group |
+|----|------|-------|
+| `default` | DCF Default | Recommended |
+| `clinical` | Clinical | Recommended |
+| `paper` | Paper | Recommended |
+| `contrast` | High Contrast | Recommended |
+| `colorblind` | Colorblind Safe | Recommended |
+| `amethyst` | Amethyst | Custom |
+| `lagoon` | Lagoon | Custom |
+| `spectral` | Spectral | Custom |
+| `inferno` | Inferno | Custom |
+| `sage` | Sage | Custom |
+
+Chrome tokens (`--bg`, `--panel`, `--ink`, …) follow `data-theme="dark|light"`. Chart class colors use `--c-fent`, `--c-opioid`, etc., set by `DCFDesign.applyPalette()`. Plotly pages (Phase 2+) should use `DCFDesign.getPlotlyLayout()` and `DCFDesign.getColorscale()`.
+
+### Label density
+
+Set via `data-labels="low|default|high"` on `<html>`.
+
+| API | Purpose |
+|-----|---------|
+| `DCFDesign.peakLabelCount(n)` | low → min(2,n); default → n; high → all above threshold |
+| `DCFDesign.showTier('axis'\|'legend'\|'peak'\|'inline'\|'annotation')` | tier visibility |
+| `DCFDesign.mzLabelThreshold()` | high → 5% rel. intensity; default/low → no extra filter |
+
+SVG labels use `class="dcf-lbl" data-tier="…"`; low mode hides peak/inline/annotation tiers via CSS.
+
+Per-viz tier definitions: `src/design/label-tiers.json`.
+
+### Critique panel
+
+Between `#stage` and `<details class="dcf-how">`: thesis, strengths, weaknesses, visualization note (from `src/design/critiques.json`), plus a live note that updates with toolbar settings.
+
+### Source layout
+
+| Path | Role |
+|------|------|
+| `viz2/_design-shared.js` | Theme engine + toolbar + `DCFDesign` API |
+| `src/design/critiques.json` | Per-page design assessment copy |
+| `src/design/label-tiers.json` | Declarative label tier maps |
+| `src/design/{id}.design.js` | Optional DOM/layout overrides (pilots) |
+| `src/{id}.js` | Shared viz logic; guarded `DCFDesign` hooks |
+
+Guards (`window.DCFDesign ? … : fallback`) keep `viz/` rebuilds unchanged when only `src/*.js` is edited.
 
 ## Tokens
 
@@ -37,8 +104,12 @@ Shared visual language for all 25 standalone visualizations. Every file in `viz/
 }
 ```
 
-- **Type:** `font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif` for prose; `ui-monospace, "SF Mono", "Cascadia Mono", monospace` for m/z values, retention times, wavenumbers, sample IDs. Load Inter from Google Fonts with system fallback (must degrade gracefully offline).
+- **Type:** sans-only stacks — no serif faces anywhere. Use CSS variables from `:root`:
+  - `--font-sans` — UI prose, headings, controls, tooltips (`Inter` when the optional font link loads; otherwise `ui-sans-serif` / system UI). Always terminates with `sans-serif`.
+  - `--font-mono` — m/z values, retention times, wavenumbers, sample IDs, series tags, chart axis ticks. Always terminates with `monospace`.
+- **Load:** `injectCSS()` adds an optional Google Fonts link for Inter (`display=swap`); pages degrade to system sans when offline.
 - **Numbers are mono, units are muted:** `10.59 <span class="muted">min</span>`, `245 <span class="muted">m/z</span>`, `1645 <span class="muted">cm⁻¹</span>`.
+- **Controls:** `<select class="dcf-ctl-select">` for in-chart dropdowns (inherits `--font-sans`).
 
 ## Page anatomy (every file)
 
