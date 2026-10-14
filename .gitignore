@@ -23,3 +23,5 @@ pipeline/*.sqlite
 # checked in); keep the directory itself via .gitkeep
 pipeline/cache/*
 !pipeline/cache/.gitkeep
+# Local scratch outputs
+scratch_*.json
