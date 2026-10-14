@@ -5,7 +5,7 @@ and GuideToProgress.md for a plain-language overview and run instructions.
 
 ## 2026-10-14
 
-**Branch:** `claude/drug-checking-viz-expansion-9uwjyh` (local only, not pushed)
+**Branch:** `claude/drug-checking-viz-expansion-9uwjyh` (pushed; in sync with origin after `bc1b18390`)
 
 ### What changed
 - Resolved leftover stash-pop conflict markers in `visualization-framework/src/02-chromatogram-explorer.js`
@@ -38,4 +38,4 @@ and GuideToProgress.md for a plain-language overview and run instructions.
 - `docs/ROADMAP.md` has a dated status table.
 
 ### Next action
-Look at page 02 in a browser (the only open task), then push. `docs/REORG_PLAN.md` was dropped (see DECISIONS.md). Full list in TASKS.md.
+Look at page 02 in a browser (the only open task), then decide on `main`. `docs/REORG_PLAN.md` was dropped (see DECISIONS.md). Full list in TASKS.md.

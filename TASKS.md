@@ -6,7 +6,7 @@ One active task at a time. Park new ideas at the bottom instead of building them
 - [ ] **Look at page 02 (TIC) in a browser** and confirm the rework reads well: peak dots, RT labels, tooltip TIC %. Done when you've seen it and noted anything to change here.
 
 ## Next (in order)
-- [ ] Decide when to push this branch and whether it goes to `main`.
+- [ ] Decide whether this branch goes to `main` (and how: PR vs merge). Pushing the branch itself is done.
 
 ## Done
 - [x] `build.py` encoding: already fixed on the spectral-sourcer branch, arrived via the merge; plain `python build.py` builds 43 pages, 0 tracked diffs (2026-10-14).
@@ -16,6 +16,8 @@ One active task at a time. Park new ideas at the bottom instead of building them
 
 - [x] Housekeeping: scratch files handled, stash and backup branch dropped after verifying everything was committed (2026-10-14).
 - [x] ROADMAP status table added and layout diagram corrected; viz-lab README "20 pages" is correct (19 numbered + sample-3d; 21st file is HomePage) (2026-10-14).
+
+- [x] Branch pushed to origin, fast-forward, no secrets in the range (2026-10-14). Note: origin had already received commits up to `0ecca9852` from something other than this session; source unidentified.
 
 ## Parked (do not start)
 - Track B2/B3: live external source fetching, real mzML ingestion.

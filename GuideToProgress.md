@@ -1,12 +1,12 @@
 # Guide to Progress
 
-Snapshot as of 2026-10-14. Branch: `claude/drug-checking-viz-expansion-9uwjyh`. Everything here is local; nothing has been pushed.
+Snapshot as of 2026-10-14. Branch: `claude/drug-checking-viz-expansion-9uwjyh`. Pushed to `origin` and in sync (0 ahead, 0 behind) as of the last commit.
 
 ## Summary
 
 This repo has three working parts: offline visualizations, a data pipeline, and a React web app folder. The pipeline tests pass, the visualizations load in a browser check apart from two older failures, and the React apps type-check. The main open items are two stale docs, some scratch files to clean up, and a decision about when to push.
 
-Plain meaning: the work is saved and runs, but it is not yet shared anywhere. Nothing is lost if you stop here.
+Plain meaning: the work is saved, runs, and is backed up on GitHub. Nothing is lost if you stop here.
 
 Live task list: `TASKS.md`. Current status and what was verified: `STATE.md`. Decisions and parked ideas: `DECISIONS.md`.
 
@@ -36,14 +36,13 @@ Plain meaning first, technical detail in the last column.
 |---|---|---|
 | a | Chart 02 (TIC) was checked for errors, not checked by eye. | Manual visual review still needed. |
 | b | Root `index.html` is a generated login page. It needs a `MAIN_PASSWORD` environment variable. | Gitignored. Do not commit it. |
-| c | Nothing is pushed. | No remote work has been done. |
 
 ## Next tasks
 
 Do these in order. Each one should end with something that works. The live list is `TASKS.md`.
 
 1. Look at chart 02 in a browser (issue a).
-2. Push the branch (see `STATE.md`).
+2. Decide whether this branch goes to `main` (see `TASKS.md`).
 
 ## How to run and view
 
