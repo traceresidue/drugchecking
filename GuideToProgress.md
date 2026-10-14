@@ -35,7 +35,7 @@ Plain meaning first, technical detail in the last column.
 | # | Issue | Technical detail |
 |---|---|---|
 | a | Chart 02 (TIC) was checked for errors, not checked by eye. | Manual visual review still needed. |
-| b | Root `index.html` is a generated login page. It needs a `MAIN_PASSWORD` environment variable. | Gitignored. Do not commit it. |
+| b | The password gate is off by default. Set `DCF_GATE=1` at build time to turn it on. | Client-side only, so not real security. Real access control is parked in `DECISIONS.md`. |
 
 ## Next tasks
 

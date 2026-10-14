@@ -79,7 +79,7 @@ viz/lib/               vendored d3, d3-sankey, plotly, smiles-drawer, topojson-c
 test/check.js          Playwright: every page must load with zero console/page errors
 ```
 
-Deployment: `vercel.json` runs `build_index.py` which generates a password-gated `index.html` (password from `MAIN_PASSWORD` env var; the generated file is gitignored). Each viz page checks `localStorage.dcf_auth` and redirects to the gate.
+Deployment: `vercel.json` runs `build_index.py`, which generates the gitignored root `index.html`. By default this is a plain redirect to the gallery (the password gate is **off**). Setting `DCF_GATE=1` (with `MAIN_PASSWORD`) at build time restores the client-side gate: a login page plus a per-page guard that checks `localStorage.dcf_auth`. That gate is friction only, not security; see DECISIONS.md.
 
 ### 7. Stata production code (`datasets/code/`, `textexport/`)
 

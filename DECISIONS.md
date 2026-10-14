@@ -2,6 +2,19 @@
 
 Decisions made, and ideas parked on purpose. Newest first. Do not build parked items without moving them to TASKS.md.
 
+## 2026-10-14 — Password gate switched off by default (`DCF_GATE`)
+**Decision:** the gate is off unless `DCF_GATE=1` is set at build time. With it off, `index.html` redirects to
+the gallery and the 44 built pages carry no guard.
+**Why:** it was client-side only. `build_index.py` wrote the password into the page source, and each page only
+checked that `localStorage.dcf_auth` existed (any value passes). It gave friction, not security, and locked out
+local use when `MAIN_PASSWORD` wasn't set at build time. No password literal was ever committed to git.
+**Gate-on mode is unchanged:** a `DCF_GATE=1` build is byte-identical to the previously committed pages.
+**Parked: real access control (do not build yet).** It must be server-side, not client JS. Candidates to
+evaluate when needed: (1) Vercel Deployment Protection / password protection, platform-level, no code;
+(2) Vercel edge middleware with a signed session cookie; (3) an auth provider in front of the deployment.
+When one lands, delete `DCF_GATE`, `AUTH_GUARD` and the gate branch of `build_index.py`.
+**Open:** whether the current Vercel deployment is public and what it should be. [NEEDS VERIFICATION]
+
 ## 2026-10-14 — Parked idea: composable compound fingerprint string (from `cid-hash.md`)
 **Status:** idea only, nothing built. File removed from the repo root; content kept verbatim here.
 Format: `<CID>#<BasePeak>-<RI>[ROLE]` — PubChem CID, GC-MS base peak (m/z) and retention index (or RT), role tag.
