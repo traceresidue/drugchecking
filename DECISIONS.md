@@ -2,6 +2,15 @@
 
 Decisions made, and ideas parked on purpose. Newest first. Do not build parked items without moving them to TASKS.md.
 
+## 2026-10-14 — Untrack and gitignore `web/apps/viz-lab/dist/`
+**Decision:** `dist/` of viz-lab is build output (`vite build`); removed from the index (commit `b95eab7e7`) and ignored via
+`web/apps/viz-lab/.gitignore`. `web/packages/dcf-core/dist/` stays tracked because `visualization-framework/build.py` reads it.
+**Consequence:** Vercel serves the repository root, so the built viz-lab app is no longer hosted from the tracked path
+`/web/apps/viz-lab/dist/` on the deployment. Run it locally (`npm run dev` in `web/apps/viz-lab`). If a hosted viz-lab is
+wanted later, give it its own Vercel project or a build step; that is a separate task.
+**Verified:** `npm run build` in viz-lab exits 0 after the change; no other tracked file changed.
+**Approved by:** repository owner, in session, 2026-10-14.
+
 ## 2026-10-14 — RESOLVED: public domain removed by the owner; site is private again
 **Action (owner):** removed `aptrealisticsimulation.vercel.app` from the Vercel project `drugchecking`.
 **Verified after (unauthenticated requests, agent, 2026-10-14T13:54:47-05:00):** that host returns 404 `DEPLOYMENT_NOT_FOUND`, including

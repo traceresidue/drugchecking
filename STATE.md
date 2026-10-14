@@ -6,7 +6,7 @@ Progress: `Not tracked`
 Sync state: `Local ahead`
 Sync state values: `Synced | Local ahead | Notion ahead | Needs review`
 Sync state meaning now: repository committed and pushed; no Notion record exists to compare, so local is the only authority.
-Current phase: `Merged to main; housekeeping`
+Current phase: `Merged to main; idle, waiting on Notion`
 Last verified: `2026-10-14` (see "What is verified" below)
 
 ## Repository
@@ -15,11 +15,11 @@ Last verified: `2026-10-14` (see "What is verified" below)
 - Branch: `claude/drug-checking-viz-expansion-9uwjyh`
 - Remote: `origin` https://github.com/traceresidue/drugchecking.git; `main` and `claude/drug-checking-viz-expansion-9uwjyh` are the same commit on GitHub (fast-forwarded 2026-10-14)
 - Working tree: `Clean`
-- Baseline commit: `62b111c70` (the commit that `main` was fast-forwarded to; later docs commits follow it)
+- Baseline commit: `62b111c70` (the commit `main` was fast-forwarded to; later docs and chore commits follow it; use `git rev-parse --short HEAD` for live)
 
 ## Current objective
 
-`main` was fast-forwarded to this branch on 2026-10-14. Site visibility resolved (private again). Open: housekeeping only.
+`main` was fast-forwarded to this branch on 2026-10-14. Site visibility resolved (private again); `viz-lab/dist/` untracked. Nothing functional is open.
 
 ## Blockers
 
@@ -35,7 +35,7 @@ Last verified: `2026-10-14` (see "What is verified" below)
 
 ## Single next action
 
-Decide whether to untrack and gitignore `web/apps/viz-lab/dist/` (42 tracked build-artifact files; keep `web/packages/dcf-core/dist/`, which `build.py` reads).
+Create the Notion record for `drugchecking` when ready (deferred by the owner); then fill `PROJECT.md` Notion URL and set the sync state to `Synced`. Nothing else is open.
 
 ---
 

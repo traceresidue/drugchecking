@@ -28,15 +28,13 @@ Plain meaning first, technical detail in the last column.
 |---|---|---|
 | a | The deployed site is team-only through Vercel Authentication. A public domain was removed on 2026-10-14. | Any domain added later would be public under the current scope. The GitHub repo is public anyway. See `DECISIONS.md`. |
 | b | The password gate is off by default. Set `DCF_GATE=1` at build time to turn it on. | Client-side only, so not real security, and it never protected data files. Real access control is parked in `DECISIONS.md`. |
-| c | `web/apps/viz-lab/dist/` is tracked (42 build-artifact files). | Probably should be gitignored. Keep `web/packages/dcf-core/dist/` (`build.py` reads it). |
-| d | Notion record not set up. | Deferred by you; sync state is `Local ahead`. |
+| c | Notion record not set up. | Deferred by you; sync state is `Local ahead`. |
 
 ## Next tasks
 
 Do these in order. Each one should end with something that works. The live list is `TASKS.md`.
 
-1. Decide whether to untrack `web/apps/viz-lab/dist/` (issue c).
-2. When ready, set up the Notion record (issue d).
+1. When ready, set up the Notion record (issue c). Nothing else is open.
 
 ## How to run and view
 

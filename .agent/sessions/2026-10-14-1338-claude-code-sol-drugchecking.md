@@ -166,3 +166,15 @@ without explicit approval.
 - No Vercel setting was changed by the agent.
 - **Single next action (changed):** decide whether to untrack and gitignore `web/apps/viz-lab/dist/`.
   Sync state remains `Local ahead`.
+
+## Addendum 2026-10-14T13:56:54-05:00 (same session, appended): viz-lab dist untracked
+
+- Commit `b95eab7e7`: `web/apps/viz-lab/dist/` (42 files) removed from the index, `web/apps/viz-lab/.gitignore` added
+  (`node_modules/`, `dist/`, `*.local`, matching the librarian). Files remain on disk.
+- Checked first: no code, CI or Vercel config references the tracked path; `dcf-core/dist` kept (read by `build.py`).
+- Verified: `npm run build` in viz-lab (tsc + vite build) exit 0; no other tracked file changed.
+- Consequence recorded in `DECISIONS.md`: Vercel serves the repo root, so the built viz-lab app is no longer hosted from
+  that path on the deployment.
+- **Single next action (changed):** create the Notion record when the owner is ready. Sync state remains `Local ahead`.
+- Not pushed at the time of this addendum: `main` and the feature branch are behind local by the dist commit and the
+  docs commit that follows it.

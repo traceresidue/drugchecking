@@ -4,7 +4,7 @@ One active task at a time. Park new ideas under Later instead of building them.
 
 ## Now
 
-- [ ] **Decide whether to untrack and gitignore `web/apps/viz-lab/dist/`** (42 tracked build-artifact files). Keep `web/packages/dcf-core/dist/`, which `build.py` consumes. Done when the decision is recorded; if yes, `git ls-files web/apps/viz-lab/dist` is empty and `npm run build` in viz-lab still works.
+- [ ] **Create the Notion record for `drugchecking`** (deferred by the owner). Then fill the `PROJECT.md` Notion URL and set the sync state to `Synced`. Nothing else is open.
 
 ## Next
 
@@ -29,6 +29,7 @@ One active task at a time. Park new ideas under Later instead of building them.
 
 ## Completed
 
+- [x] `web/apps/viz-lab/dist/` untracked and gitignored (`b95eab7e7`); `npm run build` verified exit 0; `dcf-core/dist` kept (2026-10-14).
 - [x] Production site made private again: owner removed `aptrealisticsimulation.vercel.app`; agent verified 404 and no project domains (2026-10-14). See DECISIONS.md.
 - [x] `main` fast-forwarded from `4bca8ce06` to `62b111c70` (43 commits, no force, no merge commit); range scanned for secrets first (2026-10-14).
 - [x] `build.py` encoding: already fixed on the spectral-sourcer branch, arrived via the merge; plain `python build.py` builds 43 pages, 0 tracked diffs (2026-10-14).
