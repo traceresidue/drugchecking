@@ -4,7 +4,7 @@ One active task at a time. Park new ideas under Later instead of building them.
 
 ## Now
 
-- [ ] **Decide whether this branch goes to `main`** (PR vs merge). Nothing else is open.
+- [ ] **Decide whether to untrack and gitignore `web/apps/viz-lab/dist/`** (42 tracked build-artifact files). Keep `web/packages/dcf-core/dist/`, which `build.py` consumes. Done when `git ls-files web/apps/viz-lab/dist` is empty (if yes) and `npm run build` in viz-lab still works.
 
 ## Next
 
@@ -29,6 +29,7 @@ One active task at a time. Park new ideas under Later instead of building them.
 
 ## Completed
 
+- [x] `main` fast-forwarded from `4bca8ce06` to `62b111c70` (43 commits, no force, no merge commit); range scanned for secrets first (2026-10-14).
 - [x] `build.py` encoding: already fixed on the spectral-sourcer branch, arrived via the merge; plain `python build.py` builds 43 pages, 0 tracked diffs (2026-10-14).
 - [x] `docs/REORG_PLAN.md` dropped; ideas parked in DECISIONS.md (2026-10-14).
 - [x] 06b `d3 is not defined` and `viz/index.html` missing image fixed; `check.js` 0 of 45 failed (2026-10-14).

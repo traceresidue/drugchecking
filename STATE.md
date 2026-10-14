@@ -6,20 +6,20 @@ Progress: `Not tracked`
 Sync state: `Local ahead`
 Sync state values: `Synced | Local ahead | Notion ahead | Needs review`
 Sync state meaning now: repository committed and pushed; no Notion record exists to compare, so local is the only authority.
-Current phase: `Post-merge stabilization; scaffold adopted 2026-10-14`
+Current phase: `Merged to main; housekeeping`
 Last verified: `2026-10-14` (see "What is verified" below)
 
 ## Repository
 
 - Git: `Initialized`
 - Branch: `claude/drug-checking-viz-expansion-9uwjyh`
-- Remote: `origin` https://github.com/traceresidue/drugchecking.git (scaffold-adoption commit `59f9f8c26` is pushed; in sync at that commit)
+- Remote: `origin` https://github.com/traceresidue/drugchecking.git; `main` and `claude/drug-checking-viz-expansion-9uwjyh` are the same commit on GitHub (fast-forwarded 2026-10-14)
 - Working tree: `Clean`
-- Baseline commit: `59f9f8c26`
+- Baseline commit: `62b111c70` (the commit that `main` was fast-forwarded to; later docs commits follow it)
 
 ## Current objective
 
-Decide whether this branch goes to `main` (PR vs merge). Nothing else is open in `TASKS.md`.
+Housekeeping only. `main` was fast-forwarded to this branch on 2026-10-14; nothing functional is open.
 
 ## Blockers
 
@@ -35,7 +35,7 @@ Decide whether this branch goes to `main` (PR vs merge). Nothing else is open in
 
 ## Single next action
 
-Decide whether this branch goes to `main`: open a PR or merge locally, then push `main` only with explicit approval.
+Decide whether to untrack and gitignore `web/apps/viz-lab/dist/` (42 tracked build-artifact files, about 4.5 MB bundle). Keep `web/packages/dcf-core/dist/`: `build.py` consumes it.
 
 ---
 

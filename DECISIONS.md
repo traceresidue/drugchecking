@@ -2,6 +2,15 @@
 
 Decisions made, and ideas parked on purpose. Newest first. Do not build parked items without moving them to TASKS.md.
 
+## 2026-10-14 — `main` updated by fast-forward from the feature branch
+**Decision:** `main` was moved from `4bca8ce06` to `62b111c70` by fast-forward (no PR, no merge commit, no force).
+**Why:** `main` had no commits the branch lacked, so a fast-forward kept history linear and reversible; the owner
+asked to go to `main` directly. The 43-commit range was scanned for secrets and large blobs first.
+**Operational note:** SQLiteStudio had `pipeline/drugchecking.sqlite` open, which stopped Windows from removing the
+file on branch switch (`main` does not track it). Close database tools before switching branches; the push itself
+was done ref-to-ref and did not depend on the working tree.
+**Approved by:** repository owner, in session, 2026-10-14.
+
 ## 2026-10-14 — Defer Notion; sync state is `Local ahead`
 **Decision:** skip creating or confirming the Notion record for now. Because the repository is committed and
 pushed and no Notion record exists, the sync state is `Local ahead` (not `Synced`, not `Needs review`).

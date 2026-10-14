@@ -125,3 +125,16 @@ without explicit approval.
   compare). The `Synchronization state` section above is preserved as written at 13:38 and is superseded by this line.
 - Decision recorded in `DECISIONS.md`.
 - Unchanged: single next action is deciding whether the branch goes to `main`.
+
+## Addendum 2026-10-14T13:46:10-05:00 (same session, appended)
+
+- Pushed `62b111c70` to the feature branch, then fast-forwarded `origin/main` from `4bca8ce06` to `62b111c70`
+  (ref-to-ref push, no force, no merge commit). Local `main` now equals `origin/main`.
+- Pre-push scan of the 43-commit range: no sensitive filenames, no real `.env`, no key or token patterns
+  (one Plotly error-message string was a false positive); largest blob about 4.5 MB.
+- Incident: switching to local `main` could not remove `pipeline/drugchecking.sqlite` because SQLiteStudio held it
+  open, which blocked the local fast-forward and the switch back. No data was lost: the file was verified
+  byte-identical to the committed blob (`e5d47bf20`), moved aside after the owner closed SQLiteStudio, and the
+  branch checkout was restored. The aside copy is in the session scratchpad and can be discarded.
+- Open: `web/apps/viz-lab/dist/` is tracked (42 files); the single next action is now to decide whether to untrack it.
+- Sync state remains `Local ahead` (Notion deferred by the owner).
