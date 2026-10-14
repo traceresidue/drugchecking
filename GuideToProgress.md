@@ -34,15 +34,13 @@ Plain meaning first, technical detail in the last column.
 
 | # | Issue | Technical detail |
 |---|---|---|
-| a | Chart 02 (TIC) was checked for errors, not checked by eye. | Manual visual review still needed. |
 | b | The password gate is off by default. Set `DCF_GATE=1` at build time to turn it on. | Client-side only, so not real security. Real access control is parked in `DECISIONS.md`. |
 
 ## Next tasks
 
 Do these in order. Each one should end with something that works. The live list is `TASKS.md`.
 
-1. Look at chart 02 in a browser (issue a).
-2. Decide whether this branch goes to `main` (see `TASKS.md`).
+1. Decide whether this branch goes to `main` (see `TASKS.md`).
 
 ## How to run and view
 

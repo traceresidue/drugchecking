@@ -3,10 +3,9 @@
 One active task at a time. Park new ideas at the bottom instead of building them.
 
 ## Active
-- [ ] **Look at page 02 (TIC) in a browser** and confirm the rework reads well: peak dots, RT labels, tooltip TIC %. Done when you've seen it and noted anything to change here.
+- [ ] **Decide whether this branch goes to `main`** (PR vs merge). Nothing else is open.
 
 ## Next (in order)
-- [ ] Decide whether this branch goes to `main` (and how: PR vs merge). Pushing the branch itself is done.
 
 ## Done
 - [x] `build.py` encoding: already fixed on the spectral-sourcer branch, arrived via the merge; plain `python build.py` builds 43 pages, 0 tracked diffs (2026-10-14).
@@ -20,6 +19,8 @@ One active task at a time. Park new ideas at the bottom instead of building them
 - [x] Branch pushed to origin, fast-forward, no secrets in the range (2026-10-14). Note: origin had already received commits up to `0ecca9852` from something other than this session; source unidentified.
 
 - [x] Gate off by default (`DCF_GATE`); deployed site stays private via Vercel Authentication (checked, no change needed); pushed (2026-10-14).
+
+- [x] Page 02 TIC rework checked by eye by the owner: passes (2026-10-14).
 
 ## Parked (do not start)
 - Real, server-side access control for the deployed site (see DECISIONS.md, 2026-10-14). Until then the gate is off by default.

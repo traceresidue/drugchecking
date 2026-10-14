@@ -23,7 +23,7 @@ and GuideToProgress.md for a plain-language overview and run instructions.
 | viz-lab type-checks | `tsc --noEmit` exit 0 | software |
 | 45 of 45 built pages load with no console or page errors | `node test/check.js` (Playwright) | software |
 | viz-lab JSON equals exporter output (byte-identical) | JSON compare vs `visualization-framework/data` | software |
-| Page 02 looks right (smaller apex-snapped peak dots, RT labels) | not checked | NOT verified, needs a manual look |
+| Page 02 looks right (smaller apex-snapped peak dots, RT labels) | owner opened it in a browser | manual, passes |
 
 ### Build
 `python build.py` (no flags) builds 43 pages and leaves 0 tracked diffs. The encoding bug seen pre-merge was already fixed on the spectral-sourcer branch.
@@ -38,4 +38,4 @@ and GuideToProgress.md for a plain-language overview and run instructions.
 - `docs/ROADMAP.md` has a dated status table.
 
 ### Next action
-Look at page 02 in a browser (the only open task), then decide on `main`. `docs/REORG_PLAN.md` was dropped (see DECISIONS.md). Full list in TASKS.md.
+Decide whether this branch goes to `main` (PR vs merge). Nothing else is open. Gate is off by default (`DCF_GATE`), deployed site is private via Vercel Authentication; see DECISIONS.md.
