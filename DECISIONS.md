@@ -13,7 +13,11 @@ local use when `MAIN_PASSWORD` wasn't set at build time. No password literal was
 evaluate when needed: (1) Vercel Deployment Protection / password protection, platform-level, no code;
 (2) Vercel edge middleware with a signed session cookie; (3) an auth provider in front of the deployment.
 When one lands, delete `DCF_GATE`, `AUTH_GUARD` and the gate branch of `build_index.py`.
-**Open:** whether the current Vercel deployment is public and what it should be. [NEEDS VERIFICATION]
+**Deployment visibility (checked 2026-10-14 via Vercel API, read-only):** project `drugchecking` has Vercel
+Authentication on (`ssoProtection: all_except_custom_domains`), password protection off, no custom domains.
+So its `*.vercel.app` URLs require a Vercel login: the site is private. Chosen: stay private.
+**Watch out:** adding a custom domain makes that domain public (`all_except_custom_domains`). Re-check protection
+before adding one. That the Vercel project is linked to this GitHub repo was not confirmed. [NEEDS VERIFICATION]
 
 ## 2026-10-14 — Parked idea: composable compound fingerprint string (from `cid-hash.md`)
 **Status:** idea only, nothing built. File removed from the repo root; content kept verbatim here.
