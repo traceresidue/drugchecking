@@ -21,20 +21,20 @@ and GuideToProgress.md for a plain-language overview and run instructions.
 |---|---|---|
 | `pipeline/` unit tests pass (55) | `python -m unittest discover -s pipeline/test` | software |
 | viz-lab type-checks | `tsc --noEmit` exit 0 | software |
-| 43 of 45 built pages load with no console or page errors | `node test/check.js` (Playwright) | software |
+| 45 of 45 built pages load with no console or page errors | `node test/check.js` (Playwright) | software |
 | viz-lab JSON equals exporter output (byte-identical) | JSON compare vs `visualization-framework/data` | software |
 | Page 02 looks right (smaller apex-snapped peak dots, RT labels) | not checked | NOT verified, needs a manual look |
 
 ### Build
 `python build.py` (no flags) builds 43 pages and leaves 0 tracked diffs. The encoding bug seen pre-merge was already fixed on the spectral-sourcer branch.
 
-### Known failures (pre-existing on the spectral-sourcer branch, not caused by the merge)
-- `viz/06b-ridgeline-3d.html`: `d3 is not defined` (page loads plotly only).
-- `viz/index.html`: fails to load a resource.
+### Fixed this session (were pre-existing)
+- `06b-ridgeline-3d`: registry declared only plotly but its shared include needs d3 (`registry.json`).
+- `viz/index.html`: `review-previews/chromatogram-sample-3d.png` was missing; captured it.
 
 ### Safety nets still present
 - `stash@{0}` (everything in it is committed except the two scratch files)
 - branch `backup/staged-pre-merge-2026-10-14`
 
 ### Next action
-Triage the two failing pages (`06b-ridgeline-3d`, `viz/index.html`). `docs/REORG_PLAN.md` was dropped (see DECISIONS.md). Full list in TASKS.md.
+Look at page 02 in a browser, then housekeeping. `docs/REORG_PLAN.md` was dropped (see DECISIONS.md). Full list in TASKS.md.

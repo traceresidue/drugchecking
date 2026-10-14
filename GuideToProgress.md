@@ -4,7 +4,7 @@ Snapshot as of 2026-10-14. Branch: `claude/drug-checking-viz-expansion-9uwjyh`. 
 
 ## Summary
 
-This repo has three working parts: offline visualizations, a data pipeline, and a React web app folder. The pipeline tests pass, the visualizations load in a browser check apart from two older failures, and the React apps type-check. The main open items are two stale docs, two older page failures, some scratch files to clean up, and a decision about when to push.
+This repo has three working parts: offline visualizations, a data pipeline, and a React web app folder. The pipeline tests pass, the visualizations load in a browser check apart from two older failures, and the React apps type-check. The main open items are two stale docs, some scratch files to clean up, and a decision about when to push.
 
 Plain meaning: the work is saved and runs, but it is not yet shared anywhere. Nothing is lost if you stop here.
 
@@ -14,7 +14,7 @@ Live task list: `TASKS.md`. Current status and what was verified: `STATE.md`. De
 
 | Part | Folder | What it is | Status |
 |---|---|---|---|
-| Visualizations | `visualization-framework/` | About 33 single-file HTML charts in `viz/`. They open offline in a browser. | Browser check: 43 of 45 pages ok. |
+| Visualizations | `visualization-framework/` | About 33 single-file HTML charts in `viz/`. They open offline in a browser. | Browser check: 45 of 45 pages ok. |
 | Pipeline | `pipeline/` | Python scripts that build a SQLite database and export JSON for the charts. Standard library only. | 55 tests pass. |
 | Web apps | `web/` | npm workspaces: `viz-lab` (20 curated charts, React), `librarian` (sample and reference browser, React + sql.js), `packages/dcf-core`. | `viz-lab` typecheck passes. `librarian` 15 tests pass. |
 
@@ -34,25 +34,22 @@ Plain meaning first, technical detail in the last column.
 
 | # | Issue | Technical detail |
 |---|---|---|
-| a | Chart `06b-ridgeline-3d` does not load. | `d3 is not defined`. Existed before this work. |
-| b | `viz/index.html` does not load one of its resources. | Pre-existing. |
-| c | `docs/ROADMAP.md` does not mention the pipeline or `viz-lab`. | Written before those existed. |
-| d | `viz-lab` README says 20 pages, but the folder holds 21 page files. | `web/apps/viz-lab/src/pages`. |
-| e | Chart 02 (TIC) was checked for errors, not checked by eye. | Manual visual review still needed. |
-| f | Root `index.html` is a generated login page. It needs a `MAIN_PASSWORD` environment variable. | Gitignored. Do not commit it. |
-| g | Two untracked scratch files are waiting for a keep-or-delete decision. | `scratch_matched.json`, `cid-hash.md`. |
-| h | A git stash and a backup branch are kept as safety nets. | Branch: `backup/staged-pre-merge-2026-10-14`. Drop only after confirming the merge. |
-| i | Nothing is pushed. | No remote work has been done. |
+| a | `docs/ROADMAP.md` does not mention the pipeline or `viz-lab`. | Written before those existed. |
+| b | `viz-lab` README says 20 pages, but the folder holds 21 page files. | `web/apps/viz-lab/src/pages`. |
+| c | Chart 02 (TIC) was checked for errors, not checked by eye. | Manual visual review still needed. |
+| d | Root `index.html` is a generated login page. It needs a `MAIN_PASSWORD` environment variable. | Gitignored. Do not commit it. |
+| e | Two untracked scratch files are waiting for a keep-or-delete decision. | `scratch_matched.json`, `cid-hash.md`. |
+| f | A git stash and a backup branch are kept as safety nets. | Branch: `backup/staged-pre-merge-2026-10-14`. Drop only after confirming the merge. |
+| g | Nothing is pushed. | No remote work has been done. |
 
 ## Next tasks
 
 Do these in order. Each one should end with something that works. The live list is `TASKS.md`.
 
-1. Look at the failures in chart 06b and `viz/index.html` (issues a and b).
-2. Look at chart 02 in a browser (issue e).
-3. Clean up: decide on the two scratch files, the stash, and the backup branch (issues g and h).
-4. Fix the viz-lab README page count and update `docs/ROADMAP.md` (issues c and d).
-5. Decide when to push, and to which remote. Ask before creating a new remote or branch.
+1. Look at chart 02 in a browser (issue c).
+2. Clean up: decide on the two scratch files, the stash, and the backup branch (issues e and f).
+3. Fix the viz-lab README page count and update `docs/ROADMAP.md` (issues a and b).
+4. Decide when to push, and to which remote. Ask before creating a new remote or branch.
 
 ## How to run and view
 
@@ -119,12 +116,12 @@ If `pipeline\drugchecking.sqlite` exists, the app loads it. Otherwise use the "O
 | Suite | Command | What good looks like |
 |---|---|---|
 | Pipeline (Python) | `python -m unittest discover -s pipeline/test -v` (repo root) | Ends with `OK`, 55 tests. Verified. |
-| Visualizations (browser) | `cd visualization-framework` then `node test/check.js` | Ends with `2 of 45 failed`. The two failures are `06b-ridgeline-3d` and `index.html` (issues a and b). Verified. |
+| Visualizations (browser) | `cd visualization-framework` then `node test/check.js` | Ends with `0 of 45 failed`. Verified. |
 | viz-lab types | `cd web\apps\viz-lab` then `npm run typecheck` | No error lines. Verified. |
 | viz-lab unit tests | `cd web\apps\viz-lab` then `npm run test` | There are no test files yet, so this exits with an error. Not a regression. |
 | Librarian unit tests | `cd web\apps\librarian` then `npm run test` | 4 files, 15 tests passed. Verified. |
 
-A passing run shows the command output. "It looks fine" is not a test result. For the viz-lab pages, a visual check by eye is still a separate step (issue e).
+A passing run shows the command output. "It looks fine" is not a test result. For the viz-lab pages, a visual check by eye is still a separate step (issue c).
 
 ### Doc conflicts to know about
 
