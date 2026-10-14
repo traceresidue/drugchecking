@@ -51,7 +51,10 @@ LIBS = {
 }
 
 # Auth guard: redirect to login if no session. Path is relative to viz/ — 2 levels up to repo root.
-AUTH_GUARD = """<script>
+# OFF by default. Set DCF_GATE=1 (also true/on/yes) at build time to include it.
+# NOTE: this is a client-side gate only (see DECISIONS.md) — friction, not security.
+GATE_ON = os.environ.get('DCF_GATE', '').strip().lower() in ('1', 'true', 'on', 'yes')
+AUTH_GUARD_SRC = """<script>
 (function(){{
   if(!localStorage.getItem('dcf_auth')){{
     var loc=encodeURIComponent(location.href);
@@ -59,6 +62,7 @@ AUTH_GUARD = """<script>
   }}
 }})();
 </script>"""
+AUTH_GUARD = AUTH_GUARD_SRC if GATE_ON else ''
 
 TEMPLATE = """<!doctype html>
 <html lang="en">
@@ -169,7 +173,8 @@ if __name__=='__main__':
     reg = json.load(open(ROOT/'src'/'registry.json', encoding='utf-8'))
     print(f"shared bundle: {'dcf-core (built)' if _DCF_CORE_DIST.exists() else 'viz/_shared.js (legacy)'}")
     os.makedirs(ROOT/'viz',exist_ok=True)
-    # Generate root index.html from MAIN_PASSWORD env var (file is gitignored)
+    # Generate root index.html (gate page if DCF_GATE is set, otherwise a plain redirect; gitignored)
+    print(f"auth gate: {'ON (DCF_GATE set)' if GATE_ON else 'off'}")
     import subprocess, sys
     subprocess.run([sys.executable, str(ROOT.parent/'build_index.py')], check=False)
     total=0

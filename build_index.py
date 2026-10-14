@@ -1,21 +1,46 @@
 #!/usr/bin/env python3
-"""Generate index.html with password gate from MAIN_PASSWORD environment variable.
+"""Generate the root index.html.
 
-Run locally:
-  MAIN_PASSWORD=yourpassword python3 build_index.py
-  # or with .env:
-  set -a && source .env && set +a && python3 build_index.py
+The password gate is OFF by default: index.html is then a plain redirect to the
+gallery (visualization-framework/viz/index.html) and no password is involved.
 
-On Vercel this runs automatically with the MAIN_PASSWORD env var set in the dashboard.
+To turn the gate ON, set DCF_GATE=1 together with MAIN_PASSWORD at build time:
+  DCF_GATE=1 MAIN_PASSWORD=yourpassword python3 build_index.py
+and build the visualizations with the same DCF_GATE=1 so each page carries the guard.
+
+WARNING: the gate is client-side only. The password is written into the page source
+and each page only checks that localStorage.dcf_auth exists. It is friction, not
+security; see DECISIONS.md for the plan for real, server-side access control.
+
 The generated index.html is gitignored and never committed.
 """
 import os, pathlib
 
 ROOT = pathlib.Path(__file__).parent
 pwd = os.environ.get('MAIN_PASSWORD', '')
+gate_on = os.environ.get('DCF_GATE', '').strip().lower() in ('1', 'true', 'on', 'yes')
+out = ROOT / 'index.html'
+
+if not gate_on:
+    out.write_text("""<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Drug Checking Visualizations</title>
+<meta http-equiv="refresh" content="0; url=visualization-framework/viz/index.html">
+</head>
+<body>
+<p><a href="visualization-framework/viz/index.html">Open the visualization gallery</a></p>
+<script>location.replace('visualization-framework/viz/index.html');</script>
+</body>
+</html>
+""", encoding='utf-8')
+    print(f"Generated {out} (gate off: redirect to gallery)")
+    raise SystemExit(0)
 
 if not pwd:
-    print("WARNING: MAIN_PASSWORD not set — login will reject all passwords")
+    print("WARNING: DCF_GATE is set but MAIN_PASSWORD is not — login will reject all passwords")
 
 html = f"""<!doctype html>
 <html lang="en">
@@ -79,6 +104,5 @@ document.getElementById('pwd').addEventListener('keydown',e=>{{if(e.key==='Enter
 </body>
 </html>"""
 
-out = ROOT / 'index.html'
-out.write_text(html)
+out.write_text(html, encoding='utf-8')
 print(f"Generated {out} ({'with password' if pwd else 'WARNING: no password set'})")
