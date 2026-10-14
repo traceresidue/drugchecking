@@ -4,11 +4,11 @@ Snapshot as of 2026-10-14. Branch: `claude/drug-checking-viz-expansion-9uwjyh`. 
 
 ## Summary
 
-This repo has three working parts: offline visualizations, a data pipeline, and a React web app folder. The pipeline tests pass, the visualizations load in a browser check apart from two older failures, and the React apps type-check. The main open items are a few stale docs, two older page failures, some scratch files to clean up, and a decision about when to push.
+This repo has three working parts: offline visualizations, a data pipeline, and a React web app folder. The pipeline tests pass, the visualizations load in a browser check apart from two older failures, and the React apps type-check. The main open items are two stale docs, two older page failures, some scratch files to clean up, and a decision about when to push.
 
 Plain meaning: the work is saved and runs, but it is not yet shared anywhere. Nothing is lost if you stop here.
 
-Live task list: `TASKS.md`. Current status and what was verified: `STATE.md`.
+Live task list: `TASKS.md`. Current status and what was verified: `STATE.md`. Decisions and parked ideas: `DECISIONS.md`.
 
 ## Current state
 
@@ -36,25 +36,23 @@ Plain meaning first, technical detail in the last column.
 |---|---|---|
 | a | Chart `06b-ridgeline-3d` does not load. | `d3 is not defined`. Existed before this work. |
 | b | `viz/index.html` does not load one of its resources. | Pre-existing. |
-| c | `docs/REORG_PLAN.md` is out of date. | Names old branches. Never carried out. |
-| d | `docs/ROADMAP.md` does not mention the pipeline or `viz-lab`. | Written before those existed. |
-| e | `viz-lab` README says 20 pages, but the folder holds 21 page files. | `web/apps/viz-lab/src/pages`. |
-| f | Chart 02 (TIC) was checked for errors, not checked by eye. | Manual visual review still needed. |
-| g | Root `index.html` is a generated login page. It needs a `MAIN_PASSWORD` environment variable. | Gitignored. Do not commit it. |
-| h | Two untracked scratch files are waiting for a keep-or-delete decision. | `scratch_matched.json`, `cid-hash.md`. |
-| i | A git stash and a backup branch are kept as safety nets. | Branch: `backup/staged-pre-merge-2026-10-14`. Drop only after confirming the merge. |
-| j | Nothing is pushed. | No remote work has been done. |
+| c | `docs/ROADMAP.md` does not mention the pipeline or `viz-lab`. | Written before those existed. |
+| d | `viz-lab` README says 20 pages, but the folder holds 21 page files. | `web/apps/viz-lab/src/pages`. |
+| e | Chart 02 (TIC) was checked for errors, not checked by eye. | Manual visual review still needed. |
+| f | Root `index.html` is a generated login page. It needs a `MAIN_PASSWORD` environment variable. | Gitignored. Do not commit it. |
+| g | Two untracked scratch files are waiting for a keep-or-delete decision. | `scratch_matched.json`, `cid-hash.md`. |
+| h | A git stash and a backup branch are kept as safety nets. | Branch: `backup/staged-pre-merge-2026-10-14`. Drop only after confirming the merge. |
+| i | Nothing is pushed. | No remote work has been done. |
 
 ## Next tasks
 
 Do these in order. Each one should end with something that works. The live list is `TASKS.md`.
 
-1. Decide what to do with `docs/REORG_PLAN.md`: refresh it, carry it out, or delete it (issue c).
-2. Look at the failures in chart 06b and `viz/index.html` (issues a and b).
-3. Look at chart 02 in a browser (issue f).
-4. Clean up: decide on the two scratch files, the stash, and the backup branch (issues h and i).
-5. Fix the viz-lab README page count and update `docs/ROADMAP.md` (issues d and e).
-6. Decide when to push, and to which remote. Ask before creating a new remote or branch.
+1. Look at the failures in chart 06b and `viz/index.html` (issues a and b).
+2. Look at chart 02 in a browser (issue e).
+3. Clean up: decide on the two scratch files, the stash, and the backup branch (issues g and h).
+4. Fix the viz-lab README page count and update `docs/ROADMAP.md` (issues c and d).
+5. Decide when to push, and to which remote. Ask before creating a new remote or branch.
 
 ## How to run and view
 
@@ -126,7 +124,7 @@ If `pipeline\drugchecking.sqlite` exists, the app loads it. Otherwise use the "O
 | viz-lab unit tests | `cd web\apps\viz-lab` then `npm run test` | There are no test files yet, so this exits with an error. Not a regression. |
 | Librarian unit tests | `cd web\apps\librarian` then `npm run test` | 4 files, 15 tests passed. Verified. |
 
-A passing run shows the command output. "It looks fine" is not a test result. For the viz-lab pages, a visual check by eye is still a separate step (issue f).
+A passing run shows the command output. "It looks fine" is not a test result. For the viz-lab pages, a visual check by eye is still a separate step (issue e).
 
 ### Doc conflicts to know about
 

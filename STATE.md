@@ -37,4 +37,4 @@ and GuideToProgress.md for a plain-language overview and run instructions.
 - branch `backup/staged-pre-merge-2026-10-14`
 
 ### Next action
-Decide the fate of `docs/REORG_PLAN.md`. Full list in TASKS.md.
+Triage the two failing pages (`06b-ridgeline-3d`, `viz/index.html`). `docs/REORG_PLAN.md` was dropped (see DECISIONS.md). Full list in TASKS.md.
