@@ -6,7 +6,7 @@ Parent outcome: `[NEEDS VERIFICATION]`
 Project type: `Code project`
 Primary owner: `Luka (GitHub: traceresidue)`
 Repository URL: `https://github.com/traceresidue/drugchecking`
-Notion URL: `[NEEDS VERIFICATION]`
+Notion URL: `https://app.notion.com/p/3f932b5e72bf8138afd3f6e34db5c41e` (private draft page in the connected Notion account's workspace)
 Authoritative local path: `B:\ClaudeHub\ClaudeCode\drugchecking`
 Execution surfaces: `Claude Code, Cursor, Codex (second-opinion reviewer), Terminal`
 Created: `[NEEDS VERIFICATION]` (repository history starts 2022-03-01 from the upstream project; this fork's start date is not recorded)
@@ -51,7 +51,7 @@ Parked in `TASKS.md` and `DECISIONS.md`; do not absorb without a recorded decisi
 - `TASKS.md` contains the actionable work queue.
 - `DECISIONS.md` contains durable decisions (append, do not rewrite).
 - `.agent/sessions/` contains chronological handoffs.
-- Notion contains the human-readable project metaview: `[NEEDS VERIFICATION]` whether a record exists.
+- Notion contains the human-readable project metaview (page created 2026-10-14; the repository remains authoritative).
 - Git provides implementation history, attribution, rollback, and conflict resolution.
 
 ## Constraints
@@ -73,4 +73,4 @@ Parked in `TASKS.md` and `DECISIONS.md`; do not absorb without a recorded decisi
 - Plain-language overview and run steps: `GuideToProgress.md`.
 - Roadmap with phase status: `docs/ROADMAP.md`. Build log: `spectral-sourcer/PROGRESS.md`.
 - Repository: https://github.com/traceresidue/drugchecking
-- Notion: `[NEEDS VERIFICATION]`
+- Notion: https://app.notion.com/p/3f932b5e72bf8138afd3f6e34db5c41e

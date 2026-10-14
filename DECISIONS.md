@@ -2,6 +2,19 @@
 
 Decisions made, and ideas parked on purpose. Newest first. Do not build parked items without moving them to TASKS.md.
 
+## 2026-10-14 — Notion record created; sync state is `Synced`
+**Decision:** create the Notion metaview as a private draft page (no parent) in the connected account's workspace,
+and set the sync state to `Synced`. Supersedes "Defer Notion; sync state is `Local ahead`" below.
+**Why `Synced`:** the page was generated from `STATE.md`, `TASKS.md`, `PROJECT.md` and `DECISIONS.md`, then read back
+after creation; its status, next action, open items and decisions match the repository. The page deliberately holds no
+secrets, credentials, deployment IDs or email addresses.
+**Account:** the Notion account is a different login from the one used for the repository; the owner confirmed it is correct.
+**Scope note:** `Synced` refers to repo versus Notion only. Some commits are not yet pushed to GitHub (tracked in `TASKS.md` Now).
+**Re-check when:** `STATE.md` changes materially (especially pushes, new blockers, next action). The page shows the count of
+unpushed commits and will go stale until updated.
+**Not done:** the page was not moved or shared; it stays private until the owner decides.
+**Approved by:** repository owner, in session, 2026-10-14.
+
 ## 2026-10-14 — Untrack and gitignore `web/apps/viz-lab/dist/`
 **Decision:** `dist/` of viz-lab is build output (`vite build`); removed from the index (commit `b95eab7e7`) and ignored via
 `web/apps/viz-lab/.gitignore`. `web/packages/dcf-core/dist/` stays tracked because `visualization-framework/build.py` reads it.

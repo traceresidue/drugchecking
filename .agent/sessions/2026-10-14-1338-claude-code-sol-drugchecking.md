@@ -178,3 +178,16 @@ without explicit approval.
 - **Single next action (changed):** create the Notion record when the owner is ready. Sync state remains `Local ahead`.
 - Not pushed at the time of this addendum: `main` and the feature branch are behind local by the dist commit and the
   docs commit that follows it.
+
+## Addendum 2026-10-14T14:00:54-05:00 (same session, appended): Notion record created
+
+- The owner installed the Notion plugin and confirmed the connected Notion account (a different login from the repository
+  account) is correct. A search for `drugchecking` found no existing record, so there was no duplicate.
+- Created a private draft page (no parent) titled "drugchecking — project metaview" and read it back; content matched.
+  URL: https://app.notion.com/p/3f932b5e72bf8138afd3f6e34db5c41e
+- Content is non-sensitive only: identity, status, tests, next action, open items, decisions, parked items, links to repo files.
+  No credentials, no deployment IDs, no emails.
+- `PROJECT.md` Notion URL filled; `STATE.md` sync state changed from `Local ahead` to **`Synced`**; `TASKS.md` and
+  `DECISIONS.md` updated. The earlier "Local ahead" entries remain as history and are superseded.
+- Caveat recorded: the Notion page lists unpushed local commits; it needs a refresh after the owner pushes.
+- **Single next action (changed):** push the local commits and fast-forward `main` when the owner approves.

@@ -3,10 +3,10 @@
 Status: `In progress`
 Health: `On track`
 Progress: `Not tracked`
-Sync state: `Local ahead`
+Sync state: `Synced`
 Sync state values: `Synced | Local ahead | Notion ahead | Needs review`
-Sync state meaning now: repository committed and pushed; no Notion record exists to compare, so local is the only authority.
-Current phase: `Merged to main; idle, waiting on Notion`
+Sync state meaning now: the Notion metaview page was created from this file's facts and read back on 2026-10-14T14:00; they agree. Re-check after any state change. Note: some local commits are not yet pushed to GitHub; that is separate from Notion sync.
+Current phase: `Merged to main; idle, push pending`
 Last verified: `2026-10-14` (see "What is verified" below)
 
 ## Repository
@@ -24,18 +24,18 @@ Last verified: `2026-10-14` (see "What is verified" below)
 ## Blockers
 
 - None for implementation.
-- Notion record and URL not confirmed; owner chose to skip Notion for now (2026-10-14). Sync state is therefore `Local ahead`, not `Synced`.
+- Notion record created 2026-10-14 (private draft); the URL is in `PROJECT.md`. Move or share it when the owner decides.
 
 ## Risks or uncertainty
 
-- `PROJECT.md` has three unverified fields (parent outcome, Notion URL, created date).
+- `PROJECT.md` has two unverified fields (parent outcome, created date).
 - Something other than the Claude sessions pushed commits to `origin` on 2026-10-14 (up to `0ecca9852`); source unidentified.
 - Production deployment is team-only (Vercel Authentication) after the owner removed `aptrealisticsimulation.vercel.app` (verified 404 and no project domains, 2026-10-14T13:54). Any domain added later would be public under the current scope; the GitHub repo is public regardless. Origin of that domain unknown. [NEEDS VERIFICATION]
 - That the Vercel project `drugchecking` is linked to this repo is not confirmed. [NEEDS VERIFICATION]
 
 ## Single next action
 
-Create the Notion record for `drugchecking` when ready (deferred by the owner); then fill `PROJECT.md` Notion URL and set the sync state to `Synced`. Nothing else is open.
+Push the local commits (viz-lab `dist/` untrack and the docs commits since `c9913ba79`) to the feature branch and fast-forward `main`, when the owner approves. Nothing else is open.
 
 ---
 
