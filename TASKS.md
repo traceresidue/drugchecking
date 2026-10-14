@@ -4,10 +4,11 @@ One active task at a time. Park new ideas under Later instead of building them.
 
 ## Now
 
-- [ ] **Decide whether to untrack and gitignore `web/apps/viz-lab/dist/`** (42 tracked build-artifact files). Keep `web/packages/dcf-core/dist/`, which `build.py` consumes. Done when `git ls-files web/apps/viz-lab/dist` is empty (if yes) and `npm run build` in viz-lab still works.
+- [ ] **Decide the production site's visibility** (`aptrealisticsimulation.vercel.app` is public; see the DECISIONS.md correction). Options: accept public (the repo is public on GitHub), remove the domain, or raise Vercel protection. Needs the owner; no agent change to Vercel without approval.
 
 ## Next
 
+- [ ] Decide whether to untrack and gitignore `web/apps/viz-lab/dist/` (42 tracked build-artifact files). Keep `web/packages/dcf-core/dist/`, which `build.py` consumes. Done when `git ls-files web/apps/viz-lab/dist` is empty (if yes) and `npm run build` in viz-lab still works.
 - [ ] Run the shortened cross-agent smoke test from `VALIDATION.md` once (Codex to Claude and back).
 
 ## Later
@@ -25,7 +26,7 @@ One active task at a time. Park new ideas under Later instead of building them.
 - [ ] Notion record and URL for `drugchecking` (deferred by owner 2026-10-14). When it exists: fill the URL in `PROJECT.md`, compare, then set sync state to `Synced`.
 - [ ] Owner to supply `PROJECT.md` unknowns: parent outcome, Notion URL, created date.
 - [ ] Identify what pushed commits to `origin` on 2026-10-14 without a session push (GitHub Desktop auto-sync?).
-- [ ] Owner to confirm the Vercel project `drugchecking` is linked to this repository.
+- [ ] Owner to confirm the Vercel project `drugchecking` is linked to this repository, and whether `aptrealisticsimulation.vercel.app` was intentional.
 
 ## Completed
 
@@ -36,6 +37,6 @@ One active task at a time. Park new ideas under Later instead of building them.
 - [x] Housekeeping: scratch files handled, stash and backup branch dropped after verifying everything was committed (2026-10-14).
 - [x] ROADMAP status table added and layout diagram corrected; viz-lab README "20 pages" is correct (19 numbered + sample-3d; 21st file is HomePage) (2026-10-14).
 - [x] Branch pushed to origin, fast-forward, no secrets in the range (2026-10-14). Note: origin had already received commits up to `0ecca9852` from something other than this session; source unidentified.
-- [x] Gate off by default (`DCF_GATE`); deployed site stays private via Vercel Authentication (checked, no change needed); pushed (2026-10-14).
+- [x] Gate off by default (`DCF_GATE`); deployed site stays private via Vercel Authentication (checked, no change needed); pushed (2026-10-14). **Superseded 13:50:** `aptrealisticsimulation.vercel.app` is public; see the DECISIONS.md correction.
 - [x] Page 02 TIC rework checked by eye by the owner: passes (2026-10-14).
 - [x] Agent-project scaffold adopted: `.agent/`, `CLAUDE.md`, `PROJECT.md`, validation script added; `AGENTS.md` merged; `STATE.md` and `TASKS.md` reshaped (2026-10-14).

@@ -138,3 +138,18 @@ without explicit approval.
   branch checkout was restored. The aside copy is in the session scratchpad and can be discarded.
 - Open: `web/apps/viz-lab/dist/` is tracked (42 files); the single next action is now to decide whether to untrack it.
 - Sync state remains `Local ahead` (Notion deferred by the owner).
+
+## Addendum 2026-10-14T13:55:00-05:00 (same session, appended): closeout alignment
+
+- `HEAD`, `origin/main` and `origin/claude/drug-checking-viz-expansion-9uwjyh` were all `8cefa8c7b` at the start of this
+  alignment; tree clean; 0 stashes.
+- **Correction to the earlier privacy claim.** Unauthenticated requests: `aptrealisticsimulation.vercel.app` returns 200 and
+  serves the gallery, page 02, `pipeline/drugchecking.sqlite` (4,157,440 bytes) and `visualization-framework/data/spectra.json`;
+  the three `drugchecking-*aaron-bair-s-projects.vercel.app` URLs return 302 to Vercel SSO; `drugchecking.vercel.app` is 404.
+  Production deployment `dpl_ChYxz3BppCjg7KkYuMMWA66iModo` (READY, target production) was created at 13:46:37, after the
+  `main` fast-forward. Earlier in this session I reported the site as private from the project config alone; that is now
+  superseded. The GitHub repository is public, which bounds the exposure.
+- No Vercel setting was changed. Domains and deployment ownership are an approval boundary (`AGENTS.md`).
+- Docs aligned to live state: `STATE.md`, `TASKS.md`, `DECISIONS.md` (correction appended), `PROJECT.md`,
+  `GuideToProgress.md` (stale commit table, summary, issues and next tasks rewritten).
+- **Single next action (changed):** the owner decides the production site's visibility. Sync state remains `Local ahead`.

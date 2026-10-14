@@ -28,7 +28,7 @@ illustrative stand-ins. Harm-reduction tone throughout; method limits are disclo
 
 ## Definition of done
 
-Per major phase; the current phase is defined by `TASKS.md` Active and the run card. At the repo level:
+Per major phase; the current phase is defined by `TASKS.md` Now and the run card. At the repo level:
 
 - `node test/check.js` (in `visualization-framework/`) reports 0 pages failed.
 - `python -m unittest discover -s pipeline/test` passes.
@@ -58,13 +58,13 @@ Parked in `TASKS.md` and `DECISIONS.md`; do not absorb without a recorded decisi
 
 - Harm-reduction tone; no fear framing. Spectral visualizations must disclose method limits.
 - Standalone visualizations must stay openable offline (`file://`); no CDN at runtime.
-- Never commit secrets or `.env`. The in-page password gate is client-side only and off by default.
+- Never commit secrets or `.env`. The in-page password gate is client-side only and off by default. The GitHub repository is public; do not commit anything that must stay private.
 - Windows 11, PowerShell; Python 3.14, Node 24.
 - Data licensing: MoNA records carry per-record Creative Commons licenses; treat them as provenance.
 
 ## Dependencies
 
-- Vercel project `drugchecking` (Vercel Authentication on; no custom domains as of 2026-10-14).
+- Vercel project `drugchecking`: Vercel Authentication on for its team URLs, but the project domain `aptrealisticsimulation.vercel.app` is public (checked 2026-10-14). Visibility decision pending; see `DECISIONS.md`.
 - GitHub remote `origin` (`traceresidue/drugchecking`); `upstream` is the original project.
 - Local reference spectra at `B:\ClaudeHub\ClaudeCode\spectra_library` (not in the repo).
 

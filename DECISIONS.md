@@ -2,6 +2,21 @@
 
 Decisions made, and ideas parked on purpose. Newest first. Do not build parked items without moving them to TASKS.md.
 
+## 2026-10-14 — CORRECTION: the production site is publicly reachable (supersedes the "private" finding)
+**Finding (checked ~13:50, unauthenticated requests):** `https://aptrealisticsimulation.vercel.app/` returns HTTP 200 and
+serves this project's gallery, pages, `pipeline/drugchecking.sqlite` (4.1 MB) and `visualization-framework/data/*.json`.
+The three `drugchecking-*aaron-bair-s-projects.vercel.app` URLs return 302 to Vercel SSO (protected).
+**Why the earlier entry is superseded:** it recorded Vercel Authentication `all_except_custom_domains` with no custom
+domains and concluded the site was private. A project domain `aptrealisticsimulation.vercel.app` now exists (it was not
+in the earlier list, which had `drugchecking.vercel.app`, now 404) and is not covered by that scope. It went live with the
+production deployment built from `main` at 13:46:37 after the fast-forward. Who added or renamed the domain is unknown.
+**Context that bounds the exposure:** the GitHub repository `traceresidue/drugchecking` is PUBLIC (fork of `ectracy/drugchecking`)
+and already contains the sqlite and data files. The client-side gate never protected data files in any case.
+**Not changed:** no Vercel setting was altered by the agent (domains are an approval boundary in `AGENTS.md`).
+**Owner decision needed:** (a) accept public, since the data is already public on GitHub; (b) remove the domain from the
+project; (c) raise protection to cover all deployments or enable password protection (platform-level).
+**Open:** whether `aptrealisticsimulation.vercel.app` was intentional. [NEEDS VERIFICATION]
+
 ## 2026-10-14 — `main` updated by fast-forward from the feature branch
 **Decision:** `main` was moved from `4bca8ce06` to `62b111c70` by fast-forward (no PR, no merge commit, no force).
 **Why:** `main` had no commits the branch lacked, so a fast-forward kept history linear and reversible; the owner
